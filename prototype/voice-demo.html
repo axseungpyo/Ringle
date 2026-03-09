@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RING LOOP — 실시간 음성 데모</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #5B4FFF;
+    --purple-light: #EEF0FF;
+    --purple-mid: #7B6FFF;
+    --red: #EF4444;
+    --green: #22C55E;
+    --orange: #F59E0B;
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --card2: #22223a;
+    --text: #f0f0ff;
+    --text-muted: #888aaa;
+    --border: rgba(91,79,255,0.2);
+  }
+
+  body {
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    width: 100%; max-width: 900px;
+    padding: 28px 24px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 20px; font-weight: 700; }
+  .logo span { color: var(--purple); }
+  .api-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 8px 14px; font-size: 13px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .api-pill:hover { border-color: var(--purple); }
+  .api-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+  .api-pill .dot.on { background: var(--green); }
+
+  /* ── Page title ── */
+  .page-title { width: 100%; max-width: 900px; padding: 24px 24px 0; }
+  .page-title h1 { font-size: 26px; font-weight: 700; }
+  .page-title p { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ── Grid ── */
+  .grid {
+    width: 100%; max-width: 900px; padding: 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .chat-card { grid-column: 1; }
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .card-title {
+    font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 6px; background: var(--purple-light); color: var(--purple);
+  }
+  .badge.green { background: rgba(34,197,94,0.15); color: var(--green); }
+
+  /* ── STT Display ── */
+  .stt-display {
+    background: var(--card2); border-radius: 14px;
+    padding: 16px; min-height: 130px;
+    font-size: 15px; line-height: 1.9;
+    color: var(--text-muted);
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+    word-break: break-all;
+    position: relative;
+    overflow-y: auto;
+    max-height: 250px;
+  }
+  .stt-display.active { border-color: var(--purple); }
+  .stt-display.result { color: var(--text); border-color: var(--green); }
+
+  .stt-final { color: var(--text); }
+  .stt-interim {
+    color: rgba(240,240,255,0.4);
+    border-bottom: 1px dashed rgba(91,79,255,0.25);
+  }
+  .stt-cursor {
+    display: inline-block; width: 2px; height: 1.1em;
+    background: var(--purple);
+    animation: blink 0.7s step-end infinite;
+    vertical-align: text-bottom; margin-left: 2px;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── Level meter ── */
+  .level-meter {
+    width: 100%; height: 4px;
+    background: var(--card2); border-radius: 2px; overflow: hidden;
+  }
+  .level-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--green), var(--purple));
+    border-radius: 2px; transition: width 0.08s ease-out;
+  }
+
+  /* ── Mic button ── */
+  .mic-big {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+    border: none; color: white; font-size: 28px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s, box-shadow 0.2s;
+    align-self: center; flex-shrink: 0;
+  }
+  .mic-big:hover { box-shadow: 0 0 0 8px rgba(91,79,255,0.15); }
+  .mic-big:active { transform: scale(0.93); }
+  .mic-big.recording {
+    background: linear-gradient(135deg, var(--red), #ff6b6b);
+    animation: micRing 1.2s ease-in-out infinite;
+  }
+  @keyframes micRing {
+    0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+    50% { box-shadow: 0 0 0 14px rgba(239,68,68,0); }
+  }
+
+  .stt-status {
+    font-size: 13px; color: var(--text-muted); text-align: center;
+    min-height: 20px; display: flex; align-items: center;
+    justify-content: center; gap: 6px;
+  }
+  .timer { color: var(--red); font-variant-numeric: tabular-nums; }
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(91,79,255,0.3);
+    border-top-color: var(--purple); border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .stt-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stt-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--text-muted); border-radius: 10px;
+    padding: 8px 14px; font-size: 13px; cursor: pointer;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .stt-btn:hover { border-color: var(--purple); color: var(--purple); }
+
+  /* ── TTS Card ── */
+  .tts-textarea {
+    background: var(--card2); border: 2px solid transparent;
+    border-radius: 14px; padding: 14px 16px;
+    font-size: 14px; color: var(--text); font-family: inherit;
+    resize: none; outline: none; line-height: 1.7;
+    transition: border-color 0.2s; width: 100%; min-height: 120px;
+  }
+  .tts-textarea:focus { border-color: var(--purple); }
+  .tts-textarea::placeholder { color: var(--text-muted); }
+  .tts-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .voice-select {
+    flex: 1; background: var(--card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 12px; color: var(--text);
+    font-size: 13px; font-family: inherit; outline: none; cursor: pointer; min-width: 120px;
+  }
+  .play-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+    border: none; color: white; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s, opacity 0.2s; flex-shrink: 0;
+  }
+  .play-btn:hover { opacity: 0.85; }
+  .play-btn:active { transform: scale(0.9); }
+  .play-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .tts-status { font-size: 12px; color: var(--text-muted); min-height: 18px; }
+  .wave-bars { display: flex; align-items: center; gap: 3px; height: 24px; }
+  .wave-bar {
+    width: 4px; background: var(--purple); border-radius: 2px;
+    animation: wave 1.2s ease-in-out infinite; transform-origin: bottom;
+  }
+  .wave-bar:nth-child(1){animation-delay:0s;height:8px}
+  .wave-bar:nth-child(2){animation-delay:.15s;height:16px}
+  .wave-bar:nth-child(3){animation-delay:.3s;height:22px}
+  .wave-bar:nth-child(4){animation-delay:.45s;height:14px}
+  .wave-bar:nth-child(5){animation-delay:.6s;height:10px}
+  @keyframes wave {
+    0%,100%{transform:scaleY(.4);opacity:.6} 50%{transform:scaleY(1);opacity:1}
+  }
+
+  /* ── Chat Card ── */
+  .chat-card { grid-column: 1 / -1; }
+  .chat-messages {
+    background: var(--card2); border-radius: 14px;
+    padding: 16px; min-height: 160px; max-height: 300px;
+    overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-messages::-webkit-scrollbar { width: 0; }
+  .chat-msg { display: flex; gap: 8px; align-items: flex-start; }
+  .chat-msg.user { flex-direction: row-reverse; }
+  .chat-bubble {
+    padding: 10px 14px; border-radius: 16px;
+    font-size: 14px; line-height: 1.6;
+    max-width: 80%; white-space: pre-wrap; word-break: break-word;
+  }
+  .chat-msg.ai .chat-bubble {
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-top-left-radius: 4px;
+  }
+  .chat-msg.user .chat-bubble {
+    background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+    color: white; border-top-right-radius: 4px;
+  }
+  .chat-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .chat-msg.ai .chat-avatar { background: var(--purple); color: white; }
+  .chat-msg.user .chat-avatar { background: var(--card); color: var(--text-muted); border: 1px solid var(--border); }
+  .typing-dots { display: flex; gap: 4px; padding: 2px 0; }
+  .typing-dot {
+    width: 7px; height: 7px; background: var(--text-muted);
+    border-radius: 50%; animation: tdot 1.4s infinite;
+  }
+  .typing-dot:nth-child(2){animation-delay:.2s}
+  .typing-dot:nth-child(3){animation-delay:.4s}
+  @keyframes tdot {
+    0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-5px);opacity:1}
+  }
+  .chat-input-row { display: flex; gap: 8px; align-items: center; }
+  .chat-input-wrap { position: relative; flex: 1; }
+  .chat-text-input {
+    width: 100%; background: var(--card2); border: 2px solid transparent;
+    border-radius: 12px; padding: 10px 14px; color: var(--text);
+    font-family: inherit; font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-text-input:focus { border-color: var(--purple); }
+  .chat-text-input::placeholder { color: var(--text-muted); }
+  .chat-interim-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; align-items: center; padding: 10px 14px;
+    font-size: 14px; color: rgba(240,240,255,0.4);
+    pointer-events: none; border-radius: 12px;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .chat-mic-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--card2); border: 1px solid var(--border);
+    color: var(--text-muted); font-size: 17px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .chat-mic-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .chat-mic-btn.recording {
+    background: var(--red); border-color: var(--red); color: white;
+    animation: micRing 1.2s ease-in-out infinite;
+  }
+  .chat-send-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+    border: none; color: white; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.2s, transform 0.15s; flex-shrink: 0; opacity: 0.4;
+  }
+  .chat-send-btn.active { opacity: 1; }
+  .chat-send-btn:active { transform: scale(0.9); }
+
+  /* ── Modal ── */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 100; display: none; align-items: center;
+    justify-content: center; padding: 20px;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 28px 24px; width: 100%;
+    max-width: 440px; display: flex; flex-direction: column; gap: 16px;
+  }
+  .modal-title {
+    font-size: 18px; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+  .modal-label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .modal-input {
+    width: 100%; background: var(--card2); border: 2px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; color: var(--text);
+    font-size: 14px; font-family: monospace; outline: none; transition: border-color 0.2s;
+  }
+  .modal-input:focus { border-color: var(--purple); }
+  .modal-hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+  .modal-save {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+    color: white; border: none; border-radius: 13px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: opacity 0.2s; margin-top: 4px;
+  }
+  .modal-save:hover { opacity: 0.9; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 22px; border-radius: 14px;
+    font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 200;
+    white-space: nowrap; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .section-hint {
+    font-size: 12px; color: var(--text-muted); line-height: 1.6;
+    background: rgba(91,79,255,0.08); border-radius: 10px;
+    padding: 10px 12px; border-left: 3px solid var(--purple);
+  }
+  .eng-hl {
+    background: rgba(91,79,255,0.2); color: #a5a0ff;
+    padding: 1px 5px; border-radius: 5px; font-weight: 500;
+  }
+
+  /* ── WS Status indicator ── */
+  .ws-status {
+    font-size: 11px; display: flex; align-items: center; gap: 5px;
+    color: var(--text-muted);
+  }
+  .ws-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .ws-dot.connected { background: var(--green); }
+  .ws-dot.connecting { background: var(--orange); animation: blink 0.8s step-end infinite; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="site-header">
+  <div class="logo"><span>RING</span> LOOP — Realtime Voice</div>
+  <div class="api-pill" onclick="openSettings()">
+    <div class="dot" id="apiDot"></div>
+    <span id="apiPillLabel">API 키 설정</span>
+  </div>
+</div>
+
+<div class="page-title">
+  <h1>🎙 실시간 음성 인식 데모</h1>
+  <p>OpenAI Realtime API (WebSocket) — 말하는 즉시 텍스트가 나타납니다.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ═══ STT Card ═══ -->
+  <div class="card">
+    <div class="card-title">
+      🎤 실시간 STT
+      <span class="badge green">Realtime WebSocket</span>
+    </div>
+    <div class="section-hint">
+      마이크 버튼을 누르면 WebSocket이 연결되고,<br>
+      <b>말하는 즉시 텍스트가 글자 단위로 스트리밍</b>됩니다.<br>
+      말을 멈추면 VAD가 자동으로 문장을 구분합니다.
+    </div>
+    <div class="ws-status" id="sttWsStatus">
+      <div class="ws-dot" id="sttWsDot"></div> <span id="sttWsLabel">연결 안 됨</span>
+    </div>
+    <div class="stt-display" id="sttDisplay">
+      <span style="color:var(--text-muted)">마이크 버튼을 눌러 시작하세요…</span>
+    </div>
+    <div class="level-meter" id="sttLevelMeter" style="display:none;">
+      <div class="level-fill" id="sttLevelFill"></div>
+    </div>
+    <div class="stt-status" id="sttStatus">대기 중</div>
+    <button class="mic-big" id="micBig" onclick="toggleStt()">🎤</button>
+    <div class="stt-actions" id="sttActions" style="display:none;">
+      <button class="stt-btn" onclick="copySttResult()">📋 복사</button>
+      <button class="stt-btn" onclick="clearSttResult()">🗑 지우기</button>
+    </div>
+  </div>
+
+  <!-- ═══ TTS Card ═══ -->
+  <div class="card">
+    <div class="card-title">
+      🔊 TTS — 텍스트 → 음성
+      <span class="badge">gpt-4o-mini-tts</span>
+    </div>
+    <div class="section-hint">
+      텍스트를 수정하고 ▶ 버튼을 누르세요.<br>보이스 6종 선택 가능.
+    </div>
+    <textarea class="tts-textarea" id="ttsInput"
+      placeholder="읽을 텍스트를 입력하세요…">Hello! Today I want to practice my business English. Let me walk you through what I'm working on this week.</textarea>
+    <div class="tts-controls">
+      <select class="voice-select" id="voiceSelect">
+        <option value="nova">nova (밝고 친근)</option>
+        <option value="alloy">alloy (중성적)</option>
+        <option value="echo">echo (남성·깊은)</option>
+        <option value="fable">fable (영국식)</option>
+        <option value="onyx">onyx (남성·저음)</option>
+        <option value="shimmer">shimmer (여성·부드)</option>
+      </select>
+      <button class="play-btn" id="ttsPlayBtn" onclick="playTts()" title="재생">▶</button>
+    </div>
+    <div class="tts-status" id="ttsStatus"><span style="color:var(--text-muted)">대기 중</span></div>
+  </div>
+
+  <!-- ═══ Chat Card ═══ -->
+  <div class="card chat-card">
+    <div class="card-title">
+      💬 AI 음성 채팅
+      <span class="badge green">실시간 STT + GPT + TTS</span>
+    </div>
+    <div class="section-hint">
+      🎤 누르면 실시간으로 텍스트 인식 → 말이 끝나면 자동 전송 → AI 답변 → 음성 재생
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg ai">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-bubble">안녕하세요! 🎤 마이크를 눌러 말씀하시면 실시간으로 인식됩니다. 텍스트로도 입력 가능해요! 😊</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <div class="chat-input-wrap">
+        <input type="text" class="chat-text-input" id="chatInput"
+          placeholder="메시지 입력 또는 🎤 으로 음성 입력…" autocomplete="off" />
+        <div class="chat-interim-overlay" id="chatInterimOverlay"></div>
+      </div>
+      <button class="chat-mic-btn" id="chatMicBtn" onclick="toggleChatMic()" title="음성 입력">🎤</button>
+      <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-bg" id="settingsModal" onclick="closeSettingsModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      ⚙ API 설정
+      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+    </div>
+    <div>
+      <label class="modal-label">OpenAI API Key</label>
+      <input type="password" class="modal-input" id="apiKeyInput" placeholder="sk-proj-…" />
+      <p class="modal-hint">💡 브라우저 localStorage에만 저장. 외부 전송 없음.</p>
+    </div>
+    <div>
+      <label class="modal-label">Chat 모델</label>
+      <select class="modal-input" id="chatModelSelect" style="font-family:inherit;cursor:pointer;">
+        <option value="gpt-4o-mini">gpt-4o-mini (추천)</option>
+        <option value="gpt-4.1-nano">gpt-4.1-nano (최저가)</option>
+        <option value="gpt-4o">gpt-4o (고품질)</option>
+      </select>
+    </div>
+    <button class="modal-save" onclick="saveSettings()">저장하기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+const S = {
+  apiKey: localStorage.getItem('vd_api_key') || '',
+  model:  localStorage.getItem('vd_model')   || 'gpt-4o-mini',
+
+  // STT Realtime
+  sttActive: false,
+  sttWs: null,
+  sttAudioCtx: null,
+  sttProcessor: null,
+  sttStream: null,
+  sttAnalyser: null,
+  sttAnimFrame: null,
+  sttFinalText: '',     // accumulated final transcripts
+  sttInterimText: '',   // current partial/delta
+  sttCurrentItemId: null,
+  sttCurrentDelta: '',  // delta accumulator for current item
+  sttTimerInterval: null,
+  sttSeconds: 0,
+
+  // TTS
+  ttsPlaying: false,
+  ttsAudioCtx: null,
+  ttsSource: null,
+
+  // Chat
+  chatMessages: [],
+  chatStreaming: false,
+  chatMicActive: false,
+  chatWs: null,
+  chatAudioCtx: null,
+  chatProcessor: null,
+  chatStream: null,
+  chatFinalText: '',
+  chatInterimText: '',
+  chatCurrentDelta: '',
+  chatSilenceTimer: null,
+};
+
+const CHAT_SYS = `당신은 링글 AI 톡 어시스턴트입니다.
+- 한국어 기반 대화. 사용자 맥락에 맞는 영어 비즈니스 표현 1~2개 자연스럽게 삽입.
+- 영어 표현은 큰따옴표로 감싸기. 예: "Let me walk you through..."
+- 응답은 3~4문장으로 짧게. 이모지 1~2개.
+- 따뜻하고 친근한 어조.`;
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('apiKeyInput').value = S.apiKey;
+  document.getElementById('chatModelSelect').value = S.model;
+  updateApiPill();
+
+  S.chatMessages = [
+    { role: 'system', content: CHAT_SYS },
+    { role: 'assistant', content: '안녕하세요! 🎤 마이크를 눌러 말씀하시면 실시간으로 인식됩니다. 텍스트로도 입력 가능해요! 😊' },
+  ];
+
+  const ci = document.getElementById('chatInput');
+  ci.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sendChat(); }
+  });
+  ci.addEventListener('input', () => {
+    document.getElementById('chatSendBtn').classList.toggle('active', ci.value.trim().length > 0);
+  });
+});
+
+// ════════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════════
+function openSettings() { document.getElementById('settingsModal').classList.add('open'); }
+function closeSettingsModal(e) {
+  if (e && e.target !== document.getElementById('settingsModal')) return;
+  document.getElementById('settingsModal').classList.remove('open');
+}
+function saveSettings() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const model = document.getElementById('chatModelSelect').value;
+  if (key && !key.startsWith('sk-')) { showToast('❌ 유효한 API 키를 입력해주세요'); return; }
+  S.apiKey = key; S.model = model;
+  localStorage.setItem('vd_api_key', key);
+  localStorage.setItem('vd_model', model);
+  updateApiPill();
+  document.getElementById('settingsModal').classList.remove('open');
+  showToast('✅ 설정 저장됨');
+}
+function updateApiPill() {
+  const dot = document.getElementById('apiDot');
+  const label = document.getElementById('apiPillLabel');
+  dot.className = S.apiKey ? 'dot on' : 'dot';
+  label.textContent = S.apiKey ? S.model + ' 연결됨' : 'API 키 설정';
+}
+function requireApiKey() {
+  if (!S.apiKey) { openSettings(); showToast('⚙ API 키를 먼저 설정해주세요'); return false; }
+  return true;
+}
+
+// ════════════════════════════════════════════
+// AUDIO HELPERS — PCM16 at 24kHz
+// ════════════════════════════════════════════
+
+// Convert Float32 samples to Int16 PCM
+function float32ToPcm16(float32) {
+  const buf = new ArrayBuffer(float32.length * 2);
+  const view = new DataView(buf);
+  for (let i = 0; i < float32.length; i++) {
+    let s = Math.max(-1, Math.min(1, float32[i]));
+    view.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); // little-endian
+  }
+  return new Uint8Array(buf);
+}
+
+// Downsample from source rate to 24kHz
+function downsample(buffer, fromRate, toRate) {
+  if (fromRate === toRate) return buffer;
+  const ratio = fromRate / toRate;
+  const newLen = Math.round(buffer.length / ratio);
+  const result = new Float32Array(newLen);
+  for (let i = 0; i < newLen; i++) {
+    const idx = i * ratio;
+    const lo = Math.floor(idx);
+    const hi = Math.min(lo + 1, buffer.length - 1);
+    const frac = idx - lo;
+    result[i] = buffer[lo] * (1 - frac) + buffer[hi] * frac; // linear interpolation
+  }
+  return result;
+}
+
+// Uint8Array → base64
+function uint8ToBase64(bytes) {
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+// Start mic → AudioContext → ScriptProcessor → callback with base64 PCM16 chunks
+async function startAudioPipeline(onChunk, onAnalyser) {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioCtx.createMediaStreamSource(stream);
+  const analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  source.connect(analyser);
+
+  // ScriptProcessor for raw PCM access (deprecated but universally supported)
+  const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+  analyser.connect(processor);
+  processor.connect(audioCtx.destination);
+
+  const nativeRate = audioCtx.sampleRate;
+
+  processor.onaudioprocess = (e) => {
+    const float32 = e.inputBuffer.getChannelData(0);
+    const resampled = downsample(float32, nativeRate, 24000);
+    const pcm16 = float32ToPcm16(resampled);
+    const b64 = uint8ToBase64(pcm16);
+    onChunk(b64);
+  };
+
+  if (onAnalyser) onAnalyser(analyser);
+
+  return { stream, audioCtx, processor, analyser };
+}
+
+function stopAudioPipeline(stream, audioCtx, processor) {
+  if (processor) { processor.disconnect(); }
+  if (audioCtx) { try { audioCtx.close(); } catch {} }
+  if (stream) { stream.getTracks().forEach(t => t.stop()); }
+}
+
+// ════════════════════════════════════════════
+// LEVEL METER
+// ════════════════════════════════════════════
+function startLevelMeter(analyser, fillId, onFrame) {
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  const fill = document.getElementById(fillId);
+  function draw() {
+    analyser.getByteFrequencyData(data);
+    const avg = data.reduce((a, b) => a + b, 0) / data.length;
+    fill.style.width = Math.min(100, (avg / 128) * 100) + '%';
+    return requestAnimationFrame(draw);
+  }
+  return draw();
+}
+
+// ════════════════════════════════════════════
+// REALTIME WEBSOCKET — CONNECT
+// ════════════════════════════════════════════
+function connectRealtimeWs(apiKey, onDelta, onCompleted, onOpen, onError, onClose) {
+  const url = 'wss://api.openai.com/v1/realtime?intent=transcription';
+  const ws = new WebSocket(url, [
+    'realtime',
+    'openai-insecure-api-key.' + apiKey,
+    'openai-beta.realtime-v1',
+  ]);
+
+  ws.onopen = () => {
+    // Configure transcription session (beta transcription-only format)
+    ws.send(JSON.stringify({
+      type: 'transcription_session.update',
+      session: {
+        input_audio_format: 'pcm16',
+        input_audio_transcription: {
+          model: 'gpt-4o-mini-transcribe',
+          language: 'ko',
+          prompt: '한국어와 영어가 혼용된 대화를 정확하게 전사하세요.',
+        },
+        turn_detection: {
+          type: 'server_vad',
+          threshold: 0.5,
+          prefix_padding_ms: 300,
+          silence_duration_ms: 700,
+        },
+      },
+    }));
+    if (onOpen) onOpen();
+  };
+
+  ws.onmessage = (event) => {
+    let msg;
+    try { msg = JSON.parse(event.data); } catch { return; }
+
+    // Debug: log all events to console for troubleshooting
+    if (msg.type !== 'input_audio_buffer.speech_started' &&
+        msg.type !== 'input_audio_buffer.speech_stopped') {
+      console.log('[Realtime]', msg.type, msg);
+    }
+
+    switch (msg.type) {
+      case 'conversation.item.input_audio_transcription.delta':
+        if (onDelta) onDelta(msg.delta || '', msg.item_id);
+        break;
+      case 'conversation.item.input_audio_transcription.completed':
+        if (onCompleted) onCompleted(msg.transcript || '', msg.item_id);
+        break;
+      case 'error':
+        console.error('Realtime API error:', msg.error);
+        if (onError) onError(msg.error);
+        break;
+      case 'session.created':
+      case 'session.updated':
+      case 'transcription_session.created':
+      case 'transcription_session.updated':
+        console.log('Session configured:', msg.type);
+        break;
+      default:
+        break;
+    }
+  };
+
+  ws.onerror = (e) => {
+    console.error('WebSocket error:', e);
+    if (onError) onError({ message: 'WebSocket 연결 실패' });
+  };
+
+  ws.onclose = (e) => {
+    console.log('WebSocket closed:', e.code, e.reason);
+    if (onClose) onClose(e);
+  };
+
+  return ws;
+}
+
+function sendAudioChunk(ws, base64Audio) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'input_audio_buffer.append',
+      audio: base64Audio,
+    }));
+  }
+}
+
+// ════════════════════════════════════════════
+// STT — MAIN
+// ════════════════════════════════════════════
+function toggleStt() {
+  if (S.sttActive) { stopStt(); } else { startStt(); }
+}
+
+async function startStt() {
+  if (!requireApiKey()) return;
+
+  S.sttFinalText = '';
+  S.sttInterimText = '';
+  S.sttCurrentDelta = '';
+  S.sttCurrentItemId = null;
+  S.sttSeconds = 0;
+  S.sttActive = true;
+
+  const btn = document.getElementById('micBig');
+  btn.classList.add('recording');
+  btn.textContent = '⏹';
+
+  const display = document.getElementById('sttDisplay');
+  display.className = 'stt-display active';
+  display.innerHTML = '<span class="spinner"></span> WebSocket 연결 중…';
+
+  document.getElementById('sttActions').style.display = 'none';
+  document.getElementById('sttLevelMeter').style.display = 'block';
+
+  setWsStatus('stt', 'connecting', '연결 중…');
+
+  // Timer
+  S.sttTimerInterval = setInterval(() => {
+    S.sttSeconds++;
+    const m = String(Math.floor(S.sttSeconds / 60)).padStart(2, '0');
+    const s = String(S.sttSeconds % 60).padStart(2, '0');
+    document.getElementById('sttStatus').innerHTML =
+      `<span class="timer">⏺ ${m}:${s}</span> · 실시간 인식 중`;
+  }, 1000);
+
+  // Start mic
+  try {
+    const pipeline = await startAudioPipeline(
+      (b64) => sendAudioChunk(S.sttWs, b64),
+      (analyser) => { S.sttAnalyser = analyser; S.sttAnimFrame = startLevelMeter(analyser, 'sttLevelFill'); }
+    );
+    S.sttStream = pipeline.stream;
+    S.sttAudioCtx = pipeline.audioCtx;
+    S.sttProcessor = pipeline.processor;
+  } catch {
+    showToast('🎤 마이크 권한이 필요해요');
+    resetSttUI();
+    return;
+  }
+
+  // Connect WebSocket
+  S.sttWs = connectRealtimeWs(
+    S.apiKey,
+    // onDelta
+    (delta, itemId) => {
+      if (itemId !== S.sttCurrentItemId) {
+        // New speech segment — commit previous delta to final
+        if (S.sttCurrentDelta) {
+          S.sttFinalText += S.sttCurrentDelta + ' ';
+        }
+        S.sttCurrentItemId = itemId;
+        S.sttCurrentDelta = '';
+      }
+      S.sttCurrentDelta += delta;
+      S.sttInterimText = S.sttCurrentDelta;
+      updateSttDisplay();
+    },
+    // onCompleted
+    (transcript, itemId) => {
+      // Finalize this speech segment
+      S.sttCurrentDelta = '';
+      S.sttCurrentItemId = null;
+      if (transcript) {
+        // Replace any accumulated delta with the final transcript
+        S.sttFinalText += transcript + ' ';
+      }
+      S.sttInterimText = '';
+      updateSttDisplay();
+    },
+    // onOpen
+    () => {
+      setWsStatus('stt', 'connected', '연결됨');
+      const display = document.getElementById('sttDisplay');
+      display.innerHTML = '<span style="color:var(--text-muted)">말씀해주세요…</span><span class="stt-cursor"></span>';
+    },
+    // onError
+    (err) => {
+      showToast('❌ ' + (err?.message || 'WebSocket 오류'));
+      stopStt();
+    },
+    // onClose
+    () => {
+      setWsStatus('stt', 'disconnected', '연결 종료');
+    }
+  );
+}
+
+function updateSttDisplay() {
+  const display = document.getElementById('sttDisplay');
+  let html = '';
+  if (S.sttFinalText.trim()) {
+    html += `<span class="stt-final">${esc(S.sttFinalText)}</span>`;
+  }
+  if (S.sttInterimText) {
+    html += `<span class="stt-interim">${esc(S.sttInterimText)}</span>`;
+  }
+  if (S.sttActive) {
+    html += '<span class="stt-cursor"></span>';
+  }
+  if (!html) {
+    html = '<span style="color:var(--text-muted)">말씀해주세요…</span><span class="stt-cursor"></span>';
+  }
+  display.innerHTML = html;
+  display.scrollTop = display.scrollHeight;
+}
+
+function stopStt() {
+  S.sttActive = false;
+  clearInterval(S.sttTimerInterval);
+  cancelAnimationFrame(S.sttAnimFrame);
+
+  // Close WebSocket
+  if (S.sttWs) { try { S.sttWs.close(); } catch {} S.sttWs = null; }
+
+  // Stop audio
+  stopAudioPipeline(S.sttStream, S.sttAudioCtx, S.sttProcessor);
+  S.sttStream = null; S.sttAudioCtx = null; S.sttProcessor = null;
+
+  // Commit any remaining delta
+  if (S.sttCurrentDelta) {
+    S.sttFinalText += S.sttCurrentDelta;
+    S.sttCurrentDelta = '';
+    S.sttInterimText = '';
+  }
+
+  // UI
+  const btn = document.getElementById('micBig');
+  btn.classList.remove('recording');
+  btn.textContent = '🎤';
+
+  document.getElementById('sttLevelMeter').style.display = 'none';
+  document.getElementById('sttLevelFill').style.width = '0%';
+
+  const display = document.getElementById('sttDisplay');
+  display.classList.remove('active');
+
+  const result = S.sttFinalText.trim();
+  if (result) {
+    display.classList.add('result');
+    display.innerHTML = `<span class="stt-final">${esc(result)}</span>`;
+    document.getElementById('sttStatus').textContent = '✅ 인식 완료';
+    document.getElementById('sttActions').style.display = 'flex';
+  } else {
+    display.innerHTML = '<span style="color:var(--text-muted)">인식된 텍스트가 없습니다.</span>';
+    document.getElementById('sttStatus').textContent = '결과 없음';
+  }
+
+  setWsStatus('stt', 'disconnected', '연결 종료');
+}
+
+function resetSttUI() {
+  S.sttActive = false;
+  clearInterval(S.sttTimerInterval);
+  document.getElementById('micBig').classList.remove('recording');
+  document.getElementById('micBig').textContent = '🎤';
+  document.getElementById('sttLevelMeter').style.display = 'none';
+  document.getElementById('sttStatus').textContent = '대기 중';
+  setWsStatus('stt', 'disconnected', '연결 안 됨');
+}
+
+function copySttResult() {
+  const t = S.sttFinalText.trim();
+  if (t) navigator.clipboard.writeText(t).then(() => showToast('📋 복사됨'));
+}
+function clearSttResult() {
+  S.sttFinalText = ''; S.sttInterimText = '';
+  document.getElementById('sttDisplay').innerHTML = '<span style="color:var(--text-muted)">마이크 버튼을 눌러 시작하세요…</span>';
+  document.getElementById('sttDisplay').className = 'stt-display';
+  document.getElementById('sttActions').style.display = 'none';
+  document.getElementById('sttStatus').textContent = '대기 중';
+}
+
+function setWsStatus(prefix, state, label) {
+  const dot = document.getElementById(prefix + 'WsDot');
+  const lbl = document.getElementById(prefix + 'WsLabel');
+  dot.className = 'ws-dot' + (state === 'connected' ? ' connected' : state === 'connecting' ? ' connecting' : '');
+  lbl.textContent = label;
+}
+
+// ════════════════════════════════════════════
+// TTS
+// ════════════════════════════════════════════
+async function playTts() {
+  if (!requireApiKey()) return;
+  if (S.ttsPlaying) { stopTts(); return; }
+  const text = document.getElementById('ttsInput').value.trim();
+  const voice = document.getElementById('voiceSelect').value;
+  if (!text) { showToast('텍스트를 입력해주세요'); return; }
+
+  S.ttsPlaying = true;
+  const btn = document.getElementById('ttsPlayBtn');
+  btn.disabled = true; btn.textContent = '⏳';
+  document.getElementById('ttsStatus').innerHTML = '<span style="color:var(--text-muted)">로딩 중…</span>';
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.apiKey}` },
+      body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice, input: text }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const buf = await res.arrayBuffer();
+    S.ttsAudioCtx = new AudioContext();
+    const decoded = await S.ttsAudioCtx.decodeAudioData(buf);
+    S.ttsSource = S.ttsAudioCtx.createBufferSource();
+    S.ttsSource.buffer = decoded;
+    S.ttsSource.connect(S.ttsAudioCtx.destination);
+    S.ttsSource.onended = () => {
+      S.ttsPlaying = false; btn.disabled = false; btn.textContent = '▶';
+      document.getElementById('ttsStatus').innerHTML = `<span style="color:var(--green)">✅ 완료 (${voice})</span>`;
+    };
+    S.ttsSource.start(0);
+    btn.disabled = false; btn.textContent = '⏹';
+    document.getElementById('ttsStatus').innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="wave-bars"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+        <span style="font-size:12px;color:var(--purple)">재생 중 (${voice})</span>
+      </div>`;
+  } catch (e) {
+    S.ttsPlaying = false; btn.disabled = false; btn.textContent = '▶';
+    document.getElementById('ttsStatus').innerHTML = `<span style="color:var(--red)">❌ ${esc(e.message)}</span>`;
+    showToast('❌ TTS 오류');
+  }
+}
+function stopTts() {
+  if (S.ttsSource) { try { S.ttsSource.stop(); } catch {} }
+  if (S.ttsAudioCtx) { try { S.ttsAudioCtx.close(); } catch {} }
+  S.ttsPlaying = false; S.ttsSource = null; S.ttsAudioCtx = null;
+  document.getElementById('ttsPlayBtn').disabled = false;
+  document.getElementById('ttsPlayBtn').textContent = '▶';
+  document.getElementById('ttsStatus').innerHTML = '<span style="color:var(--text-muted)">중지됨</span>';
+}
+
+// ════════════════════════════════════════════
+// CHAT
+// ════════════════════════════════════════════
+async function sendChat(overrideText) {
+  if (S.chatStreaming) return;
+  const input = document.getElementById('chatInput');
+  const text = overrideText || input.value.trim();
+  if (!text) return;
+  if (!requireApiKey()) return;
+
+  input.value = '';
+  document.getElementById('chatSendBtn').classList.remove('active');
+  document.getElementById('chatInterimOverlay').textContent = '';
+
+  appendChatBubble('user', text);
+  S.chatMessages.push({ role: 'user', content: text });
+  S.chatStreaming = true;
+  const typingEl = appendTyping();
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.apiKey}` },
+      body: JSON.stringify({ model: S.model, messages: S.chatMessages, temperature: 0.85, max_tokens: 400, stream: true }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    typingEl.remove();
+    const bubbleEl = appendChatBubble('ai', '');
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let full = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      for (const line of dec.decode(value).split('\n').filter(l => l.startsWith('data: '))) {
+        const d = line.slice(6);
+        if (d === '[DONE]') continue;
+        try {
+          const delta = JSON.parse(d).choices?.[0]?.delta?.content;
+          if (delta) { full += delta; bubbleEl.innerHTML = fmtChat(full); scrollChat(); }
+        } catch {}
+      }
+    }
+    S.chatMessages.push({ role: 'assistant', content: full });
+    autoPlayChatTts(full);
+  } catch (e) {
+    typingEl.remove();
+    appendChatBubble('ai', '❌ ' + e.message);
+    showToast('❌ API 오류');
+  } finally { S.chatStreaming = false; }
+}
+
+function fmtChat(t) {
+  t = esc(t);
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/&quot;([^&]+)&quot;/g, '<span class="eng-hl">"$1"</span>');
+  return t;
+}
+function appendChatBubble(role, text) {
+  const row = document.createElement('div'); row.className = `chat-msg ${role}`;
+  const av = document.createElement('div'); av.className = 'chat-avatar'; av.textContent = role==='ai'?'🤖':'👤';
+  const bb = document.createElement('div'); bb.className = 'chat-bubble'; bb.innerHTML = text ? fmtChat(text) : '';
+  row.appendChild(av); row.appendChild(bb);
+  document.getElementById('chatMessages').appendChild(row);
+  scrollChat(); return bb;
+}
+function appendTyping() {
+  const row = document.createElement('div'); row.className = 'chat-msg ai';
+  const av = document.createElement('div'); av.className = 'chat-avatar'; av.textContent = '🤖';
+  const bb = document.createElement('div'); bb.className = 'chat-bubble';
+  bb.innerHTML = '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  row.appendChild(av); row.appendChild(bb);
+  document.getElementById('chatMessages').appendChild(row);
+  scrollChat(); return row;
+}
+function scrollChat() {
+  const el = document.getElementById('chatMessages'); el.scrollTop = el.scrollHeight;
+}
+
+// Chat TTS
+async function autoPlayChatTts(text) {
+  if (!S.apiKey) return;
+  const plain = text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/"([^"]+)"/g, '$1');
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${S.apiKey}` },
+      body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice: 'nova', input: plain }),
+    });
+    if (!res.ok) return;
+    const buf = await res.arrayBuffer();
+    const ctx = new AudioContext();
+    const src = ctx.createBufferSource();
+    src.buffer = await ctx.decodeAudioData(buf);
+    src.connect(ctx.destination); src.start(0);
+  } catch {}
+}
+
+// ════════════════════════════════════════════
+// CHAT MIC — Realtime WebSocket STT
+// ════════════════════════════════════════════
+function toggleChatMic() {
+  if (S.chatMicActive) { stopChatMic(true); } else { startChatMic(); }
+}
+
+async function startChatMic() {
+  if (!requireApiKey()) return;
+
+  S.chatFinalText = '';
+  S.chatInterimText = '';
+  S.chatCurrentDelta = '';
+  S.chatMicActive = true;
+
+  const micBtn = document.getElementById('chatMicBtn');
+  micBtn.classList.add('recording'); micBtn.textContent = '⏹';
+  document.getElementById('chatInput').placeholder = '실시간 인식 중…';
+
+  // Start mic pipeline
+  try {
+    const pipeline = await startAudioPipeline(
+      (b64) => sendAudioChunk(S.chatWs, b64),
+      null
+    );
+    S.chatStream = pipeline.stream;
+    S.chatAudioCtx = pipeline.audioCtx;
+    S.chatProcessor = pipeline.processor;
+  } catch {
+    showToast('🎤 마이크 권한이 필요해요');
+    resetChatMicUI(); return;
+  }
+
+  // Connect Realtime WS
+  S.chatWs = connectRealtimeWs(
+    S.apiKey,
+    // onDelta
+    (delta) => {
+      S.chatCurrentDelta += delta;
+      S.chatInterimText = S.chatCurrentDelta;
+      // Show in input
+      document.getElementById('chatInput').value = S.chatFinalText + S.chatCurrentDelta;
+      document.getElementById('chatSendBtn').classList.toggle('active',
+        (S.chatFinalText + S.chatCurrentDelta).trim().length > 0);
+    },
+    // onCompleted
+    (transcript) => {
+      if (transcript) {
+        S.chatFinalText += transcript + ' ';
+      }
+      S.chatCurrentDelta = '';
+      S.chatInterimText = '';
+      document.getElementById('chatInput').value = S.chatFinalText.trim();
+
+      // Auto-send after 1.5s silence (VAD already detected speech end)
+      clearTimeout(S.chatSilenceTimer);
+      S.chatSilenceTimer = setTimeout(() => {
+        if (S.chatMicActive && S.chatFinalText.trim()) {
+          const text = S.chatFinalText.trim();
+          stopChatMic(false);
+          sendChat(text);
+        }
+      }, 1500);
+    },
+    // onOpen
+    () => { showToast('🎤 말씀하세요 — 멈추면 자동 전송'); },
+    // onError
+    (err) => {
+      showToast('❌ ' + (err?.message || '음성 인식 오류'));
+      stopChatMic(false);
+    },
+    null
+  );
+}
+
+function stopChatMic(manualStop) {
+  S.chatMicActive = false;
+  clearTimeout(S.chatSilenceTimer);
+
+  if (S.chatWs) { try { S.chatWs.close(); } catch {} S.chatWs = null; }
+  stopAudioPipeline(S.chatStream, S.chatAudioCtx, S.chatProcessor);
+  S.chatStream = null; S.chatAudioCtx = null; S.chatProcessor = null;
+
+  // Commit remaining delta
+  if (S.chatCurrentDelta) {
+    S.chatFinalText += S.chatCurrentDelta;
+    S.chatCurrentDelta = '';
+  }
+
+  resetChatMicUI();
+
+  // If manual stop with text, send it
+  if (manualStop && S.chatFinalText.trim()) {
+    const text = S.chatFinalText.trim();
+    document.getElementById('chatInput').value = '';
+    sendChat(text);
+  }
+}
+
+function resetChatMicUI() {
+  const micBtn = document.getElementById('chatMicBtn');
+  micBtn.classList.remove('recording'); micBtn.textContent = '🎤';
+  document.getElementById('chatInput').placeholder = '메시지 입력 또는 🎤 으로 음성 입력…';
+  document.getElementById('chatInterimOverlay').textContent = '';
+}
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+function esc(text) {
+  const d = document.createElement('div'); d.textContent = text; return d.innerHTML;
+}
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
