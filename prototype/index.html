@@ -92,6 +92,46 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 .nav-item svg{width:24px;height:24px;}
 
 .scroll-hide::-webkit-scrollbar{display:none;} .scroll-hide{-ms-overflow-style:none;scrollbar-width:none;}
+
+/* Live Chat Styles */
+.live-chat-msg{display:flex;margin-bottom:12px;align-items:flex-start;animation:bubbleIn 0.3s ease-out;}
+.live-chat-msg.user-msg{flex-direction:row-reverse;}
+.live-chat-msg .chat-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.live-chat-msg .chat-avatar.ai-av{background:linear-gradient(135deg,#5B4FFF,#7B6FFF);}
+.live-chat-content{max-width:78%;margin:0 8px;}
+.live-chat-bubble{padding:12px 16px;border-radius:18px;font-size:13px;line-height:1.7;word-break:break-word;white-space:pre-wrap;}
+.live-chat-msg:not(.user-msg) .live-chat-bubble{background:#fff;color:#1A1A2E;border-top-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.live-chat-msg.user-msg .live-chat-bubble{background:linear-gradient(135deg,#5B4FFF,#6B5FFF);color:#fff;border-top-right-radius:4px;}
+.live-chat-time{font-size:10px;color:#9CA3AF;margin-top:3px;padding:0 4px;}
+.live-chat-msg.user-msg .live-chat-time{text-align:right;}
+.eng-hl{background:#EEF0FF;color:#5B4FFF;padding:1px 5px;border-radius:5px;font-weight:500;}
+.live-typing{display:flex;align-items:center;gap:4px;padding:12px 16px;}
+.lt-dot{width:7px;height:7px;background:#bbb;border-radius:50%;animation:typing 1.2s infinite;}
+.lt-dot:nth-child(2){animation-delay:0.2s;}.lt-dot:nth-child(3){animation-delay:0.4s;}
+
+.api-config-banner{background:#FFF3CD;color:#856404;padding:8px 16px;font-size:12px;text-align:center;cursor:pointer;flex-shrink:0;}
+.api-config-banner:hover{background:#FFE69C;}
+.api-config-banner.ok{background:#D1FAE5;color:#065F46;}
+
+.settings-overlay-v2{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:170;display:none;align-items:flex-end;}
+.settings-overlay-v2.active{display:flex;}
+.settings-sheet-v2{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:24px 20px 40px;transform:translateY(100%);transition:transform 0.3s ease;}
+.settings-overlay-v2.active .settings-sheet-v2{transform:translateY(0);}
+
+.live-input-wrap{display:flex;align-items:center;background:#F3F4F6;border-radius:24px;padding:4px 6px 4px 16px;border:2px solid transparent;transition:border-color 0.2s;}
+.live-input-wrap:focus-within{border-color:#5B4FFF;background:#fff;}
+.live-input-wrap input{flex:1;border:none;outline:none;font-size:14px;background:transparent;font-family:inherit;color:#1A1A2E;}
+.live-input-wrap input::placeholder{color:#aaa;}
+.live-send-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;opacity:0.4;transition:opacity 0.2s,transform 0.15s;}
+.live-send-btn.on{opacity:1;}
+.live-send-btn:active{transform:scale(0.9);}
+
+.phone-cta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.phone-cta{padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;border:none;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.phone-cta:hover{opacity:0.85;transform:translateY(-1px);}
+.phone-cta.pri{background:#5B4FFF;color:#fff;}
+.phone-cta.sec{background:#EEF0FF;color:#5B4FFF;}
+.phone-cta.ter{background:#f0f0f0;color:#666;}
 </style>
 </head>
 <body>
@@ -234,35 +274,71 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     </div>
   </div>
 
-  <!-- ==================== SCREEN 2: AI TALK ==================== -->
+  <!-- ==================== SCREEN 2: AI TALK (LIVE GPT CHAT) ==================== -->
   <div class="screen hidden-right" id="screen2" style="background:#fff;display:flex;flex-direction:column;">
+    <!-- API Config Banner -->
+    <div class="api-config-banner" id="apiBannerMain" onclick="openApiSettings()" style="margin-top:54px;">
+      🔑 API 키를 설정하면 실제 AI와 대화할 수 있어요 (탭하여 설정)
+    </div>
     <!-- Header -->
-    <div style="padding:54px 20px 12px;background:#fff;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
+    <div style="padding:10px 20px 10px;background:#fff;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>
           <div>
             <div style="font-size:15px;font-weight:700;color:#1A1A2E;">AI 톡</div>
-            <div style="font-size:11px;color:#22C55E;">● 온라인</div>
+            <div style="font-size:11px;" id="liveStatusText"><span style="color:#9CA3AF;">● 오프라인</span></div>
           </div>
         </div>
-        <button id="skipChatBtn" onclick="skipChat()" style="font-size:12px;color:#5B4FFF;background:none;border:1px solid #5B4FFF;border-radius:20px;padding:4px 12px;cursor:pointer;">대화 건너뛰기 >></button>
+        <div style="display:flex;gap:8px;">
+          <button onclick="openApiSettings()" style="font-size:14px;background:none;border:1px solid #E5E7EB;border-radius:50%;width:34px;height:34px;cursor:pointer;">⚙</button>
+          <button onclick="useDemoChat()" style="font-size:11px;color:#5B4FFF;background:none;border:1px solid #5B4FFF;border-radius:20px;padding:4px 12px;cursor:pointer;">데모 모드</button>
+        </div>
       </div>
     </div>
     <!-- Chat area -->
-    <div id="chatArea" class="scroll-hide" style="flex:1;padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+    <div id="liveChatArea" class="scroll-hide" style="flex:1;padding:16px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;background:#f5f5fa;">
     </div>
     <!-- Input bar -->
-    <div style="padding:10px 20px 30px;background:#fff;border-top:1px solid #F3F4F6;display:flex;align-items:center;gap:10px;flex-shrink:0;">
-      <div style="flex:1;background:#F3F4F6;border-radius:24px;padding:12px 16px;font-size:13px;color:#9CA3AF;">메시지를 입력하세요...</div>
-      <div style="width:40px;height:40px;border-radius:50%;background:#5B4FFF;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;">🎤</div>
+    <div style="padding:10px 16px 30px;background:#fff;border-top:1px solid #F3F4F6;flex-shrink:0;">
+      <div class="live-input-wrap">
+        <input type="text" id="liveMsgInput" placeholder="메시지를 입력하세요..." autocomplete="off" />
+        <button class="live-send-btn" id="liveSendBtn" onclick="liveSendMessage()">➤</button>
+      </div>
     </div>
     <!-- Bottom nav -->
     <div style="display:flex;justify-content:space-around;padding:8px 0 20px;background:#fff;border-top:1px solid #F3F4F6;flex-shrink:0;">
-      <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
+      <div class="nav-item" onclick="goTo('screen1')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
       <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
-      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
+      <div class="nav-item" onclick="goTo('screen3')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
       <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
+    </div>
+
+    <!-- Settings Bottom Sheet -->
+    <div class="settings-overlay-v2" id="apiSettingsOverlay" onclick="closeApiSettings(event)">
+      <div class="settings-sheet-v2" onclick="event.stopPropagation()">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h3 style="margin:0;font-size:18px;font-weight:700;color:#1A1A2E;">⚙ AI 톡 설정</h3>
+          <span onclick="closeApiSettings()" style="cursor:pointer;font-size:20px;color:#999;">✕</span>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:6px;">OpenAI API Key</label>
+          <input type="password" id="apiKeyField" placeholder="sk-proj-..." style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:12px;font-size:13px;font-family:monospace;outline:none;" onfocus="this.style.borderColor='#5B4FFF'" onblur="this.style.borderColor='#e5e7eb'" />
+          <p style="font-size:10px;color:#999;margin:4px 0 0;">API 키는 브라우저 로컬에만 저장됩니다</p>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:6px;">모델</label>
+          <select id="modelField" style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:12px;font-size:13px;outline:none;font-family:inherit;background:#fff;">
+            <option value="gpt-4o-mini">GPT-4o-mini (추천)</option>
+            <option value="gpt-4.1-nano">GPT-4.1-nano (최저가)</option>
+            <option value="gpt-4.1-mini">GPT-4.1-mini</option>
+            <option value="gpt-4o">GPT-4o</option>
+            <option value="gpt-4.1">GPT-4.1</option>
+          </select>
+        </div>
+        <button onclick="saveApiSettings()" style="width:100%;padding:14px;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">저장하기</button>
+        <button onclick="resetLiveChat()" style="width:100%;padding:10px;background:none;color:#EF4444;border:none;font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit;">🗑 대화 초기화</button>
+      </div>
     </div>
   </div>
 
@@ -666,7 +742,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 // ==================== STATE ====================
 let currentScreen = 'screen1';
 let rpStep = 0, rpTimerVal = 180, rpTimerInterval = null;
-let chatStep = 0, chatCompleted = false, chatInterval = null;
+let chatStep = 0;
 let briefTimerVal = 582, briefTimerInterval = null;
 let callStep = 0, callTimerVal = 0, callTimerInterval = null;
 
@@ -850,117 +926,330 @@ function addHintBubble(container, text) {
   container.scrollTop = container.scrollHeight;
 }
 
-// ==================== AI TALK CHAT (Screen 2) ====================
-const chatData = [
-  { type:'date', text:'오늘 오전 9:12' },
-  { type:'ai', text:'좋은 아침이에요! ☀️ 오늘 하루 어떤 일정이 있어요?<br><span style="color:#5B4FFF;font-weight:500;">What\'s on your schedule today?</span>', delay:800 },
-  { type:'dots', delay:1200 },
-  { type:'user', text:'오늘 오후에 팀장님 앞에서 분기 보고 있어요 😅', delay:600 },
-  { type:'dots', delay:1500 },
-  { type:'ai', html: true, text:`분기 보고! 긴장되겠다 😊<br>영어로 하면 이렇게 말할 수 있어요:
-    <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.12);border-radius:12px;padding:12px;margin:10px 0;">
-      <div style="font-size:13px;font-weight:600;color:#5B4FFF;">"I have a quarterly report presentation this afternoon."</div>
-      <div style="font-size:11px;color:#6B7280;margin-top:4px;">오늘 오후에 분기 보고 발표가 있어요</div>
-    </div>
-    혹시 보고할 때 쓸 표현 연습해볼까요?`, delay:800 },
-  { type:'dots', delay:800 },
-  { type:'user', text:'좋아요! 어떤 표현이 있을까요?', delay:600 },
-  { type:'dots', delay:1800 },
-  { type:'ai', html: true, text:`비즈니스 보고에 자주 쓰는 표현이에요! 👇
-    <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.12);border-radius:12px;padding:14px;margin:10px 0;">
-      <div style="font-size:11px;font-weight:600;color:#5B4FFF;margin-bottom:8px;">📚 오늘의 표현 3개</div>
-      <div style="font-size:12px;margin-bottom:6px;">1. <b>"Let me walk you through the numbers."</b><br><span style="color:#6B7280;font-size:11px;">숫자를 함께 살펴보겠습니다</span></div>
-      <div style="font-size:12px;margin-bottom:6px;">2. <b>"Compared to last quarter..."</b><br><span style="color:#6B7280;font-size:11px;">지난 분기 대비...</span></div>
-      <div style="font-size:12px;">3. <b>"The key takeaway is..."</b><br><span style="color:#6B7280;font-size:11px;">핵심 요점은...</span></div>
-    </div>
-    이따 전화로 실전 연습해볼까? 📞<br>분기 보고 시나리오로 준비해둘게!
-    <div style="display:flex;gap:8px;margin-top:12px;">
-      <button onclick="handleChatBtn('accept')" style="background:#5B4FFF;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">좋아! 👍</button>
-      <button onclick="handleChatBtn('time')" style="background:#F3F4F6;color:#1A1A2E;border:none;border-radius:20px;padding:8px 16px;font-size:12px;cursor:pointer;">시간 변경</button>
-      <button onclick="handleChatBtn('skip')" style="background:#F3F4F6;color:#1A1A2E;border:none;border-radius:20px;padding:8px 16px;font-size:12px;cursor:pointer;">오늘은 패스</button>
-    </div>`, delay:600 },
-];
+// ==================== AI TALK CHAT - LIVE GPT (Screen 2) ====================
+const RINGLE_SYSTEM_PROMPT = `당신은 "링글 AI 톡"의 AI 어시스턴트입니다. 아래 규칙을 반드시 따르세요.
+
+## 역할
+- 이름: 링글 AI (Ringle AI)
+- 성격: 따뜻하고 친근하며 격려적. 친한 영어 잘하는 친구 같은 느낌.
+- 주 목적: 사용자의 일상/업무 이야기를 들으며 자연스럽게 비즈니스 영어 표현을 알려주는 것.
+
+## 대화 규칙
+1. **한국어 기반 대화**: 메인 대화는 한국어로 진행.
+2. **영어 표현 삽입**: 매 응답마다 사용자의 맥락에 맞는 영어 표현 1~3개를 자연스럽게 알려줌. 큰따옴표로 감싸기.
+3. **짧고 친근하게**: 응답은 3~5문장. 이모지 1~2개.
+4. **전화 연습 제안**: 대화 5턴 이상 진행 후, 자연스럽게 AI 전화 영어 연습을 제안. "이따 전화로 실전 연습 해볼까요? 📞" 식으로.
+5. **금지**: 과도한 칭찬, 딱딱한 문법 수업, 한 번에 표현 5개 이상, 영어로만 전환 시도`;
+
+let liveChat = {
+  apiKey: localStorage.getItem('ringle_api_key') || '',
+  model: localStorage.getItem('ringle_model') || 'gpt-4o-mini',
+  messages: [],
+  isStreaming: false,
+  turnCount: 0,
+  initialized: false,
+  demoMode: false,
+};
 
 function initChat() {
-  if (chatCompleted) { renderAllChat(); return; }
-  if (chatStep > 0) return;
-  const area = document.getElementById('chatArea');
-  area.innerHTML = '';
-  chatStep = 0;
-  advanceChat();
+  if (liveChat.initialized) return;
+  liveChat.initialized = true;
+
+  // Restore settings UI
+  document.getElementById('apiKeyField').value = liveChat.apiKey;
+  document.getElementById('modelField').value = liveChat.model;
+  if (liveChat.apiKey) updateApiBannerState(true);
+
+  // Input handlers
+  const input = document.getElementById('liveMsgInput');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); liveSendMessage(); }
+  });
+  input.addEventListener('input', () => {
+    document.getElementById('liveSendBtn').classList.toggle('on', input.value.trim().length > 0);
+  });
+
+  // Restore or start
+  const saved = sessionStorage.getItem('ringle_live_chat');
+  if (saved) {
+    liveChat.messages = JSON.parse(saved);
+    liveChat.messages.forEach(m => {
+      if (m.role === 'assistant') addLiveBubble('ai', m.content, false);
+      else if (m.role === 'user') addLiveBubble('user', m.content, false);
+    });
+    liveChat.turnCount = liveChat.messages.filter(m => m.role === 'user').length;
+    scrollLiveChat();
+  } else if (liveChat.apiKey) {
+    sendLiveGreeting();
+  }
 }
 
-function advanceChat() {
-  if (chatStep >= chatData.length) { chatCompleted = true; return; }
-  const item = chatData[chatStep];
-  const area = document.getElementById('chatArea');
+// Demo mode (static chat - original behavior)
+const demoData = [
+  { type:'date', text:'오늘 오전 9:12' },
+  { type:'ai', text:'좋은 아침이에요! ☀️ 오늘 하루 어떤 일정이 있어요?\n\nWhat\'s on your schedule today?', delay:800 },
+  { type:'user', text:'오늘 오후에 팀장님 앞에서 분기 보고 있어요 😅', delay:1200 },
+  { type:'ai', text:'분기 보고! 긴장되겠다 😊\n영어로 하면 이렇게 말할 수 있어요:\n\n"I have a quarterly report presentation this afternoon."\n\n혹시 보고할 때 쓸 표현 연습해볼까요?', delay:1500 },
+  { type:'user', text:'좋아요! 어떤 표현이 있을까요?', delay:800 },
+  { type:'ai', text:'비즈니스 보고에 자주 쓰는 표현이에요! 👇\n\n1. "Let me walk you through the numbers."\n   숫자를 함께 살펴보겠습니다\n\n2. "Compared to last quarter..."\n   지난 분기 대비...\n\n3. "The key takeaway is..."\n   핵심 요점은...\n\n이따 전화로 실전 연습해볼까? 📞', delay:1800, showCta:true },
+];
+let demoStep = 0, demoRunning = false;
+
+function useDemoChat() {
+  liveChat.demoMode = true;
+  const area = document.getElementById('liveChatArea');
+  area.innerHTML = '';
+  demoStep = 0;
+  demoRunning = true;
+  advanceDemo();
+}
+
+function advanceDemo() {
+  if (demoStep >= demoData.length || !demoRunning) return;
+  const item = demoData[demoStep];
+  const area = document.getElementById('liveChatArea');
 
   if (item.type === 'date') {
     const d = document.createElement('div');
     d.style.cssText = 'text-align:center;font-size:11px;color:#9CA3AF;padding:8px 0;';
     d.textContent = item.text;
     area.appendChild(d);
-    chatStep++;
-    setTimeout(() => advanceChat(), item.delay || 400);
+    demoStep++;
+    setTimeout(() => advanceDemo(), 400);
   } else if (item.type === 'ai') {
-    const dots = addTypingDots(area, false);
+    const dots = addLiveTypingDots();
     setTimeout(() => {
-      area.removeChild(dots);
-      addAIBubble(area, item.text);
-      chatStep++;
-      setTimeout(() => advanceChat(), item.delay || 600);
+      dots.remove();
+      addLiveBubble('ai', item.text, true);
+      if (item.showCta) addLivePhoneCta();
+      demoStep++;
+      setTimeout(() => advanceDemo(), item.delay || 600);
     }, 1000);
   } else if (item.type === 'user') {
-    addUserBubble(area, item.text);
-    chatStep++;
-    setTimeout(() => advanceChat(), item.delay || 600);
-  } else if (item.type === 'dots') {
-    const dots = addTypingDots(area, false);
-    setTimeout(() => {
-      area.removeChild(dots);
-      chatStep++;
-      advanceChat();
-    }, item.delay || 1000);
+    addLiveBubble('user', item.text, true);
+    demoStep++;
+    setTimeout(() => advanceDemo(), item.delay || 600);
   }
-  area.scrollTop = area.scrollHeight;
 }
 
-function skipChat() {
-  chatCompleted = true;
-  chatStep = chatData.length;
-  renderAllChat();
-  document.getElementById('skipChatBtn').style.display = 'none';
+// Live GPT Chat
+async function sendLiveGreeting() {
+  liveChat.messages = [{ role: 'system', content: RINGLE_SYSTEM_PROMPT }];
+  const hour = new Date().getHours();
+  let ctx = hour < 12 ? '오전' : hour < 18 ? '오후' : '저녁';
+  liveChat.messages.push({ role: 'user', content: `[시스템: 대화 시작. 지금은 ${ctx}입니다. 첫 인사를 해주세요.]` });
+  await callLiveGPT(true);
+  liveChat.messages = liveChat.messages.filter(m => !m.content.startsWith('[시스템:'));
+  saveLiveChat();
 }
 
-function renderAllChat() {
-  const area = document.getElementById('chatArea');
-  area.innerHTML = '';
-  chatData.forEach(item => {
-    if (item.type === 'date') {
-      const d = document.createElement('div');
-      d.style.cssText = 'text-align:center;font-size:11px;color:#9CA3AF;padding:8px 0;';
-      d.textContent = item.text;
-      area.appendChild(d);
-    } else if (item.type === 'ai') {
-      addAIBubble(area, item.text);
-    } else if (item.type === 'user') {
-      addUserBubble(area, item.text);
+async function liveSendMessage() {
+  const input = document.getElementById('liveMsgInput');
+  const text = input.value.trim();
+  if (!text || liveChat.isStreaming) return;
+
+  if (liveChat.demoMode) {
+    // In demo mode, clicking send goes to briefing
+    input.value = '';
+    addLiveBubble('user', text, true);
+    setTimeout(() => {
+      showToast('21:00 전화 예약 완료! 📞');
+      setTimeout(() => goTo('screen3'), 1500);
+    }, 500);
+    return;
+  }
+
+  if (!liveChat.apiKey) { openApiSettings(); return; }
+
+  input.value = '';
+  document.getElementById('liveSendBtn').classList.remove('on');
+  addLiveBubble('user', text, true);
+
+  if (liveChat.messages.length === 0) {
+    liveChat.messages.push({ role: 'system', content: RINGLE_SYSTEM_PROMPT });
+  }
+  liveChat.messages.push({ role: 'user', content: text });
+  liveChat.turnCount++;
+  saveLiveChat();
+
+  await callLiveGPT(false);
+}
+
+async function callLiveGPT(isGreeting) {
+  liveChat.isStreaming = true;
+  const dots = addLiveTypingDots();
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + liveChat.apiKey },
+      body: JSON.stringify({ model: liveChat.model, messages: liveChat.messages, temperature: 0.85, max_tokens: 500, stream: true }),
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || 'HTTP ' + res.status); }
+
+    dots.remove();
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    const msgEl = createLiveAiEl();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n').filter(l => l.startsWith('data: '))) {
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          const delta = JSON.parse(data).choices?.[0]?.delta?.content;
+          if (delta) { fullText += delta; msgEl.querySelector('.lt-text').innerHTML = formatLiveMsg(fullText); scrollLiveChat(); }
+        } catch(e) {}
+      }
     }
-    // skip 'dots' type
-  });
-  area.scrollTop = area.scrollHeight;
-  document.getElementById('skipChatBtn').style.display = 'none';
+
+    liveChat.messages.push({ role: 'assistant', content: fullText });
+    saveLiveChat();
+
+    // Show phone CTA after enough turns
+    if (!isGreeting && liveChat.turnCount >= 4 && (fullText.includes('전화') || fullText.includes('📞'))) {
+      addLivePhoneCta();
+    }
+  } catch(err) {
+    dots.remove();
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'text-align:center;padding:8px;font-size:11px;color:#EF4444;';
+    errDiv.textContent = '⚠️ ' + err.message;
+    document.getElementById('liveChatArea').appendChild(errDiv);
+    scrollLiveChat();
+    if (err.message.includes('401') || err.message.includes('API key')) updateApiBannerState(false);
+  } finally {
+    liveChat.isStreaming = false;
+  }
 }
 
-function handleChatBtn(action) {
+// Live Chat UI helpers
+function addLiveBubble(who, text, animate) {
+  const area = document.getElementById('liveChatArea');
+  const row = document.createElement('div');
+  row.className = 'live-chat-msg' + (who === 'user' ? ' user-msg' : '');
+  const now = new Date();
+  const timeStr = (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2,'0') + (now.getHours() < 12 ? ' AM' : ' PM');
+
+  if (who === 'ai') {
+    row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringle AI · ' + timeStr + '</div></div>';
+  } else {
+    row.innerHTML = '<div class="live-chat-content"><div class="live-chat-bubble">' + escLiveHtml(text) + '</div><div class="live-chat-time">' + timeStr + '</div></div>';
+  }
+  if (animate) { row.style.opacity='0';row.style.transform='translateY(10px)'; }
+  area.appendChild(row);
+  if (animate) requestAnimationFrame(() => { row.style.transition='all 0.3s ease'; row.style.opacity='1'; row.style.transform='translateY(0)'; });
+  scrollLiveChat();
+}
+
+function createLiveAiEl() {
+  const area = document.getElementById('liveChatArea');
+  const row = document.createElement('div');
+  row.className = 'live-chat-msg';
+  const now = new Date();
+  const timeStr = (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2,'0') + (now.getHours() < 12 ? ' AM' : ' PM');
+  row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringle AI · ' + timeStr + '</div></div>';
+  row.style.opacity='0';row.style.transform='translateY(10px)';
+  area.appendChild(row);
+  requestAnimationFrame(() => { row.style.transition='all 0.3s ease'; row.style.opacity='1'; row.style.transform='translateY(0)'; });
+  return row;
+}
+
+function addLiveTypingDots() {
+  const area = document.getElementById('liveChatArea');
+  const row = document.createElement('div');
+  row.className = 'live-chat-msg';
+  row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble"><div class="live-typing"><div class="lt-dot"></div><div class="lt-dot"></div><div class="lt-dot"></div></div></div></div>';
+  area.appendChild(row);
+  scrollLiveChat();
+  return row;
+}
+
+function addLivePhoneCta() {
+  const area = document.getElementById('liveChatArea');
+  const ctaRow = document.createElement('div');
+  ctaRow.style.cssText = 'padding:4px 44px;';
+  ctaRow.innerHTML = '<div class="phone-cta-row"><button class="phone-cta pri" onclick="handleLivePhoneCta(\'accept\')">📞 좋아!</button><button class="phone-cta sec" onclick="handleLivePhoneCta(\'time\')">⏰ 시간 변경</button><button class="phone-cta ter" onclick="handleLivePhoneCta(\'skip\')">오늘은 패스</button></div>';
+  area.appendChild(ctaRow);
+  scrollLiveChat();
+}
+
+function handleLivePhoneCta(action) {
+  document.querySelectorAll('.phone-cta-row').forEach(el => { el.style.opacity='0.5'; el.style.pointerEvents='none'; });
   if (action === 'accept') {
     showToast('21:00 전화 예약 완료! 📞');
     setTimeout(() => goTo('screen3'), 2000);
   } else if (action === 'time') {
     showToast('시간 변경 기능은 준비 중이에요');
-  } else if (action === 'skip') {
+  } else {
     showToast('오늘은 패스할게요 👋');
   }
+}
+
+function formatLiveMsg(text) {
+  let h = escLiveHtml(text);
+  h = h.replace(/"([^"]+)"/g, '<span class="eng-hl">"$1"</span>');
+  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  h = h.replace(/\n/g, '<br>');
+  return h;
+}
+
+function escLiveHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+function scrollLiveChat() { const a = document.getElementById('liveChatArea'); if(a) requestAnimationFrame(() => a.scrollTop = a.scrollHeight); }
+
+function saveLiveChat() {
+  const toSave = liveChat.messages.filter(m => m.role !== 'system');
+  sessionStorage.setItem('ringle_live_chat', JSON.stringify(toSave));
+}
+
+// Settings
+function openApiSettings() { document.getElementById('apiSettingsOverlay').classList.add('active'); }
+function closeApiSettings(e) { if(e && e.target !== document.getElementById('apiSettingsOverlay')) return; document.getElementById('apiSettingsOverlay').classList.remove('active'); }
+
+function saveApiSettings() {
+  const key = document.getElementById('apiKeyField').value.trim();
+  const model = document.getElementById('modelField').value;
+  if (!key) { showToast('❌ API 키를 입력해주세요'); return; }
+  if (!key.startsWith('sk-')) { showToast('❌ 올바른 API 키 형식이 아닙니다'); return; }
+  liveChat.apiKey = key;
+  liveChat.model = model;
+  localStorage.setItem('ringle_api_key', key);
+  localStorage.setItem('ringle_model', model);
+  updateApiBannerState(true);
+  closeApiSettings();
+  showToast('✅ 설정 저장됨');
+  if (liveChat.messages.length === 0 && !liveChat.demoMode) sendLiveGreeting();
+}
+
+function updateApiBannerState(ok) {
+  const b = document.getElementById('apiBannerMain');
+  const s = document.getElementById('liveStatusText');
+  if (ok) {
+    b.className = 'api-config-banner ok';
+    b.innerHTML = '✅ ' + liveChat.model + ' 연결됨 (탭하여 설정 변경)';
+    s.innerHTML = '<span style="color:#22C55E;">● ' + liveChat.model + '</span>';
+  } else {
+    b.className = 'api-config-banner';
+    b.innerHTML = '🔑 API 키를 설정해주세요 (탭하여 설정)';
+    s.innerHTML = '<span style="color:#9CA3AF;">● 오프라인</span>';
+  }
+}
+
+function resetLiveChat() {
+  liveChat.messages = [];
+  liveChat.turnCount = 0;
+  liveChat.demoMode = false;
+  demoRunning = false;
+  sessionStorage.removeItem('ringle_live_chat');
+  document.getElementById('liveChatArea').innerHTML = '';
+  closeApiSettings();
+  showToast('🗑 대화 초기화 완료');
+  if (liveChat.apiKey) setTimeout(() => sendLiveGreeting(), 500);
 }
 
 // ==================== BRIEF TIMER (Screen 3b) ====================

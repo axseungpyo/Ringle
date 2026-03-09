@@ -69,24 +69,28 @@ Ringle/
 
 ## 프로토타입
 
-### 1. MVP 플로우 프로토타입 (`prototype/index.html`)
+### 1. MVP 플로우 프로토타입 (`prototype/index.html`) — 통합 버전
 
-9개 화면으로 구성된 클릭 가능한 모바일 앱 프로토타입:
+전체 RING LOOP 플로우를 경험할 수 있는 통합 인터랙티브 프로토타입:
 
 | 화면 | 내용 |
 |---|---|
 | WF-06 온보딩 | 레벨테스트 완료 → 3분 롤플레잉 → AHA Moment |
-| WF-09 AI 톡 | 일상 대화 + 영어 표현 + 전화 전환 유도 |
+| **WF-09 AI 톡** | **OpenAI GPT 실시간 채팅 통합** — 한/영 혼용 대화, 영어 표현 코칭, 전화 전환 CTA |
 | WF-01/02 브리핑 | 전화 10분 전 톡 내 브리핑 카드 |
 | WF-03 전화 수신 | 캐릭터 표시 + 스마트 거절 바텀시트 |
 | WF-04 통화 중 | 실시간 타이머 + 힌트 카드 |
 | WF-05 Grow 리포트 | CAFP 레이더 차트 + 표현 교정 + 내일 예약 |
 
+**두 가지 모드:**
+- **라이브 모드**: ⚙ 설정 → API 키 입력 → 실제 GPT 대화
+- **데모 모드**: API 키 없이 "데모 모드" 버튼 → 정적 시나리오
+
 **실행**: `prototype/index.html`을 브라우저에서 열기
 
-### 2. AI 톡 채팅 (`prototype/chat.html`)
+### 2. AI 톡 독립 채팅 (`prototype/chat.html`) — 독립 개발용
 
-OpenAI GPT API 연동 실제 채팅 인터페이스:
+GPT 채팅 기능만 분리된 독립 인터페이스 (기능 단위 개발/테스트용):
 
 - **모델**: GPT-4o-mini (기본) / GPT-4.1-nano / GPT-4o 등 선택 가능
 - **기능**: 한/영 혼용 대화, 비즈니스 영어 표현 코칭, AI 전화 연습 제안
@@ -102,8 +106,10 @@ OpenAI GPT API 연동 실제 채팅 인터페이스:
 |---|---|
 | 프로토타입 UI | HTML + Tailwind CSS (CDN) + Vanilla JS |
 | AI 채팅 | OpenAI GPT-4o-mini API (스트리밍) |
-| AI 음성 (예정) | GPT-4o Mini Transcribe (STT) + GPT-4o-mini-TTS (TTS) |
+| STT (음성→텍스트) | OpenAI GPT-4o Mini Transcribe ($0.003/분) |
+| TTS (텍스트→음성) | OpenAI GPT-4o-mini-TTS |
 | 차트 | Canvas API (CAFP 레이더 차트) |
+| 음성 녹음 | Web MediaRecorder API |
 
 ---
 
@@ -125,7 +131,9 @@ OpenAI GPT API 연동 실제 채팅 인터페이스:
 |---|---|---|
 | v0.1.0 | 2026-03-09 | 초기 커밋: 전체 기획 문서 + 리서치 보고서 |
 | v0.2.0 | 2026-03-09 | MVP 인터랙티브 프로토타입 (9개 화면) |
-| v0.3.0 | 2026-03-09 | AI 톡 실시간 채팅 (OpenAI GPT 연동) |
+| v0.3.0 | 2026-03-09 | AI 톡 실시간 채팅 독립 버전 (chat.html, OpenAI GPT 연동) |
+| v0.4.0 | 2026-03-09 | index.html 통합: Screen 2(AI 톡)에 GPT 라이브 채팅 교체 + 데모 모드 |
+| v0.5.0 | 2026-03-09 | 음성 대화 기능: STT (GPT-4o Mini Transcribe) + TTS (GPT-4o-mini-TTS) |
 
 ---
 
