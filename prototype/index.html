@@ -132,6 +132,24 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 .phone-cta.pri{background:#5B4FFF;color:#fff;}
 .phone-cta.sec{background:#EEF0FF;color:#5B4FFF;}
 .phone-cta.ter{background:#f0f0f0;color:#666;}
+
+/* Voice feature styles — Screen 2 only */
+.live-mic-btn{width:38px;height:38px;border-radius:50%;background:#F3F4F6;border:none;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background 0.2s,transform 0.15s;margin-right:4px;}
+.live-mic-btn:active{transform:scale(0.9);}
+@keyframes liveMicPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}}
+.live-mic-btn.recording{background:#ef4444;color:#fff;animation:liveMicPulse 1s infinite;}
+.live-recording-indicator{font-size:11px;color:#ef4444;font-weight:600;padding:4px 16px 0;text-align:center;min-height:18px;}
+.live-tts-btn{background:none;border:none;font-size:13px;cursor:pointer;padding:0 2px;opacity:0.6;transition:opacity 0.2s;vertical-align:middle;}
+.live-tts-btn:hover{opacity:1;}
+.live-tts-btn.playing{opacity:1;color:#5B4FFF;}
+.live-chat-bubble.tts-active{border:1.5px solid rgba(91,79,255,0.35);}
+.tts-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.tts-toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;}
+.tts-toggle-switch input{opacity:0;width:0;height:0;}
+.tts-toggle-slider{position:absolute;inset:0;background:#D1D5DB;border-radius:12px;transition:background 0.2s;}
+.tts-toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform 0.2s;}
+.tts-toggle-switch input:checked + .tts-toggle-slider{background:#5B4FFF;}
+.tts-toggle-switch input:checked + .tts-toggle-slider::before{transform:translateX(20px);}
 </style>
 </head>
 <body>
@@ -301,8 +319,10 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     </div>
     <!-- Input bar -->
     <div style="padding:10px 16px 30px;background:#fff;border-top:1px solid #F3F4F6;flex-shrink:0;">
+      <div class="live-recording-indicator" id="liveRecordingIndicator"></div>
       <div class="live-input-wrap">
         <input type="text" id="liveMsgInput" placeholder="메시지를 입력하세요..." autocomplete="off" />
+        <button class="live-mic-btn" id="liveMicBtn" onclick="toggleLiveMic()" title="음성 입력">🎤</button>
         <button class="live-send-btn" id="liveSendBtn" onclick="liveSendMessage()">➤</button>
       </div>
     </div>
@@ -335,6 +355,16 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
             <option value="gpt-4o">GPT-4o</option>
             <option value="gpt-4.1">GPT-4.1</option>
           </select>
+        </div>
+        <div class="tts-toggle-row">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:#555;">TTS 자동재생</div>
+            <div style="font-size:10px;color:#999;margin-top:2px;">AI 응답을 자동으로 읽어드려요</div>
+          </div>
+          <label class="tts-toggle-switch">
+            <input type="checkbox" id="ttsToggleInput" onchange="onTtsToggleChange(this.checked)" />
+            <span class="tts-toggle-slider"></span>
+          </label>
         </div>
         <button onclick="saveApiSettings()" style="width:100%;padding:14px;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">저장하기</button>
         <button onclick="resetLiveChat()" style="width:100%;padding:10px;background:none;color:#EF4444;border:none;font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit;">🗑 대화 초기화</button>
@@ -949,6 +979,13 @@ let liveChat = {
   turnCount: 0,
   initialized: false,
   demoMode: false,
+  // Voice features
+  voiceEnabled: false,
+  isRecording: false,
+  isTranscribing: false,
+  mediaRecorder: null,
+  audioChunks: [],
+  ttsAudio: null,
 };
 
 function initChat() {
@@ -1109,6 +1146,14 @@ async function callLiveGPT(isGreeting) {
 
     liveChat.messages.push({ role: 'assistant', content: fullText });
     saveLiveChat();
+    // Store plain text on the row element for the TTS button
+    if (msgEl.dataset) msgEl.dataset.ttsText = fullText;
+
+    // Auto-play TTS if enabled
+    if (liveChat.voiceEnabled && fullText) {
+      const ttsBtn = msgEl.querySelector('.live-tts-btn');
+      if (ttsBtn) autoPlayLiveTts(ttsBtn, msgEl.dataset.ttsId, fullText);
+    }
 
     // Show phone CTA after enough turns
     if (!isGreeting && liveChat.turnCount >= 4 && (fullText.includes('전화') || fullText.includes('📞'))) {
@@ -1136,7 +1181,10 @@ function addLiveBubble(who, text, animate) {
   const timeStr = (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2,'0') + (now.getHours() < 12 ? ' AM' : ' PM');
 
   if (who === 'ai') {
-    row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringle AI · ' + timeStr + '</div></div>';
+    const msgId = 'lm-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
+    row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
+    row.dataset.ttsId = msgId;
+    row.dataset.ttsText = text;
   } else {
     row.innerHTML = '<div class="live-chat-content"><div class="live-chat-bubble">' + escLiveHtml(text) + '</div><div class="live-chat-time">' + timeStr + '</div></div>';
   }
@@ -1152,7 +1200,9 @@ function createLiveAiEl() {
   row.className = 'live-chat-msg';
   const now = new Date();
   const timeStr = (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2,'0') + (now.getHours() < 12 ? ' AM' : ' PM');
-  row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringle AI · ' + timeStr + '</div></div>';
+  const msgId = 'lm-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
+  row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
+  row.dataset.ttsId = msgId;
   row.style.opacity='0';row.style.transform='translateY(10px)';
   area.appendChild(row);
   requestAnimationFrame(() => { row.style.transition='all 0.3s ease'; row.style.opacity='1'; row.style.transform='translateY(0)'; });
@@ -1190,6 +1240,166 @@ function handleLivePhoneCta(action) {
   }
 }
 
+// ==================== VOICE: STT (Screen 2) ====================
+async function toggleLiveMic() {
+  if (liveChat.isTranscribing) return; // busy transcribing
+  if (!liveChat.isRecording) {
+    // Start recording
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch(e) {
+      showToast('🎤 마이크 접근 권한이 필요해요');
+      return;
+    }
+    liveChat.audioChunks = [];
+    liveChat.mediaRecorder = new MediaRecorder(stream);
+    liveChat.mediaRecorder.ondataavailable = e => { if (e.data.size > 0) liveChat.audioChunks.push(e.data); };
+    liveChat.mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      transcribeLiveAudio();
+    };
+    liveChat.mediaRecorder.start();
+    liveChat.isRecording = true;
+    const btn = document.getElementById('liveMicBtn');
+    btn.classList.add('recording');
+    btn.textContent = '⏹';
+    // Start elapsed timer
+    let sec = 0;
+    liveChat._micTimerInterval = setInterval(() => {
+      sec++;
+      const ind = document.getElementById('liveRecordingIndicator');
+      if (ind) ind.textContent = '● 녹음 중 ' + sec + 's';
+    }, 1000);
+    const ind = document.getElementById('liveRecordingIndicator');
+    if (ind) ind.textContent = '● 녹음 중 0s';
+  } else {
+    // Stop recording
+    clearInterval(liveChat._micTimerInterval);
+    liveChat.isRecording = false;
+    const btn = document.getElementById('liveMicBtn');
+    btn.classList.remove('recording');
+    btn.textContent = '🎤';
+    const ind = document.getElementById('liveRecordingIndicator');
+    if (ind) ind.textContent = '변환 중...';
+    liveChat.mediaRecorder.stop();
+  }
+}
+
+async function transcribeLiveAudio() {
+  if (!liveChat.apiKey) {
+    const ind = document.getElementById('liveRecordingIndicator');
+    if (ind) ind.textContent = '';
+    showToast('❌ API 키를 먼저 설정해주세요');
+    return;
+  }
+  liveChat.isTranscribing = true;
+  try {
+    const blob = new Blob(liveChat.audioChunks, { type: 'audio/webm' });
+    const fd = new FormData();
+    fd.append('file', blob, 'recording.webm');
+    fd.append('model', 'gpt-4o-mini-transcribe');
+    fd.append('language', 'ko');
+    fd.append('response_format', 'text');
+    const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + liveChat.apiKey },
+      body: fd,
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || 'HTTP ' + res.status); }
+    const transcript = (await res.text()).trim();
+    if (transcript) {
+      const input = document.getElementById('liveMsgInput');
+      input.value = transcript;
+      document.getElementById('liveSendBtn').classList.add('on');
+      input.focus();
+    } else {
+      showToast('음성을 인식하지 못했어요. 다시 시도해주세요.');
+    }
+  } catch(e) {
+    showToast('⚠️ 음성 변환 실패: ' + e.message);
+  } finally {
+    liveChat.isTranscribing = false;
+    liveChat.audioChunks = [];
+    const ind = document.getElementById('liveRecordingIndicator');
+    if (ind) ind.textContent = '';
+  }
+}
+
+// ==================== VOICE: TTS (Screen 2) ====================
+function onTtsToggleChange(checked) {
+  liveChat.voiceEnabled = checked;
+}
+
+async function playLiveTts(btn, msgId) {
+  const row = document.querySelector('[data-tts-id="' + msgId + '"]');
+  const text = row ? row.dataset.ttsText : '';
+  if (!text) return;
+  // If already playing this, stop it
+  if (liveChat.ttsAudio && !liveChat.ttsAudio.ended) {
+    liveChat.ttsAudio.pause();
+    liveChat.ttsAudio = null;
+    btn.textContent = '🔊';
+    btn.classList.remove('playing');
+    const bubble = document.getElementById(msgId + '-bubble');
+    if (bubble) bubble.classList.remove('tts-active');
+    return;
+  }
+  await autoPlayLiveTts(btn, msgId, text);
+}
+
+async function autoPlayLiveTts(btn, msgId, text) {
+  if (!liveChat.apiKey) { showToast('❌ API 키를 설정해야 TTS를 사용할 수 있어요'); return; }
+  // Stop any existing audio
+  if (liveChat.ttsAudio && !liveChat.ttsAudio.ended) {
+    liveChat.ttsAudio.pause();
+    liveChat.ttsAudio = null;
+    // Reset all tts buttons
+    document.querySelectorAll('.live-tts-btn').forEach(b => { b.textContent = '🔊'; b.classList.remove('playing'); });
+    document.querySelectorAll('.live-chat-bubble').forEach(b => b.classList.remove('tts-active'));
+  }
+  // Strip HTML and strip markdown formatting for clean TTS input
+  const tmpDiv = document.createElement('div');
+  tmpDiv.innerHTML = formatLiveMsg(text);
+  const plainText = tmpDiv.textContent || tmpDiv.innerText || text;
+  if (btn) { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  const bubble = msgId ? document.getElementById(msgId + '-bubble') : null;
+  if (bubble) bubble.classList.add('tts-active');
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + liveChat.apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice: 'nova', input: plainText }),
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || 'HTTP ' + res.status); }
+    const arrayBuf = await res.arrayBuffer();
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuf;
+    source.connect(audioCtx.destination);
+    // Wrap in a pseudo-Audio object to allow pause
+    let stopped = false;
+    const pseudoAudio = {
+      ended: false,
+      pause() { if (!stopped) { source.stop(); stopped = true; this.ended = true; } },
+    };
+    source.onended = () => {
+      pseudoAudio.ended = true;
+      if (btn) { btn.textContent = '🔊'; btn.classList.remove('playing'); }
+      if (bubble) bubble.classList.remove('tts-active');
+      if (liveChat.ttsAudio === pseudoAudio) liveChat.ttsAudio = null;
+      audioCtx.close();
+    };
+    liveChat.ttsAudio = pseudoAudio;
+    source.start(0);
+  } catch(e) {
+    if (btn) { btn.textContent = '🔊'; btn.classList.remove('playing'); }
+    if (bubble) bubble.classList.remove('tts-active');
+    showToast('⚠️ TTS 오류: ' + e.message);
+  }
+}
+
 function formatLiveMsg(text) {
   let h = escLiveHtml(text);
   h = h.replace(/"([^"]+)"/g, '<span class="eng-hl">"$1"</span>');
@@ -1208,7 +1418,11 @@ function saveLiveChat() {
 }
 
 // Settings
-function openApiSettings() { document.getElementById('apiSettingsOverlay').classList.add('active'); }
+function openApiSettings() {
+  document.getElementById('apiSettingsOverlay').classList.add('active');
+  const ttsChk = document.getElementById('ttsToggleInput');
+  if (ttsChk) ttsChk.checked = liveChat.voiceEnabled;
+}
 function closeApiSettings(e) { if(e && e.target !== document.getElementById('apiSettingsOverlay')) return; document.getElementById('apiSettingsOverlay').classList.remove('active'); }
 
 function saveApiSettings() {

@@ -310,6 +310,112 @@
     font-weight: 600;
   }
 
+  /* Mic Button */
+  .mic-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #f0f0f5;
+    border: none;
+    color: #888;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    flex-shrink: 0;
+    margin-right: 4px;
+    position: relative;
+  }
+  .mic-btn:hover { background: #e5e5f0; color: #5B4FFF; }
+  .mic-btn:active { transform: scale(0.9); }
+  .mic-btn.recording {
+    background: #EF4444;
+    color: white;
+    animation: micPulse 1.2s ease-in-out infinite;
+  }
+  @keyframes micPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+  }
+  .mic-status {
+    font-size: 11px;
+    color: #EF4444;
+    text-align: center;
+    margin-top: 4px;
+    min-height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .mic-spinner {
+    width: 10px; height: 10px;
+    border: 2px solid #ccc;
+    border-top-color: #5B4FFF;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* TTS Speaker Button on AI bubble */
+  .tts-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 6px;
+    color: #999;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+  }
+  .tts-btn:hover { background: #eef0ff; color: #5B4FFF; }
+  .tts-btn.playing { color: #5B4FFF; }
+
+  /* AI bubble pulse when TTS playing */
+  @keyframes bubblePulse {
+    0%, 100% { box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    50% { box-shadow: 0 0 0 3px rgba(91,79,255,0.2); }
+  }
+  .msg-bubble.tts-playing {
+    animation: bubblePulse 1.4s ease-in-out infinite;
+  }
+
+  /* Toggle Switch */
+  .toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-track::before {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    top: 3px; left: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-switch input:checked + .toggle-track { background: #5B4FFF; }
+  .toggle-switch input:checked + .toggle-track::before { transform: translateX(20px); }
+
   /* Responsive */
   @media (max-width: 430px) {
     body { padding: 0; }
@@ -365,8 +471,10 @@
     <div class="input-area">
       <div class="input-wrapper">
         <input type="text" id="msgInput" placeholder="메시지를 입력하세요..." autocomplete="off" />
+        <button class="mic-btn" id="micBtn" onclick="toggleRecording()" title="음성 입력">🎤</button>
         <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
       </div>
+      <div class="mic-status" id="micStatus"></div>
     </div>
 
     <!-- Toast -->
@@ -410,6 +518,18 @@
             • 사용자 맥락 기반 표현 추천<br>
             • 5~7턴 대화 후 AI 전화 연습 자연스럽게 제안
           </div>
+        </div>
+
+        <!-- TTS Auto-play Toggle -->
+        <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#555;">🔊 AI 응답 자동 음성 재생</div>
+            <div style="font-size:11px;color:#999;margin-top:3px;">AI 답변이 완료되면 자동으로 음성 재생</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="ttsAutoPlayToggle" onchange="saveTtsAutoPlay(this.checked)">
+            <span class="toggle-track"></span>
+          </label>
         </div>
 
         <!-- Save Button -->
@@ -463,6 +583,7 @@ const SYSTEM_PROMPT = `당신은 "링글 AI 톡"의 AI 어시스턴트입니다.
 let state = {
   apiKey: localStorage.getItem('ringle_api_key') || '',
   model: localStorage.getItem('ringle_model') || 'gpt-4o-mini',
+  ttsAutoPlay: localStorage.getItem('ringle_tts_autoplay') === 'true',
   messages: [],
   isStreaming: false,
   turnCount: 0,
@@ -475,6 +596,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Restore settings
   document.getElementById('apiKeyInput').value = state.apiKey;
   document.getElementById('modelSelect').value = state.model;
+  document.getElementById('ttsAutoPlayToggle').checked = state.ttsAutoPlay;
 
   if (state.apiKey) {
     updateApiBanner(true);
@@ -687,6 +809,11 @@ async function callOpenAI(isGreeting) {
     state.messages.push({ role: 'assistant', content: fullText });
     saveChat();
 
+    // TTS auto-play if enabled
+    if (state.ttsAutoPlay && fullText) {
+      playTts(fullText, msgEl);
+    }
+
     // Check if we should show phone CTA
     if (!isGreeting && state.turnCount >= 5 && fullText.includes('전화') || fullText.includes('📞')) {
       showPhoneCTA(msgEl);
@@ -750,7 +877,10 @@ function createAiMessageElement() {
     <div class="msg-avatar">R</div>
     <div class="msg-content">
       <div class="msg-bubble"><span class="msg-text"></span></div>
-      <div class="msg-time">Ringle AI · ${getTimeString()}</div>
+      <div class="msg-time" style="display:flex;align-items:center;gap:6px;">
+        <span>Ringle AI · ${getTimeString()}</span>
+        <button class="tts-btn" title="음성 재생" onclick="handleTtsBtnClick(this)">🔊</button>
+      </div>
     </div>
   `;
   row.style.opacity = '0';
@@ -889,6 +1019,287 @@ function showToast(msg) {
 function saveChat() {
   const toSave = state.messages.filter(m => m.role !== 'system');
   sessionStorage.setItem('ringle_chat', JSON.stringify(toSave));
+}
+
+// =============================================
+// TTS AUTO-PLAY TOGGLE
+// =============================================
+function saveTtsAutoPlay(enabled) {
+  state.ttsAutoPlay = enabled;
+  localStorage.setItem('ringle_tts_autoplay', enabled ? 'true' : 'false');
+  showToast(enabled ? '🔊 자동 음성 재생 켜짐' : '🔇 자동 음성 재생 꺼짐');
+}
+
+// =============================================
+// STT — Speech to Text
+// =============================================
+let sttState = {
+  mediaRecorder: null,
+  audioChunks: [],
+  isRecording: false,
+  timerInterval: null,
+  elapsedSeconds: 0,
+};
+
+async function toggleRecording() {
+  if (sttState.isRecording) {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+}
+
+async function startRecording() {
+  if (!state.apiKey) {
+    openSettings();
+    return;
+  }
+
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (err) {
+    showToast('마이크 권한이 필요해요');
+    return;
+  }
+
+  // Determine supported MIME type
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ? 'audio/webm;codecs=opus'
+    : MediaRecorder.isTypeSupported('audio/webm')
+    ? 'audio/webm'
+    : 'audio/ogg';
+
+  sttState.audioChunks = [];
+  sttState.isRecording = true;
+  sttState.elapsedSeconds = 0;
+
+  sttState.mediaRecorder = new MediaRecorder(stream, { mimeType });
+  sttState.mediaRecorder.ondataavailable = e => {
+    if (e.data && e.data.size > 0) sttState.audioChunks.push(e.data);
+  };
+  sttState.mediaRecorder.onstop = () => {
+    // Stop all tracks to release mic
+    stream.getTracks().forEach(t => t.stop());
+    processRecording(mimeType);
+  };
+  sttState.mediaRecorder.start(200);
+
+  // Update UI
+  const micBtn = document.getElementById('micBtn');
+  micBtn.classList.add('recording');
+  micBtn.textContent = '⏺';
+
+  // Start elapsed timer
+  updateMicStatus('0:00');
+  sttState.timerInterval = setInterval(() => {
+    sttState.elapsedSeconds++;
+    const m = Math.floor(sttState.elapsedSeconds / 60);
+    const s = (sttState.elapsedSeconds % 60).toString().padStart(2, '0');
+    updateMicStatus(`${m}:${s}`);
+  }, 1000);
+}
+
+function stopRecording() {
+  if (!sttState.mediaRecorder || sttState.mediaRecorder.state === 'inactive') return;
+  sttState.isRecording = false;
+  clearInterval(sttState.timerInterval);
+  sttState.mediaRecorder.stop();
+
+  // Update UI to transcribing state
+  const micBtn = document.getElementById('micBtn');
+  micBtn.classList.remove('recording');
+  micBtn.textContent = '🎤';
+  micBtn.disabled = true;
+  setMicStatusTranscribing();
+}
+
+async function processRecording(mimeType) {
+  const blob = new Blob(sttState.audioChunks, { type: mimeType });
+  const ext = mimeType.includes('ogg') ? 'ogg' : 'webm';
+
+  const formData = new FormData();
+  formData.append('file', blob, `recording.${ext}`);
+  formData.append('model', 'gpt-4o-mini-transcribe');
+  formData.append('language', 'ko');
+  formData.append('response_format', 'text');
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${state.apiKey}` },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTP ${res.status}`);
+    }
+
+    const transcribedText = (await res.text()).trim();
+
+    if (transcribedText) {
+      const input = document.getElementById('msgInput');
+      input.value = transcribedText;
+      input.focus();
+      document.getElementById('sendBtn').classList.add('active');
+      showToast('🎤 음성 입력 완료');
+    } else {
+      showToast('⚠️ 음성을 인식하지 못했어요');
+    }
+  } catch (err) {
+    showToast(`⚠️ 변환 실패: ${err.message}`);
+  } finally {
+    const micBtn = document.getElementById('micBtn');
+    micBtn.disabled = false;
+    clearMicStatus();
+  }
+}
+
+function updateMicStatus(text) {
+  const el = document.getElementById('micStatus');
+  el.innerHTML = `<span style="color:#EF4444;">⏺</span> ${text}`;
+}
+
+function setMicStatusTranscribing() {
+  const el = document.getElementById('micStatus');
+  el.innerHTML = `<span class="mic-spinner"></span> 변환 중...`;
+  el.style.color = '#5B4FFF';
+}
+
+function clearMicStatus() {
+  const el = document.getElementById('micStatus');
+  el.innerHTML = '';
+  el.style.color = '';
+}
+
+// =============================================
+// TTS — Text to Speech
+// =============================================
+let ttsState = {
+  audioContext: null,
+  currentSource: null,
+  currentBubble: null,
+  currentBtn: null,
+  isPlaying: false,
+};
+
+function stripMarkdown(text) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/"([^"]+)"/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\n/g, ' ')
+    .trim();
+}
+
+function handleTtsBtnClick(btn) {
+  const bubble = btn.closest('.msg-content').querySelector('.msg-bubble');
+  const textEl = bubble.querySelector('.msg-text');
+  if (!textEl) return;
+
+  // Get raw text from the bubble's text content
+  const rawText = textEl.textContent || textEl.innerText || '';
+  if (!rawText.trim()) return;
+
+  if (ttsState.isPlaying && ttsState.currentBtn === btn) {
+    // Stop current playback
+    stopTts();
+  } else {
+    // Stop any existing playback then start new
+    stopTts();
+    playTts(rawText, btn.closest('.msg-row'), btn);
+  }
+}
+
+async function playTts(text, msgRowEl, explicitBtn) {
+  if (!state.apiKey) return;
+
+  const cleanText = stripMarkdown(text);
+  if (!cleanText) return;
+
+  // Find the tts button in this row (if not passed explicitly)
+  const btn = explicitBtn || (msgRowEl ? msgRowEl.querySelector('.tts-btn') : null);
+  const bubble = msgRowEl ? msgRowEl.querySelector('.msg-bubble') : null;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${state.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini-tts',
+        voice: 'nova',
+        input: cleanText,
+      }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTP ${res.status}`);
+    }
+
+    const arrayBuffer = await res.arrayBuffer();
+
+    // Create or reuse AudioContext
+    if (!ttsState.audioContext || ttsState.audioContext.state === 'closed') {
+      ttsState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (ttsState.audioContext.state === 'suspended') {
+      await ttsState.audioContext.resume();
+    }
+
+    const audioBuffer = await ttsState.audioContext.decodeAudioData(arrayBuffer);
+    const source = ttsState.audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ttsState.audioContext.destination);
+
+    // Update UI to playing state
+    ttsState.currentSource = source;
+    ttsState.currentBubble = bubble;
+    ttsState.currentBtn = btn;
+    ttsState.isPlaying = true;
+
+    if (btn) { btn.textContent = '⏸'; btn.classList.add('playing'); }
+    if (bubble) bubble.classList.add('tts-playing');
+
+    source.onended = () => {
+      ttsState.isPlaying = false;
+      ttsState.currentSource = null;
+      if (btn) { btn.textContent = '🔊'; btn.classList.remove('playing'); }
+      if (bubble) bubble.classList.remove('tts-playing');
+      ttsState.currentBubble = null;
+      ttsState.currentBtn = null;
+    };
+
+    source.start(0);
+
+  } catch (err) {
+    showToast(`⚠️ TTS 오류: ${err.message}`);
+    if (btn) { btn.textContent = '🔊'; btn.classList.remove('playing'); }
+    if (bubble) bubble.classList.remove('tts-playing');
+    ttsState.isPlaying = false;
+  }
+}
+
+function stopTts() {
+  if (ttsState.currentSource) {
+    try { ttsState.currentSource.stop(); } catch (e) { /* already stopped */ }
+    ttsState.currentSource = null;
+  }
+  if (ttsState.currentBtn) {
+    ttsState.currentBtn.textContent = '🔊';
+    ttsState.currentBtn.classList.remove('playing');
+    ttsState.currentBtn = null;
+  }
+  if (ttsState.currentBubble) {
+    ttsState.currentBubble.classList.remove('tts-playing');
+    ttsState.currentBubble = null;
+  }
+  ttsState.isPlaying = false;
 }
 </script>
 
