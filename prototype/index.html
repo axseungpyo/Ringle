@@ -32,7 +32,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 .phone-frame{width:390px;height:844px;background:#fff;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #1a1a2e,0 0 0 12px #333,0 25px 80px rgba(0,0,0,0.5);}
 .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1a1a2e;border-radius:0 0 20px 20px;z-index:100;}
 .status-bar{position:absolute;top:0;left:0;right:0;height:54px;z-index:99;display:flex;align-items:center;justify-content:space-between;padding:0 24px;padding-top:4px;font-size:12px;font-weight:600;}
-.status-bar .time{color:#fff;} .status-bar .icons{color:#fff;display:flex;gap:4px;}
+.status-bar .status-time{font-size:15px;font-weight:600;letter-spacing:-0.3px;} .status-bar .status-icons{display:flex;align-items:center;gap:5px;}
 
 .screen{position:absolute;top:0;left:0;right:0;bottom:0;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;overflow-x:hidden;}
 .screen.hidden-right{transform:translateX(100%);opacity:0;pointer-events:none;}
@@ -150,6 +150,130 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 .tts-toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform 0.2s;}
 .tts-toggle-switch input:checked + .tts-toggle-slider{background:#5B4FFF;}
 .tts-toggle-switch input:checked + .tts-toggle-slider::before{transform:translateX(20px);}
+
+/* ==================== DARK MODE ==================== */
+.phone-frame {
+  --bg-primary: #ffffff;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #f5f5fa;
+  --bg-card: #ffffff;
+  --bg-input: #F3F4F6;
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --border-color: #F3F4F6;
+  --chat-ai-bg: #ffffff;
+  --chat-ai-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.phone-frame.dark {
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #1a1a2e;
+  --bg-card: #1E293B;
+  --bg-input: #1E293B;
+  --text-primary: #E2E8F0;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --border-color: #334155;
+  --chat-ai-bg: #1E293B;
+  --chat-ai-shadow: none;
+}
+
+/* Screen 1b: Roleplay */
+.phone-frame.dark #screen1b { background: var(--bg-primary) !important; }
+.phone-frame.dark #screen1b > div:nth-child(2) { background: var(--bg-secondary) !important; }
+.phone-frame.dark #roleplayChat { background: var(--bg-primary) !important; }
+.phone-frame.dark #rpBottomArea { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
+.phone-frame.dark #screen1b .chat-ai { background: var(--bg-secondary) !important; color: var(--text-primary) !important; }
+
+/* Screen 2: AI Talk */
+.phone-frame.dark #screen2 { background: var(--bg-primary) !important; }
+.phone-frame.dark #screen2 > div:not(.settings-overlay-v2):not(.api-config-banner) { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
+.phone-frame.dark #liveChatArea { background: var(--bg-tertiary) !important; }
+.phone-frame.dark #screen2 .live-chat-msg:not(.user-msg) .live-chat-bubble { background: var(--chat-ai-bg) !important; color: var(--text-primary) !important; box-shadow: var(--chat-ai-shadow) !important; }
+.phone-frame.dark #screen2 .live-input-wrap { background: var(--bg-input) !important; }
+.phone-frame.dark #screen2 .live-input-wrap input { color: var(--text-primary) !important; }
+.phone-frame.dark #screen2 .live-mic-btn { background: var(--bg-input) !important; }
+.phone-frame.dark #screen2 .live-mic-btn.recording { background: #ef4444 !important; }
+.phone-frame.dark #screen2 .nav-item { color: var(--text-muted) !important; }
+.phone-frame.dark #screen2 .nav-item.active { color: #5B4FFF !important; }
+.phone-frame.dark .settings-sheet-v2 { background: var(--bg-primary) !important; }
+.phone-frame.dark .settings-sheet-v2 h3 { color: var(--text-primary) !important; }
+.phone-frame.dark .settings-sheet-v2 label { color: var(--text-secondary) !important; }
+.phone-frame.dark .settings-sheet-v2 input,
+.phone-frame.dark .settings-sheet-v2 select { background: var(--bg-secondary) !important; color: var(--text-primary) !important; border-color: var(--border-color) !important; }
+.phone-frame.dark .settings-sheet-v2 p { color: var(--text-muted) !important; }
+.phone-frame.dark .tts-toggle-row div { color: var(--text-secondary) !important; }
+.phone-frame.dark .eng-hl { background: rgba(91,79,255,0.2) !important; }
+.phone-frame.dark .live-chat-time { color: var(--text-muted) !important; }
+.phone-frame.dark .api-config-banner { background: #1E293B !important; color: #FBBF24 !important; }
+.phone-frame.dark .api-config-banner.ok { background: #1E293B !important; color: #22C55E !important; }
+
+/* Screen 3: Briefing */
+.phone-frame.dark #screen3 { background: var(--bg-primary) !important; }
+.phone-frame.dark #screen3 > div:first-of-type { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
+.phone-frame.dark #screen3 .chat-bubble.chat-ai { background: var(--bg-secondary) !important; color: var(--text-primary) !important; }
+.phone-frame.dark .btn-secondary { background: var(--bg-input) !important; color: var(--text-primary) !important; }
+
+/* Screen 3b: Expanded Briefing */
+.phone-frame.dark #screen3b { background: var(--bg-primary) !important; }
+.phone-frame.dark #screen3b > div:first-of-type { background: var(--bg-secondary) !important; border-color: var(--border-color) !important; }
+.phone-frame.dark #screen3b > div:last-of-type { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
+
+/* Screen 6: Grow Report */
+.phone-frame.dark #screen6 { background: var(--bg-primary) !important; }
+.phone-frame.dark #screen6 .status-bar .status-time { color: var(--text-primary) !important; }
+.phone-frame.dark #screen6 .status-bar .status-icons { color: var(--text-primary) !important; }
+
+/* Screens 3/3b/6: override inline bg/color on cards and text */
+.phone-frame.dark #screen3 > div[style*="background:#fff"],
+.phone-frame.dark #screen3 > div[style*="background: #fff"] { background: var(--bg-primary) !important; }
+.phone-frame.dark #briefingChat { background: var(--bg-primary) !important; }
+.phone-frame.dark #briefingChat div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
+.phone-frame.dark #briefingChat div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
+.phone-frame.dark #briefingChat div[style*="background:#fff"] { background: var(--bg-secondary) !important; }
+.phone-frame.dark #briefingChat div[style*="background:linear-gradient(135deg,#F8F7FF"] { background: var(--bg-secondary) !important; }
+
+.phone-frame.dark #screen3b div[style*="background:#fff"] { background: var(--bg-secondary) !important; }
+.phone-frame.dark #screen3b div[style*="background:#F8F9FA"] { background: var(--bg-primary) !important; }
+.phone-frame.dark #screen3b div[style*="background:#F8F7FF"] { background: rgba(91,79,255,0.15) !important; }
+.phone-frame.dark #screen3b div[style*="background:#FFF7ED"] { background: rgba(255,107,53,0.1) !important; }
+.phone-frame.dark #screen3b span[style*="color:#1A1A2E"],
+.phone-frame.dark #screen3b div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
+.phone-frame.dark #screen3b div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
+
+.phone-frame.dark #screen6 div[style*="background:#fff"] { background: var(--bg-secondary) !important; }
+.phone-frame.dark #screen6 div[style*="background:#F8F9FA"],
+.phone-frame.dark #screen6 div[style*="background:#F8F7FF"] { background: rgba(91,79,255,0.15) !important; }
+.phone-frame.dark #screen6 div[style*="background:#F3F4F6"] { background: var(--bg-input) !important; }
+.phone-frame.dark #screen6 div[style*="background:#FEF2F2"] { background: rgba(239,68,68,0.1) !important; }
+.phone-frame.dark #screen6 div[style*="background:#F0FDF4"] { background: rgba(34,197,94,0.1) !important; }
+.phone-frame.dark #screen6 div[style*="background:#FFF7ED"] { background: rgba(255,107,53,0.1) !important; }
+.phone-frame.dark #screen6 div[style*="background:linear-gradient(135deg,#F8F7FF"] { background: var(--bg-secondary) !important; border-color: rgba(91,79,255,0.3) !important; }
+.phone-frame.dark #screen6 div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
+.phone-frame.dark #screen6 div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
+.phone-frame.dark #screen6 button[style*="background:#F3F4F6"] { background: var(--bg-input) !important; color: var(--text-primary) !important; }
+.phone-frame.dark #screen6 > div:last-of-type > div:last-child { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
+.phone-frame.dark #screen6 .nav-item { color: var(--text-muted) !important; }
+.phone-frame.dark #screen6 .nav-item.active { color: #5B4FFF !important; }
+
+/* Bottom sheet dark mode */
+.phone-frame.dark .bottom-sheet { background: var(--bg-primary) !important; }
+.phone-frame.dark .bottom-sheet div[style*="background:#F8F9FA"] { background: var(--bg-secondary) !important; }
+.phone-frame.dark .bottom-sheet div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
+.phone-frame.dark .bottom-sheet div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
+
+/* Status bar dark mode for light screens */
+.phone-frame.dark #screen2 .status-bar,
+.phone-frame.dark #screen3 .status-bar,
+.phone-frame.dark #screen3b .status-bar { color: var(--text-primary) !important; }
+
+/* Toast in dark mode */
+.phone-frame.dark .toast { background: var(--bg-secondary) !important; }
+
+/* Dark mode toggle button */
+.dark-mode-toggle { position:fixed;bottom:20px;left:20px;background:#333;color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);z-index:1000;transition:background 0.2s; }
+.dark-mode-toggle:hover { background:#555; }
 </style>
 </head>
 <body>
@@ -162,7 +286,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 
 <div class="phone-frame" id="phoneFrame">
   <div class="notch"></div>
-  <div class="status-bar"><span class="time">9:41</span><span class="icons">📶 🔋</span></div>
+  <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons"><svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="9" width="3" height="3" rx="0.5"/><rect x="4.5" y="6" width="3" height="6" rx="0.5"/><rect x="9" y="3" width="3" height="9" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg><svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zM8 6c1.9 0 3.6.8 4.8 2l-1.4 1.4C10.4 8.5 9.2 8 8 8s-2.4.5-3.4 1.4L3.2 8C4.4 6.8 6.1 6 8 6zm0-4c3 0 5.7 1.2 7.6 3.2L14.2 6.6C12.6 5 10.4 4 8 4S3.4 5 1.8 6.6L.4 5.2C2.3 3.2 5 2 8 2z"/></svg><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="23" height="12" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="19" height="9" rx="1" fill="currentColor"/><path d="M25 4.5v4a1.5 1.5 0 000-4z" fill="currentColor" opacity="0.4"/></svg></span></div>
   <div class="toast" id="toast"></div>
 
   <!-- ==================== SCREEN 1: ONBOARDING ==================== -->
@@ -302,7 +426,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     <div style="padding:10px 20px 10px;background:#fff;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>
+          <img src="../image/ringle_rogo.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="Ringle AI" />
           <div>
             <div style="font-size:15px;font-weight:700;color:#1A1A2E;">AI 톡</div>
             <div style="font-size:11px;" id="liveStatusText"><span style="color:#9CA3AF;">● 오프라인</span></div>
@@ -518,7 +642,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 
   <!-- ==================== SCREEN 4: INCOMING CALL ==================== -->
   <div class="screen hidden-right" id="screen4" style="background:linear-gradient(180deg,#0F172A 0%,#1E293B 100%);">
-    <div class="status-bar"><span class="time" style="color:#fff;">21:00</span><span class="icons" style="color:#fff;">📶 🔋</span></div>
+    <div class="status-bar"><span class="status-time" style="color:#fff;">21:00</span><span class="status-icons" style="color:#fff;"><svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="9" width="3" height="3" rx="0.5"/><rect x="4.5" y="6" width="3" height="6" rx="0.5"/><rect x="9" y="3" width="3" height="9" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg><svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zM8 6c1.9 0 3.6.8 4.8 2l-1.4 1.4C10.4 8.5 9.2 8 8 8s-2.4.5-3.4 1.4L3.2 8C4.4 6.8 6.1 6 8 6zm0-4c3 0 5.7 1.2 7.6 3.2L14.2 6.6C12.6 5 10.4 4 8 4S3.4 5 1.8 6.6L.4 5.2C2.3 3.2 5 2 8 2z"/></svg><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="23" height="12" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="19" height="9" rx="1" fill="currentColor"/><path d="M25 4.5v4a1.5 1.5 0 000-4z" fill="currentColor" opacity="0.4"/></svg></span></div>
     <div style="padding:70px 28px 40px;text-align:center;color:#fff;display:flex;flex-direction:column;align-items:center;">
       <!-- Label -->
       <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.6;margin-bottom:28px;">링글 AI 전화영어</div>
@@ -578,59 +702,68 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
   </div>
 
   <!-- ==================== SCREEN 5: CALL IN PROGRESS ==================== -->
-  <div class="screen hidden-right" id="screen5" style="background:#0F172A;">
+  <div class="screen hidden-right" id="screen5" style="background:#0F172A;display:flex;flex-direction:column;">
     <!-- Green call status bar -->
-    <div style="background:#16A34A;padding:54px 16px 8px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:12px;font-weight:600;">
+    <div style="background:#16A34A;padding:54px 16px 8px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:12px;font-weight:600;flex-shrink:0;">
       <span>Ringle AI 통화 중 ●●●</span>
       <span id="callTimer">00:00</span>
       <span id="wordCount" style="font-size:11px;">발화량: 0단어</span>
     </div>
     <!-- Roleplay header -->
-    <div style="background:#1E293B;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="background:#1E293B;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:8px;">
         <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:14px;">👩‍💼</div>
         <span style="color:#fff;font-size:13px;font-weight:600;">Jennifer Park · Mango Corp</span>
       </div>
       <span style="background:#5B4FFF;color:#fff;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">면접 롤플레이</span>
     </div>
-    <!-- Chat area -->
-    <div id="callChat" class="scroll-hide" style="padding:14px 16px;height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+    <!-- Chat area (flex:1 fills remaining space) -->
+    <div id="callChat" class="scroll-hide" style="padding:14px 16px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
     </div>
     <!-- Subtitle area -->
-    <div id="subtitleArea" style="display:none;background:#1E293B;padding:8px 16px;border-top:1px solid #334155;">
+    <div id="subtitleArea" style="display:none;background:#1E293B;padding:8px 16px;border-top:1px solid #334155;flex-shrink:0;">
       <div id="subtitleText" style="font-size:12px;color:#94A3B8;text-align:center;"></div>
     </div>
     <!-- Hint card -->
-    <div id="callHintCard" style="display:none;background:#1E293B;border-top:1px solid #334155;padding:10px 16px;">
+    <div id="callHintCard" style="display:none;background:#1E293B;border-top:1px solid #334155;padding:10px 16px;flex-shrink:0;">
       <div onclick="toggleHint()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
         <span style="font-size:12px;color:#FBBF24;font-weight:600;">💡 힌트</span>
         <span style="font-size:11px;color:#94A3B8;" id="hintToggleLabel">접기 ▲</span>
       </div>
       <div id="hintContent" style="font-size:12px;color:#CBD5E1;margin-top:6px;"></div>
     </div>
+    <!-- Call input bar (for live GPT mode) -->
+    <div id="callInputBar" style="display:none;background:#1E293B;padding:8px 16px;border-top:1px solid #334155;flex-shrink:0;">
+      <div class="live-recording-indicator" id="callRecordingIndicator" style="color:#ef4444;min-height:16px;text-align:center;font-size:11px;font-weight:600;"></div>
+      <div style="display:flex;align-items:center;background:#0F172A;border-radius:24px;padding:4px 6px 4px 16px;border:2px solid transparent;transition:border-color 0.2s;" id="callInputWrap">
+        <input type="text" id="callMsgInput" placeholder="영어로 답변하세요..." autocomplete="off" style="flex:1;border:none;outline:none;font-size:14px;background:transparent;font-family:inherit;color:#E2E8F0;" />
+        <button id="callMicBtn" onclick="toggleCallMic()" style="width:38px;height:38px;border-radius:50%;background:#1E293B;border:none;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;margin-right:4px;transition:background 0.2s;" title="음성 입력">🎤</button>
+        <button id="callSendBtn" onclick="callSendMessage()" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;opacity:0.4;transition:opacity 0.2s;">➤</button>
+      </div>
+    </div>
     <!-- Bottom controls -->
-    <div style="position:absolute;bottom:0;left:0;right:0;background:#0F172A;padding:12px 20px 32px;border-top:1px solid #1E293B;">
-      <div style="display:flex;justify-content:space-around;margin-bottom:12px;">
+    <div style="background:#0F172A;padding:6px 24px 20px;border-top:1px solid #1E293B;flex-shrink:0;">
+      <button id="callAdvBtn" onclick="advanceCall()" style="display:none;width:100%;padding:12px;background:#5B4FFF;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;">대화 계속하기 🎤</button>
+      <div style="display:flex;justify-content:center;align-items:center;gap:28px;">
         <div style="text-align:center;cursor:pointer;">
-          <div style="width:48px;height:48px;border-radius:50%;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">🔇</div>
-          <div style="font-size:10px;color:#94A3B8;margin-top:4px;">음소거</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto;">🔇</div>
+          <div style="font-size:9px;color:#94A3B8;margin-top:2px;">음소거</div>
+        </div>
+        <div onclick="hangUpCall()" style="text-align:center;cursor:pointer;">
+          <div style="width:52px;height:52px;border-radius:50%;background:#EF4444;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto;box-shadow:0 0 12px rgba(239,68,68,0.4);">📵</div>
+          <div style="font-size:9px;color:#EF4444;margin-top:2px;font-weight:600;">끊기</div>
         </div>
         <div onclick="toggleSubtitle()" style="text-align:center;cursor:pointer;">
-          <div id="subtitleBtn" style="width:48px;height:48px;border-radius:50%;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">💬</div>
-          <div style="font-size:10px;color:#94A3B8;margin-top:4px;">자막</div>
-        </div>
-        <div onclick="goTo('screen6')" style="text-align:center;cursor:pointer;">
-          <div style="width:48px;height:48px;border-radius:50%;background:#EF4444;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">📵</div>
-          <div style="font-size:10px;color:#94A3B8;margin-top:4px;">전화끊기</div>
+          <div id="subtitleBtn" style="width:40px;height:40px;border-radius:50%;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto;">💬</div>
+          <div style="font-size:9px;color:#94A3B8;margin-top:2px;">자막</div>
         </div>
       </div>
-      <button id="callAdvBtn" onclick="advanceCall()" style="display:none;width:100%;padding:14px;background:#5B4FFF;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;">대화 계속하기 🎤</button>
     </div>
   </div>
 
   <!-- ==================== SCREEN 6: GROW REPORT ==================== -->
   <div class="screen hidden-right" id="screen6" style="background:#F8F9FA;">
-    <div class="status-bar"><span class="time" style="color:#1A1A2E;">21:07</span><span class="icons" style="color:#1A1A2E;">📶 🔋</span></div>
+    <div class="status-bar"><span class="status-time" style="color:#1A1A2E;">21:07</span><span class="status-icons" style="color:#1A1A2E;"><svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="9" width="3" height="3" rx="0.5"/><rect x="4.5" y="6" width="3" height="6" rx="0.5"/><rect x="9" y="3" width="3" height="9" rx="0.5"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg><svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zM8 6c1.9 0 3.6.8 4.8 2l-1.4 1.4C10.4 8.5 9.2 8 8 8s-2.4.5-3.4 1.4L3.2 8C4.4 6.8 6.1 6 8 6zm0-4c3 0 5.7 1.2 7.6 3.2L14.2 6.6C12.6 5 10.4 4 8 4S3.4 5 1.8 6.6L.4 5.2C2.3 3.2 5 2 8 2z"/></svg><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="23" height="12" rx="2.5" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="19" height="9" rx="1" fill="currentColor"/><path d="M25 4.5v4a1.5 1.5 0 000-4z" fill="currentColor" opacity="0.4"/></svg></span></div>
     <div class="scroll-hide" style="padding:54px 0 100px;overflow-y:auto;height:100%;">
       <!-- Celebration header -->
       <div style="background:linear-gradient(135deg,#7C3AED,#5B4FFF);padding:28px 24px;text-align:center;color:#fff;">
@@ -726,6 +859,8 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 
 <!-- Floating Before/After Button -->
 <button onclick="toggleBeforeAfter()" style="position:fixed;bottom:20px;right:20px;background:#5B4FFF;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(91,79,255,0.4);z-index:1000;">📊 Before/After</button>
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" id="darkModeBtn" onclick="toggleDarkMode()">🌙</button>
 
 <!-- Before/After Modal -->
 <div id="beforeAfterModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1001;display:none;align-items:center;justify-content:center;" onclick="toggleBeforeAfter()">
@@ -981,11 +1116,20 @@ let liveChat = {
   demoMode: false,
   // Voice features
   voiceEnabled: false,
-  isRecording: false,
-  isTranscribing: false,
-  mediaRecorder: null,
-  audioChunks: [],
   ttsAudio: null,
+  // Realtime STT
+  sttActive: false,
+  sttWs: null,
+  sttAudioCtx: null,
+  sttProcessor: null,
+  sttStream: null,
+  sttFinalText: '',
+  sttInterimText: '',
+  sttCurrentDelta: '',
+  sttCurrentItemId: null,
+  sttSilenceTimer: null,
+  sttAnalyser: null,
+  sttAnimFrame: null,
 };
 
 function initChat() {
@@ -1182,7 +1326,7 @@ function addLiveBubble(who, text, animate) {
 
   if (who === 'ai') {
     const msgId = 'lm-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
-    row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
+    row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
     row.dataset.ttsId = msgId;
     row.dataset.ttsText = text;
   } else {
@@ -1201,7 +1345,7 @@ function createLiveAiEl() {
   const now = new Date();
   const timeStr = (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2,'0') + (now.getHours() < 12 ? ' AM' : ' PM');
   const msgId = 'lm-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
-  row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
+  row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
   row.dataset.ttsId = msgId;
   row.style.opacity='0';row.style.transform='translateY(10px)';
   area.appendChild(row);
@@ -1213,7 +1357,7 @@ function addLiveTypingDots() {
   const area = document.getElementById('liveChatArea');
   const row = document.createElement('div');
   row.className = 'live-chat-msg';
-  row.innerHTML = '<div class="chat-avatar ai-av">🤖</div><div class="live-chat-content"><div class="live-chat-bubble"><div class="live-typing"><div class="lt-dot"></div><div class="lt-dot"></div><div class="lt-dot"></div></div></div></div>';
+  row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble"><div class="live-typing"><div class="lt-dot"></div><div class="lt-dot"></div><div class="lt-dot"></div></div></div></div>';
   area.appendChild(row);
   scrollLiveChat();
   return row;
@@ -1240,90 +1384,272 @@ function handleLivePhoneCta(action) {
   }
 }
 
-// ==================== VOICE: STT (Screen 2) ====================
-async function toggleLiveMic() {
-  if (liveChat.isTranscribing) return; // busy transcribing
-  if (!liveChat.isRecording) {
-    // Start recording
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch(e) {
-      showToast('🎤 마이크 접근 권한이 필요해요');
-      return;
+// ==================== AUDIO HELPERS — PCM16 at 24kHz ====================
+function float32ToPcm16(float32) {
+  const buf = new ArrayBuffer(float32.length * 2);
+  const view = new DataView(buf);
+  for (let i = 0; i < float32.length; i++) {
+    let s = Math.max(-1, Math.min(1, float32[i]));
+    view.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+  }
+  return new Uint8Array(buf);
+}
+
+function downsample(buffer, fromRate, toRate) {
+  if (fromRate === toRate) return buffer;
+  const ratio = fromRate / toRate;
+  const newLen = Math.round(buffer.length / ratio);
+  const result = new Float32Array(newLen);
+  for (let i = 0; i < newLen; i++) {
+    const idx = i * ratio;
+    const lo = Math.floor(idx);
+    const hi = Math.min(lo + 1, buffer.length - 1);
+    const frac = idx - lo;
+    result[i] = buffer[lo] * (1 - frac) + buffer[hi] * frac;
+  }
+  return result;
+}
+
+function uint8ToBase64(bytes) {
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+async function startAudioPipeline(onChunk) {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioCtx.createMediaStreamSource(stream);
+  const analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  source.connect(analyser);
+  const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+  analyser.connect(processor);
+  processor.connect(audioCtx.destination);
+  const nativeRate = audioCtx.sampleRate;
+  processor.onaudioprocess = (e) => {
+    const float32 = e.inputBuffer.getChannelData(0);
+    const resampled = downsample(float32, nativeRate, 24000);
+    const pcm16 = float32ToPcm16(resampled);
+    const b64 = uint8ToBase64(pcm16);
+    onChunk(b64);
+  };
+  return { stream, audioCtx, processor, analyser };
+}
+
+function stopAudioPipeline(stream, audioCtx, processor) {
+  if (processor) { processor.disconnect(); }
+  if (audioCtx) { try { audioCtx.close(); } catch {} }
+  if (stream) { stream.getTracks().forEach(t => t.stop()); }
+}
+
+function connectRealtimeWs(apiKey, onDelta, onCompleted, onOpen, onError, onClose) {
+  const url = 'wss://api.openai.com/v1/realtime?intent=transcription';
+  const ws = new WebSocket(url, [
+    'realtime',
+    'openai-insecure-api-key.' + apiKey,
+    'openai-beta.realtime-v1',
+  ]);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({
+      type: 'transcription_session.update',
+      session: {
+        input_audio_format: 'pcm16',
+        input_audio_transcription: {
+          model: 'gpt-4o-mini-transcribe',
+          language: 'ko',
+          prompt: '한국어와 영어가 혼용된 대화를 정확하게 전사하세요.',
+        },
+        turn_detection: {
+          type: 'server_vad',
+          threshold: 0.5,
+          prefix_padding_ms: 300,
+          silence_duration_ms: 700,
+        },
+      },
+    }));
+    if (onOpen) onOpen();
+  };
+  ws.onmessage = (event) => {
+    let msg;
+    try { msg = JSON.parse(event.data); } catch { return; }
+    switch (msg.type) {
+      case 'conversation.item.input_audio_transcription.delta':
+        if (onDelta) onDelta(msg.delta || '', msg.item_id);
+        break;
+      case 'conversation.item.input_audio_transcription.completed':
+        if (onCompleted) onCompleted(msg.transcript || '', msg.item_id);
+        break;
+      case 'error':
+        console.error('Realtime API error:', msg.error);
+        if (onError) onError(msg.error);
+        break;
+      default:
+        break;
     }
-    liveChat.audioChunks = [];
-    liveChat.mediaRecorder = new MediaRecorder(stream);
-    liveChat.mediaRecorder.ondataavailable = e => { if (e.data.size > 0) liveChat.audioChunks.push(e.data); };
-    liveChat.mediaRecorder.onstop = () => {
-      stream.getTracks().forEach(t => t.stop());
-      transcribeLiveAudio();
-    };
-    liveChat.mediaRecorder.start();
-    liveChat.isRecording = true;
-    const btn = document.getElementById('liveMicBtn');
-    btn.classList.add('recording');
-    btn.textContent = '⏹';
-    // Start elapsed timer
-    let sec = 0;
-    liveChat._micTimerInterval = setInterval(() => {
-      sec++;
-      const ind = document.getElementById('liveRecordingIndicator');
-      if (ind) ind.textContent = '● 녹음 중 ' + sec + 's';
-    }, 1000);
-    const ind = document.getElementById('liveRecordingIndicator');
-    if (ind) ind.textContent = '● 녹음 중 0s';
-  } else {
-    // Stop recording
-    clearInterval(liveChat._micTimerInterval);
-    liveChat.isRecording = false;
-    const btn = document.getElementById('liveMicBtn');
-    btn.classList.remove('recording');
-    btn.textContent = '🎤';
-    const ind = document.getElementById('liveRecordingIndicator');
-    if (ind) ind.textContent = '변환 중...';
-    liveChat.mediaRecorder.stop();
+  };
+  ws.onerror = (e) => {
+    console.error('WebSocket error:', e);
+    if (onError) onError({ message: 'WebSocket 연결 실패' });
+  };
+  ws.onclose = (e) => {
+    if (onClose) onClose(e);
+  };
+  return ws;
+}
+
+function sendAudioChunk(ws, base64Audio) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'input_audio_buffer.append',
+      audio: base64Audio,
+    }));
   }
 }
 
-async function transcribeLiveAudio() {
-  if (!liveChat.apiKey) {
-    const ind = document.getElementById('liveRecordingIndicator');
+// ==================== VOICE: STT — Realtime API (Screen 2) ====================
+async function toggleLiveMic() {
+  if (liveChat.sttActive) {
+    stopLiveStt();
+  } else {
+    await startLiveStt();
+  }
+}
+
+async function startLiveStt() {
+  if (!liveChat.apiKey) { openApiSettings(); return; }
+
+  liveChat.sttFinalText = '';
+  liveChat.sttInterimText = '';
+  liveChat.sttCurrentDelta = '';
+  liveChat.sttCurrentItemId = null;
+  liveChat.sttActive = true;
+  clearTimeout(liveChat.sttSilenceTimer);
+
+  const btn = document.getElementById('liveMicBtn');
+  btn.classList.add('recording');
+  btn.textContent = '⏹';
+  const ind = document.getElementById('liveRecordingIndicator');
+  if (ind) ind.innerHTML = '<span style="color:#ef4444;">●</span> 연결 중...';
+
+  // Start mic pipeline
+  try {
+    const pipeline = await startAudioPipeline(
+      (b64) => sendAudioChunk(liveChat.sttWs, b64)
+    );
+    liveChat.sttStream = pipeline.stream;
+    liveChat.sttAudioCtx = pipeline.audioCtx;
+    liveChat.sttProcessor = pipeline.processor;
+    liveChat.sttAnalyser = pipeline.analyser;
+  } catch (e) {
+    showToast('🎤 마이크 접근 권한이 필요해요');
+    liveChat.sttActive = false;
+    btn.classList.remove('recording');
+    btn.textContent = '🎤';
     if (ind) ind.textContent = '';
-    showToast('❌ API 키를 먼저 설정해주세요');
     return;
   }
-  liveChat.isTranscribing = true;
-  try {
-    const blob = new Blob(liveChat.audioChunks, { type: 'audio/webm' });
-    const fd = new FormData();
-    fd.append('file', blob, 'recording.webm');
-    fd.append('model', 'gpt-4o-mini-transcribe');
-    fd.append('language', 'ko');
-    fd.append('response_format', 'text');
-    const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + liveChat.apiKey },
-      body: fd,
-    });
-    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || 'HTTP ' + res.status); }
-    const transcript = (await res.text()).trim();
-    if (transcript) {
+
+  // Connect WebSocket
+  liveChat.sttWs = connectRealtimeWs(
+    liveChat.apiKey,
+    // onDelta — real-time partial transcription
+    (delta, itemId) => {
+      if (itemId !== liveChat.sttCurrentItemId) {
+        if (liveChat.sttCurrentDelta) {
+          liveChat.sttFinalText += liveChat.sttCurrentDelta + ' ';
+        }
+        liveChat.sttCurrentItemId = itemId;
+        liveChat.sttCurrentDelta = '';
+      }
+      liveChat.sttCurrentDelta += delta;
+      liveChat.sttInterimText = liveChat.sttCurrentDelta;
+      // Show in input field
       const input = document.getElementById('liveMsgInput');
-      input.value = transcript;
-      document.getElementById('liveSendBtn').classList.add('on');
-      input.focus();
-    } else {
-      showToast('음성을 인식하지 못했어요. 다시 시도해주세요.');
+      input.value = (liveChat.sttFinalText + liveChat.sttInterimText).trim();
+      document.getElementById('liveSendBtn').classList.toggle('on', input.value.length > 0);
+      // Reset auto-send timer on each delta
+      clearTimeout(liveChat.sttSilenceTimer);
+    },
+    // onCompleted — final transcription for a speech segment
+    (transcript, itemId) => {
+      liveChat.sttCurrentDelta = '';
+      liveChat.sttCurrentItemId = null;
+      if (transcript) {
+        liveChat.sttFinalText += transcript + ' ';
+      }
+      liveChat.sttInterimText = '';
+      const input = document.getElementById('liveMsgInput');
+      input.value = liveChat.sttFinalText.trim();
+      document.getElementById('liveSendBtn').classList.toggle('on', input.value.length > 0);
+      // Auto-send after 1.5s of silence following completed transcription
+      clearTimeout(liveChat.sttSilenceTimer);
+      if (liveChat.sttFinalText.trim()) {
+        liveChat.sttSilenceTimer = setTimeout(() => {
+          if (liveChat.sttActive && liveChat.sttFinalText.trim()) {
+            stopLiveStt();
+            liveSendMessage();
+          }
+        }, 1500);
+      }
+    },
+    // onOpen
+    () => {
+      const ind = document.getElementById('liveRecordingIndicator');
+      if (ind) ind.innerHTML = '<span style="color:#ef4444;">●</span> 실시간 인식 중... (말씀해주세요)';
+    },
+    // onError
+    (err) => {
+      showToast('❌ ' + (err?.message || 'WebSocket 오류'));
+      stopLiveStt();
+    },
+    // onClose
+    () => {
+      if (liveChat.sttActive) stopLiveStt();
     }
-  } catch(e) {
-    showToast('⚠️ 음성 변환 실패: ' + e.message);
-  } finally {
-    liveChat.isTranscribing = false;
-    liveChat.audioChunks = [];
-    const ind = document.getElementById('liveRecordingIndicator');
-    if (ind) ind.textContent = '';
+  );
+}
+
+function stopLiveStt() {
+  liveChat.sttActive = false;
+  clearTimeout(liveChat.sttSilenceTimer);
+
+  // Close WebSocket
+  if (liveChat.sttWs) { try { liveChat.sttWs.close(); } catch {} liveChat.sttWs = null; }
+
+  // Stop audio pipeline
+  stopAudioPipeline(liveChat.sttStream, liveChat.sttAudioCtx, liveChat.sttProcessor);
+  liveChat.sttStream = null;
+  liveChat.sttAudioCtx = null;
+  liveChat.sttProcessor = null;
+
+  // Commit remaining delta
+  if (liveChat.sttCurrentDelta) {
+    liveChat.sttFinalText += liveChat.sttCurrentDelta;
+    liveChat.sttCurrentDelta = '';
+    liveChat.sttInterimText = '';
   }
+
+  // Update input field with final text
+  const input = document.getElementById('liveMsgInput');
+  if (liveChat.sttFinalText.trim()) {
+    input.value = liveChat.sttFinalText.trim();
+    document.getElementById('liveSendBtn').classList.add('on');
+  }
+
+  // Reset UI
+  const btn = document.getElementById('liveMicBtn');
+  btn.classList.remove('recording');
+  btn.textContent = '🎤';
+  const ind = document.getElementById('liveRecordingIndicator');
+  if (ind) ind.textContent = '';
+
+  // Reset STT state
+  liveChat.sttFinalText = '';
+  liveChat.sttInterimText = '';
+  liveChat.sttCurrentDelta = '';
+  liveChat.sttCurrentItemId = null;
 }
 
 // ==================== VOICE: TTS (Screen 2) ====================
@@ -1514,6 +1840,8 @@ function startRingCounter() {
 
 // ==================== SCREEN 5: CALL CONVERSATION ====================
 let subtitleOn = false, hintOpen = true;
+
+// Static fallback conversation (used when no API key)
 const callConvo = [
   { type:'ai', text:"Hello! Thank you for coming in today. Let me start by asking - could you briefly introduce yourself and your background?", sub:"안녕하세요! 오늘 와주셔서 감사합니다. 먼저 자기소개와 경력을 간단히 말씀해주시겠어요?", hint:"I have [X] years of experience in..." },
   { type:'user', text:"Hi Jennifer, I'm Minjun Kim. I've been working in digital marketing for 3 years, specializing in data-driven campaign strategies.", words:20 },
@@ -1524,6 +1852,40 @@ const callConvo = [
   { type:'ai', text:"Excellent! You've shown great communication skills today. Thank you for your time, and we'll be in touch soon.", sub:"훌륭해요! 오늘 뛰어난 커뮤니케이션 능력을 보여주셨어요. 시간 내주셔서 감사합니다, 곧 연락드릴게요.", end:true },
 ];
 
+// ==================== LIVE CALL GPT STATE ====================
+const CALL_SYSTEM_PROMPT = `You are Jennifer Park, HR Director at Mango Corp. You are conducting a job interview in English.
+
+## Rules
+1. Speak ONLY in English. You are a native English speaker.
+2. Ask ONE question at a time. Wait for the candidate's response before asking the next.
+3. Be professional but warm and encouraging.
+4. Start by welcoming the candidate and asking them to introduce themselves.
+5. Follow up based on their answers - show genuine interest.
+6. Cover these topics naturally: self-introduction, strengths, relevant experience, motivation for applying, and future goals.
+7. Keep your responses concise (2-4 sentences max).
+8. After each response, include a Korean translation on a new line in this exact format:
+   [KR: 한국어 번역]
+9. Do NOT break character. You ARE Jennifer Park.`;
+
+let callGpt = {
+  messages: [],
+  isStreaming: false,
+  turnCount: 0,
+  totalWords: 0,
+  liveMode: false,
+  // STT state for call
+  sttActive: false,
+  sttWs: null,
+  sttAudioCtx: null,
+  sttProcessor: null,
+  sttStream: null,
+  sttFinalText: '',
+  sttInterimText: '',
+  sttCurrentDelta: '',
+  sttCurrentItemId: null,
+  sttSilenceTimer: null,
+};
+
 function initCall() {
   callStep = 0;
   const chat = document.getElementById('callChat');
@@ -1532,10 +1894,311 @@ function initCall() {
   document.getElementById('subtitleArea').style.display = 'none';
   document.getElementById('callHintCard').style.display = 'none';
   document.getElementById('wordCount').textContent = '발화량: 0단어';
-  // Auto-start step 0
-  setTimeout(() => showCallStep(), 600);
+
+  // Reset GPT call state
+  callGpt.messages = [];
+  callGpt.isStreaming = false;
+  callGpt.turnCount = 0;
+  callGpt.totalWords = 0;
+  callGpt.liveMode = false;
+  stopCallStt();
+
+  // Check if API key is available for live mode
+  if (liveChat.apiKey) {
+    callGpt.liveMode = true;
+    document.getElementById('callInputBar').style.display = 'block';
+    document.getElementById('callAdvBtn').style.display = 'none';
+    // Setup input handlers
+    const input = document.getElementById('callMsgInput');
+    input.value = '';
+    input.onkeydown = (e) => {
+      if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); callSendMessage(); }
+    };
+    input.oninput = () => {
+      document.getElementById('callSendBtn').style.opacity = input.value.trim().length > 0 ? '1' : '0.4';
+    };
+    // Start GPT conversation
+    callGpt.messages = [{ role: 'system', content: CALL_SYSTEM_PROMPT }];
+    callGpt.messages.push({ role: 'user', content: '[The candidate has just entered the room and sat down. Please welcome them and start the interview.]' });
+    setTimeout(() => callGptSend(true), 600);
+  } else {
+    // Static fallback
+    callGpt.liveMode = false;
+    document.getElementById('callInputBar').style.display = 'none';
+    setTimeout(() => showCallStep(), 600);
+  }
 }
 
+// ==================== LIVE CALL: GPT SEND ====================
+async function callGptSend(isFirst) {
+  if (callGpt.isStreaming) return;
+  callGpt.isStreaming = true;
+  const chat = document.getElementById('callChat');
+  const dots = addCallTypingDots(chat);
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + liveChat.apiKey },
+      body: JSON.stringify({ model: liveChat.model, messages: callGpt.messages, temperature: 0.8, max_tokens: 300, stream: true }),
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || 'HTTP ' + res.status); }
+
+    chat.removeChild(dots);
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+
+    // Create streaming bubble
+    const w = document.createElement('div');
+    w.style.cssText = 'display:flex;gap:8px;';
+    const av = document.createElement('div');
+    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+    av.textContent = '👩‍💼';
+    w.appendChild(av);
+    const b = document.createElement('div');
+    b.style.cssText = 'max-width:80%;padding:12px 16px;border-radius:18px;border-bottom-left-radius:4px;background:#1E293B;color:#E2E8F0;font-size:14px;line-height:1.6;animation:bubbleIn 0.3s ease-out;';
+    b.textContent = '';
+    w.appendChild(b);
+    chat.appendChild(w);
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n').filter(l => l.startsWith('data: '))) {
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          const delta = JSON.parse(data).choices?.[0]?.delta?.content;
+          if (delta) { fullText += delta; }
+        } catch(e) {}
+      }
+      // Display English part only in bubble (strip [KR:...] for display)
+      const displayText = fullText.replace(/\[KR:.*?\]/gs, '').trim();
+      b.textContent = displayText;
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Remove the first system turn from display
+    if (isFirst) {
+      callGpt.messages = callGpt.messages.filter(m => !m.content.startsWith('[The candidate'));
+    }
+    callGpt.messages.push({ role: 'assistant', content: fullText });
+    callGpt.turnCount++;
+
+    // Extract Korean subtitle
+    const krMatch = fullText.match(/\[KR:\s*(.*?)\]/s);
+    if (krMatch) {
+      document.getElementById('subtitleText').textContent = krMatch[1].trim();
+      if (subtitleOn) document.getElementById('subtitleArea').style.display = 'block';
+    }
+
+    // Auto-play TTS for AI response
+    callAutoTts(fullText.replace(/\[KR:.*?\]/gs, '').trim());
+
+  } catch(err) {
+    chat.removeChild(dots);
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'text-align:center;padding:8px;font-size:11px;color:#EF4444;';
+    errDiv.textContent = '⚠️ ' + err.message;
+    chat.appendChild(errDiv);
+  } finally {
+    callGpt.isStreaming = false;
+    chat.scrollTop = chat.scrollHeight;
+  }
+}
+
+async function callSendMessage() {
+  const input = document.getElementById('callMsgInput');
+  const text = input.value.trim();
+  if (!text || callGpt.isStreaming) return;
+
+  input.value = '';
+  document.getElementById('callSendBtn').style.opacity = '0.4';
+
+  const chat = document.getElementById('callChat');
+  addCallUserBubble(chat, text);
+
+  // Count words
+  const words = text.split(/\s+/).filter(w => w.length > 0).length;
+  callGpt.totalWords += words;
+  document.getElementById('wordCount').textContent = '발화량: ' + callGpt.totalWords + '단어';
+
+  callGpt.messages.push({ role: 'user', content: text });
+  callGpt.turnCount++;
+
+  // Check if conversation should end (6+ exchanges = 12+ messages excluding system)
+  const exchanges = callGpt.messages.filter(m => m.role !== 'system').length;
+  if (exchanges >= 12) {
+    // Ask GPT to wrap up
+    callGpt.messages.push({ role: 'system', content: 'This is the final exchange. Please wrap up the interview naturally with a closing remark. Thank the candidate.' });
+  }
+
+  await callGptSend(false);
+
+  // Auto-transition after wrap-up
+  if (exchanges >= 12) {
+    setTimeout(() => {
+      const endMsg = document.createElement('div');
+      endMsg.style.cssText = 'text-align:center;font-size:13px;color:#94A3B8;padding:12px;';
+      endMsg.textContent = '통화가 종료됩니다...';
+      chat.appendChild(endMsg);
+      chat.scrollTop = chat.scrollHeight;
+      setTimeout(() => goTo('screen6'), 2000);
+    }, 1500);
+  }
+}
+
+function hangUpCall() {
+  // Clean up call STT if active
+  stopCallStt();
+  goTo('screen6');
+}
+
+// ==================== CALL TTS ====================
+async function callAutoTts(text) {
+  if (!liveChat.apiKey || !text) return;
+  try {
+    const res = await fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + liveChat.apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini-tts', voice: 'nova', input: text }),
+    });
+    if (!res.ok) return;
+    const arrayBuf = await res.arrayBuffer();
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuf;
+    source.connect(audioCtx.destination);
+    source.onended = () => audioCtx.close();
+    source.start(0);
+  } catch(e) { /* silently fail TTS */ }
+}
+
+// ==================== CALL STT ====================
+async function toggleCallMic() {
+  if (callGpt.sttActive) {
+    stopCallStt();
+  } else {
+    await startCallStt();
+  }
+}
+
+async function startCallStt() {
+  if (!liveChat.apiKey) return;
+
+  callGpt.sttFinalText = '';
+  callGpt.sttInterimText = '';
+  callGpt.sttCurrentDelta = '';
+  callGpt.sttCurrentItemId = null;
+  callGpt.sttActive = true;
+  clearTimeout(callGpt.sttSilenceTimer);
+
+  const btn = document.getElementById('callMicBtn');
+  btn.style.background = '#ef4444';
+  btn.textContent = '⏹';
+  const ind = document.getElementById('callRecordingIndicator');
+  if (ind) ind.innerHTML = '<span>●</span> 연결 중...';
+
+  try {
+    const pipeline = await startAudioPipeline(
+      (b64) => sendAudioChunk(callGpt.sttWs, b64)
+    );
+    callGpt.sttStream = pipeline.stream;
+    callGpt.sttAudioCtx = pipeline.audioCtx;
+    callGpt.sttProcessor = pipeline.processor;
+  } catch(e) {
+    showToast('🎤 마이크 접근 권한이 필요해요');
+    callGpt.sttActive = false;
+    btn.style.background = '#1E293B';
+    btn.textContent = '🎤';
+    if (ind) ind.textContent = '';
+    return;
+  }
+
+  callGpt.sttWs = connectRealtimeWs(
+    liveChat.apiKey,
+    // onDelta
+    (delta, itemId) => {
+      if (itemId !== callGpt.sttCurrentItemId) {
+        if (callGpt.sttCurrentDelta) callGpt.sttFinalText += callGpt.sttCurrentDelta + ' ';
+        callGpt.sttCurrentItemId = itemId;
+        callGpt.sttCurrentDelta = '';
+      }
+      callGpt.sttCurrentDelta += delta;
+      callGpt.sttInterimText = callGpt.sttCurrentDelta;
+      const input = document.getElementById('callMsgInput');
+      input.value = (callGpt.sttFinalText + callGpt.sttInterimText).trim();
+      document.getElementById('callSendBtn').style.opacity = input.value.length > 0 ? '1' : '0.4';
+      clearTimeout(callGpt.sttSilenceTimer);
+    },
+    // onCompleted
+    (transcript, itemId) => {
+      callGpt.sttCurrentDelta = '';
+      callGpt.sttCurrentItemId = null;
+      if (transcript) callGpt.sttFinalText += transcript + ' ';
+      callGpt.sttInterimText = '';
+      const input = document.getElementById('callMsgInput');
+      input.value = callGpt.sttFinalText.trim();
+      document.getElementById('callSendBtn').style.opacity = input.value.length > 0 ? '1' : '0.4';
+      clearTimeout(callGpt.sttSilenceTimer);
+      if (callGpt.sttFinalText.trim()) {
+        callGpt.sttSilenceTimer = setTimeout(() => {
+          if (callGpt.sttActive && callGpt.sttFinalText.trim()) {
+            stopCallStt();
+            callSendMessage();
+          }
+        }, 1500);
+      }
+    },
+    // onOpen
+    () => {
+      const ind = document.getElementById('callRecordingIndicator');
+      if (ind) ind.innerHTML = '<span>●</span> 실시간 인식 중... (영어로 말씀해주세요)';
+    },
+    // onError
+    (err) => {
+      showToast('❌ ' + (err?.message || 'WebSocket 오류'));
+      stopCallStt();
+    },
+    // onClose
+    () => { if (callGpt.sttActive) stopCallStt(); }
+  );
+}
+
+function stopCallStt() {
+  callGpt.sttActive = false;
+  clearTimeout(callGpt.sttSilenceTimer);
+  if (callGpt.sttWs) { try { callGpt.sttWs.close(); } catch {} callGpt.sttWs = null; }
+  stopAudioPipeline(callGpt.sttStream, callGpt.sttAudioCtx, callGpt.sttProcessor);
+  callGpt.sttStream = null;
+  callGpt.sttAudioCtx = null;
+  callGpt.sttProcessor = null;
+  if (callGpt.sttCurrentDelta) {
+    callGpt.sttFinalText += callGpt.sttCurrentDelta;
+    callGpt.sttCurrentDelta = '';
+    callGpt.sttInterimText = '';
+  }
+  const input = document.getElementById('callMsgInput');
+  if (callGpt.sttFinalText.trim()) {
+    input.value = callGpt.sttFinalText.trim();
+    document.getElementById('callSendBtn').style.opacity = '1';
+  }
+  const btn = document.getElementById('callMicBtn');
+  btn.style.background = '#1E293B';
+  btn.textContent = '🎤';
+  const ind = document.getElementById('callRecordingIndicator');
+  if (ind) ind.textContent = '';
+  callGpt.sttFinalText = '';
+  callGpt.sttInterimText = '';
+  callGpt.sttCurrentDelta = '';
+  callGpt.sttCurrentItemId = null;
+}
+
+// ==================== STATIC CALL FALLBACK (no API key) ====================
 function showCallStep() {
   if (callStep >= callConvo.length) return;
   const item = callConvo[callStep];
@@ -1588,7 +2251,6 @@ function advanceCall() {
       if (item.words) document.getElementById('wordCount').textContent = '발화량: ' + item.words + '단어';
       chat.scrollTop = chat.scrollHeight;
       callStep++;
-      // Next is AI
       setTimeout(() => showCallStep(), 600);
     }, 1500);
   }
@@ -1732,6 +2394,36 @@ function toggleBeforeAfter() {
   if (m.style.display === 'flex') { m.style.display = 'none'; }
   else { m.style.display = 'flex'; }
 }
+
+// ==================== DARK MODE ====================
+function toggleDarkMode() {
+  const frame = document.getElementById('phoneFrame');
+  const isDark = frame.classList.toggle('dark');
+  localStorage.setItem('ringle_dark_mode', isDark ? 'true' : 'false');
+  updateDarkModeBtn(isDark);
+}
+function updateDarkModeBtn(isDark) {
+  const btn = document.getElementById('darkModeBtn');
+  if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+}
+// Restore dark mode preference on load
+(function() {
+  const saved = localStorage.getItem('ringle_dark_mode');
+  if (saved === 'true') {
+    const frame = document.getElementById('phoneFrame');
+    if (frame) { frame.classList.add('dark'); updateDarkModeBtn(true); }
+  }
+})();
+
+// ==================== DYNAMIC STATUS BAR TIME ====================
+function updateStatusBarTime() {
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes().toString().padStart(2, '0');
+  document.querySelectorAll('.status-time').forEach(el => el.textContent = h + ':' + m);
+}
+updateStatusBarTime();
+setInterval(updateStatusBarTime, 30000);
 
 </script>
 </body>
