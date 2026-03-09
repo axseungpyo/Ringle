@@ -1,0 +1,11 @@
+.DS_Store
+.claude/
+.bkit/
+memory/
+*.pyc
+__pycache__/
+node_modules/
+.env
+docs/.bkit-memory.json
+docs/.pdca-status.json
+docs/.pdca-snapshots/

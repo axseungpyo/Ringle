@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RING LOOP MVP Prototype</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ringle: '#5B4FFF',
+        'ringle-dark': '#4A3FE0',
+        accent: '#FF6B35',
+        'accent-dark': '#E55A2B',
+        success: '#22C55E',
+        bg: '#F8F9FA',
+        'text-dark': '#1A1A2E',
+        'text-gray': '#6B7280',
+      }
+    }
+  }
+}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+
+*{box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;}
+body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+
+.phone-frame{width:390px;height:844px;background:#fff;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #1a1a2e,0 0 0 12px #333,0 25px 80px rgba(0,0,0,0.5);}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:34px;background:#1a1a2e;border-radius:0 0 20px 20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;z-index:99;display:flex;align-items:center;justify-content:space-between;padding:0 24px;padding-top:4px;font-size:12px;font-weight:600;}
+.status-bar .time{color:#fff;} .status-bar .icons{color:#fff;display:flex;gap:4px;}
+
+.screen{position:absolute;top:0;left:0;right:0;bottom:0;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;overflow-x:hidden;}
+.screen.hidden-right{transform:translateX(100%);opacity:0;pointer-events:none;}
+.screen.hidden-left{transform:translateX(-100%);opacity:0;pointer-events:none;}
+.screen.active{transform:translateX(0);opacity:1;pointer-events:auto;}
+
+.toast{position:absolute;top:60px;left:20px;right:20px;z-index:200;background:#1A1A2E;color:#fff;padding:14px 20px;border-radius:14px;font-size:14px;font-weight:500;text-align:center;transform:translateY(-120px);opacity:0;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);box-shadow:0 8px 30px rgba(0,0,0,0.3);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:150;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.backdrop.show{opacity:1;pointer-events:auto;}
+
+.bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:160;background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);}
+.bottom-sheet.show{transform:translateY(0);}
+
+.btn-primary{background:#5B4FFF;color:#fff;border:none;border-radius:14px;padding:16px 24px;font-size:16px;font-weight:600;cursor:pointer;width:100%;transition:all 0.2s;}
+.btn-primary:active{background:#4A3FE0;transform:scale(0.98);}
+.btn-secondary{background:#F3F4F6;color:#1A1A2E;border:none;border-radius:14px;padding:14px 20px;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.btn-secondary:active{background:#E5E7EB;transform:scale(0.98);}
+
+.chat-bubble{max-width:80%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;animation:bubbleIn 0.3s ease-out;}
+.chat-ai{background:#F3F4F6;color:#1A1A2E;border-bottom-left-radius:4px;}
+.chat-user{background:#5B4FFF;color:#fff;border-bottom-right-radius:4px;margin-left:auto;}
+
+@keyframes bubbleIn{from{opacity:0;transform:translateY(8px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes pulse{0%{transform:scale(1);opacity:0.6;}50%{transform:scale(1.5);opacity:0;}100%{transform:scale(2);opacity:0;}}
+@keyframes pulseSlow{0%{transform:scale(1);opacity:0.3;}100%{transform:scale(2.2);opacity:0;}}
+.pulse-ring{position:absolute;width:100px;height:100px;border-radius:50%;border:3px solid #22C55E;animation:pulse 1.5s infinite;}
+.pulse-ring:nth-child(2){animation-delay:0.5s;} .pulse-ring:nth-child(3){animation-delay:1s;}
+
+@keyframes typing{0%,80%,100%{opacity:0.3;}40%{opacity:1;}}
+.typing-dot{width:7px;height:7px;background:#9CA3AF;border-radius:50%;display:inline-block;margin:0 2px;}
+.typing-dot:nth-child(1){animation:typing 1.2s infinite 0s;}
+.typing-dot:nth-child(2){animation:typing 1.2s infinite 0.2s;}
+.typing-dot:nth-child(3){animation:typing 1.2s infinite 0.4s;}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-in-up{animation:fadeInUp 0.5s ease-out forwards;}
+.fade-in-up-d1{animation:fadeInUp 0.5s ease-out 0.1s forwards;opacity:0;}
+.fade-in-up-d2{animation:fadeInUp 0.5s ease-out 0.2s forwards;opacity:0;}
+.fade-in-up-d3{animation:fadeInUp 0.5s ease-out 0.3s forwards;opacity:0;}
+.fade-in-up-d4{animation:fadeInUp 0.5s ease-out 0.4s forwards;opacity:0;}
+.fade-in-up-d5{animation:fadeInUp 0.5s ease-out 0.5s forwards;opacity:0;}
+
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(91,79,255,0.4);}50%{box-shadow:0 0 0 16px rgba(91,79,255,0);}}
+.mic-pulse{animation:micPulse 1.5s infinite;}
+@keyframes confetti{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(-60px) rotate(360deg);opacity:0;}}
+@keyframes streakGlow{0%,100%{text-shadow:0 0 4px rgba(255,107,53,0.3);}50%{text-shadow:0 0 12px rgba(255,107,53,0.6);}}
+.streak-glow{animation:streakGlow 2s infinite;}
+@keyframes waveform{0%,100%{height:8px;}50%{height:24px;}}
+.wave-bar{width:3px;background:#5B4FFF;border-radius:2px;animation:waveform 0.8s ease-in-out infinite;}
+@keyframes countUp{from{opacity:0;transform:scale(0.5);}to{opacity:1;transform:scale(1);}}
+.count-up{animation:countUp 0.4s ease-out forwards;}
+
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#9CA3AF;cursor:pointer;transition:color 0.2s;padding:4px 0;}
+.nav-item.active{color:#5B4FFF;}
+.nav-item svg{width:24px;height:24px;}
+
+.scroll-hide::-webkit-scrollbar{display:none;} .scroll-hide{-ms-overflow-style:none;scrollbar-width:none;}
+</style>
+</head>
+<body>
+
+<div style="text-align:center;margin-bottom:20px;">
+  <div style="font-size:13px;color:#6B7280;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;">Ringle</div>
+  <div style="font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;">RING LOOP <span style="color:#5B4FFF;">MVP</span> Prototype</div>
+  <div style="font-size:11px;color:#9CA3AF;margin-top:4px;">Interactive Mobile Prototype · 제5회 링글 서비스 기획 공모전</div>
+</div>
+
+<div class="phone-frame" id="phoneFrame">
+  <div class="notch"></div>
+  <div class="status-bar"><span class="time">9:41</span><span class="icons">📶 🔋</span></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- ==================== SCREEN 1: ONBOARDING ==================== -->
+  <div class="screen active" id="screen1" style="background:linear-gradient(135deg,#5B4FFF 0%,#7B6FFF 50%,#9B8FFF 100%);">
+    <div style="padding:80px 28px 40px;text-align:center;color:#fff;" class="scroll-hide">
+      <!-- Progress dots -->
+      <div class="fade-in-up" style="display:flex;justify-content:center;gap:8px;margin-bottom:32px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#fff;"></span>
+        <span style="width:8px;height:8px;border-radius:50%;background:#fff;"></span>
+        <span style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.4);"></span>
+      </div>
+      <!-- Level icon -->
+      <div class="fade-in-up-d1" style="font-size:48px;margin-bottom:16px;">🎯</div>
+      <div class="fade-in-up-d2" style="font-size:22px;font-weight:700;margin-bottom:6px;">레벨 측정 완료!</div>
+      <div class="fade-in-up-d2" style="font-size:32px;font-weight:800;margin-bottom:8px;">중급 B</div>
+      <div class="fade-in-up-d3" style="font-size:13px;opacity:0.85;margin-bottom:32px;">비즈니스 표현력은 좋지만, 즉흥 대화에서 망설임이 있어요</div>
+      <!-- Scenario card -->
+      <div class="fade-in-up-d4" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border-radius:20px;padding:24px;text-align:left;margin-bottom:28px;border:1px solid rgba(255,255,255,0.2);">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1px;opacity:0.8;margin-bottom:12px;">🎭 추천 첫 시나리오</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:8px;">면접관 롤플레이</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:18px;">👩‍💼</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;">Jennifer Park</div>
+            <div style="font-size:11px;opacity:0.7;">HR Director · Mango Corp</div>
+          </div>
+        </div>
+        <div style="font-size:12px;opacity:0.7;">예상 소요 시간: 약 3분 · 6턴 대화</div>
+      </div>
+      <!-- CTA -->
+      <button class="fade-in-up-d5" onclick="goTo('screen1b')" style="background:#FF6B35;color:#fff;border:none;border-radius:14px;padding:18px 24px;font-size:16px;font-weight:700;width:100%;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,0.4);">지금 바로 시작하기 (3분) ▶</button>
+      <div class="fade-in-up-d5" style="margin-top:16px;font-size:13px;opacity:0.6;cursor:pointer;" onclick="goTo('screen2')">건너뛰고 홈으로</div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 1b: ROLEPLAY EXPERIENCE ==================== -->
+  <div class="screen hidden-right" id="screen1b" style="background:#fff;">
+    <!-- Purple header -->
+    <div style="background:linear-gradient(135deg,#5B4FFF,#7B6FFF);padding:54px 20px 12px;color:#fff;">
+      <!-- Trial banner -->
+      <div style="background:rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;">
+        ✨ 첫 체험 모드 · 힌트 제공 ON
+        <span id="rpTimerBadge" style="background:rgba(255,255,255,0.3);border-radius:10px;padding:2px 8px;font-size:10px;">⏱ <span id="rpTimer">3:00</span></span>
+      </div>
+      <!-- Roleplay header -->
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:20px;">👩‍💼</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;">Jennifer Park</div>
+          <div style="font-size:11px;opacity:0.8;">HR Director · Mango Corp</div>
+        </div>
+      </div>
+    </div>
+    <!-- Progress bar -->
+    <div style="padding:12px 20px;background:#F8F9FA;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:12px;color:#6B7280;font-weight:500;">대화 진행</span>
+      <div style="flex:1;height:6px;background:#E5E7EB;border-radius:3px;overflow:hidden;">
+        <div id="rpProgress" style="width:0%;height:100%;background:linear-gradient(90deg,#5B4FFF,#FF6B35);border-radius:3px;transition:width 0.5s;"></div>
+      </div>
+      <span id="rpTurnLabel" style="font-size:11px;color:#5B4FFF;font-weight:600;">0/6 턴</span>
+    </div>
+    <!-- Chat area -->
+    <div id="roleplayChat" class="scroll-hide" style="padding:16px 20px;height:480px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+    </div>
+    <!-- Bottom action -->
+    <div id="rpBottomArea" style="padding:12px 20px 32px;border-top:1px solid #F3F4F6;background:#fff;">
+      <button id="rpActionBtn" onclick="advanceRoleplay()" class="btn-primary" style="display:none;">내 차례 — 답변하기 🎤</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 1c: AHA MOMENT ==================== -->
+  <div class="screen hidden-right" id="screen1c" style="background:linear-gradient(135deg,#5B4FFF,#7B6FFF);">
+    <div style="padding:80px 28px 40px;text-align:center;color:#fff;" class="scroll-hide">
+      <div class="fade-in-up" style="font-size:52px;margin-bottom:8px;">🎉</div>
+      <div class="fade-in-up-d1" style="font-size:22px;font-weight:800;margin-bottom:4px;">첫 롤플레이 완료!</div>
+      <div class="fade-in-up-d2" style="font-size:13px;opacity:0.8;margin-bottom:24px;">면접관 시나리오를 성공적으로 마쳤어요</div>
+      <!-- Stats grid -->
+      <div class="fade-in-up-d3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+        <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:16px 8px;">
+          <div style="font-size:28px;font-weight:800;">45</div>
+          <div style="font-size:11px;opacity:0.7;">단어 사용</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:16px 8px;">
+          <div style="font-size:28px;font-weight:800;">6</div>
+          <div style="font-size:11px;opacity:0.7;">대화 턴</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:16px 8px;">
+          <div style="font-size:28px;font-weight:800;">2</div>
+          <div style="font-size:11px;opacity:0.7;">힌트 사용</div>
+        </div>
+      </div>
+      <!-- 7-day challenge -->
+      <div class="fade-in-up-d3" style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:20px;">🔥</span>
+        <div style="text-align:left;flex:1;">
+          <div style="font-size:13px;font-weight:600;">7일 챌린지</div>
+          <div style="font-size:11px;opacity:0.7;">첫날 완료! 내일도 이어가 보세요</div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <span style="width:20px;height:20px;border-radius:50%;background:#FF6B35;display:flex;align-items:center;justify-content:center;font-size:10px;">✓</span>
+          <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.2);font-size:10px;display:flex;align-items:center;justify-content:center;">2</span>
+          <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.2);font-size:10px;display:flex;align-items:center;justify-content:center;">3</span>
+        </div>
+      </div>
+      <!-- Feedback preview -->
+      <div class="fade-in-up-d4" style="background:rgba(255,255,255,0.15);border-radius:16px;padding:18px;text-align:left;margin-bottom:24px;border:1px solid rgba(255,255,255,0.15);">
+        <div style="font-size:12px;font-weight:600;opacity:0.8;margin-bottom:10px;">📊 AI 피드백 미리보기</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:11px;width:60px;">유창성</span>
+          <div style="flex:1;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;"><div style="width:72%;height:100%;background:#22C55E;border-radius:3px;"></div></div>
+          <span style="font-size:11px;">72%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:11px;width:60px;">정확성</span>
+          <div style="flex:1;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;"><div style="width:65%;height:100%;background:#FF6B35;border-radius:3px;"></div></div>
+          <span style="font-size:11px;">65%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;width:60px;">자연스러움</span>
+          <div style="flex:1;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;"><div style="width:58%;height:100%;background:#FBBF24;border-radius:3px;"></div></div>
+          <span style="font-size:11px;">58%</span>
+        </div>
+        <div style="font-size:11px;opacity:0.6;margin-top:10px;text-align:center;">🔒 상세 피드백은 무료 체험에서 확인</div>
+      </div>
+      <button class="fade-in-up-d5" onclick="goTo('screen2')" style="background:#FF6B35;color:#fff;border:none;border-radius:14px;padding:18px 24px;font-size:16px;font-weight:700;width:100%;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,0.4);">무료 체험 계속하기 →</button>
+      <div class="fade-in-up-d5" style="margin-top:14px;font-size:12px;opacity:0.5;cursor:pointer;" onclick="goTo('screen2')">홈으로 가기</div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 2: AI TALK ==================== -->
+  <div class="screen hidden-right" id="screen2" style="background:#fff;display:flex;flex-direction:column;">
+    <!-- Header -->
+    <div style="padding:54px 20px 12px;background:#fff;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#1A1A2E;">AI 톡</div>
+            <div style="font-size:11px;color:#22C55E;">● 온라인</div>
+          </div>
+        </div>
+        <button id="skipChatBtn" onclick="skipChat()" style="font-size:12px;color:#5B4FFF;background:none;border:1px solid #5B4FFF;border-radius:20px;padding:4px 12px;cursor:pointer;">대화 건너뛰기 >></button>
+      </div>
+    </div>
+    <!-- Chat area -->
+    <div id="chatArea" class="scroll-hide" style="flex:1;padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+    </div>
+    <!-- Input bar -->
+    <div style="padding:10px 20px 30px;background:#fff;border-top:1px solid #F3F4F6;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+      <div style="flex:1;background:#F3F4F6;border-radius:24px;padding:12px 16px;font-size:13px;color:#9CA3AF;">메시지를 입력하세요...</div>
+      <div style="width:40px;height:40px;border-radius:50%;background:#5B4FFF;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;">🎤</div>
+    </div>
+    <!-- Bottom nav -->
+    <div style="display:flex;justify-content:space-around;padding:8px 0 20px;background:#fff;border-top:1px solid #F3F4F6;flex-shrink:0;">
+      <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 3: BRIEFING ==================== -->
+  <div class="screen hidden-right" id="screen3" style="background:#fff;display:flex;flex-direction:column;">
+    <!-- Header -->
+    <div style="padding:54px 20px 12px;background:#fff;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span onclick="goTo('screen2')" style="cursor:pointer;font-size:20px;">←</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#1A1A2E;">AI 톡</div>
+          <div style="font-size:11px;color:#22C55E;">● 온라인</div>
+        </div>
+      </div>
+    </div>
+    <!-- Chat area -->
+    <div id="briefingChat" class="scroll-hide" style="flex:1;padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+      <!-- AI message: reservation confirmed -->
+      <div style="display:flex;gap:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
+        <div class="chat-bubble chat-ai">21시 전화 예약이 완료됐어요! 📞<br>10분 전에 브리핑을 보내줄게요.</div>
+      </div>
+      <!-- Time skip -->
+      <div style="display:flex;align-items:center;gap:8px;padding:12px 0;">
+        <div style="flex:1;height:1px;background:#E5E7EB;"></div>
+        <span style="font-size:11px;color:#9CA3AF;white-space:nowrap;">⏩ 시간이 흘러 20:50</span>
+        <div style="flex:1;height:1px;background:#E5E7EB;"></div>
+      </div>
+      <!-- Context connection -->
+      <div style="display:flex;gap:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
+        <div class="chat-bubble chat-ai">오늘 오전에 분기 보고 표현 연습했죠?<br>그 맥락으로 오늘 전화 시나리오를 준비했어요! 👇</div>
+      </div>
+      <!-- Briefing divider -->
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
+        <div style="flex:1;height:1px;background:#5B4FFF;opacity:0.3;"></div>
+        <span style="font-size:11px;color:#5B4FFF;font-weight:600;white-space:nowrap;">📞 전화 브리핑 · 20:50</span>
+        <div style="flex:1;height:1px;background:#5B4FFF;opacity:0.3;"></div>
+      </div>
+      <!-- Briefing card -->
+      <div style="background:linear-gradient(135deg,#F8F7FF,#F0EEFF);border:1px solid rgba(91,79,255,0.15);border-radius:16px;padding:18px;margin:0 4px;">
+        <div style="font-size:11px;color:#5B4FFF;font-weight:600;margin-bottom:10px;">🎭 오늘의 전화 시나리오</div>
+        <div style="font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">면접관 롤플레이</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:18px;">👩‍💼</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Jennifer Park</div>
+            <div style="font-size:11px;color:#6B7280;">HR Director · Mango Corp</div>
+          </div>
+        </div>
+        <!-- Key expressions -->
+        <div style="font-size:11px;font-weight:600;color:#1A1A2E;margin-bottom:8px;">📝 핵심 표현 3개</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">1.</span> I have X years of experience in...</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">2.</span> My greatest strength is...</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">3.</span> I'm passionate about...</div>
+        </div>
+        <div onclick="goTo('screen3b')" style="text-align:center;font-size:12px;color:#5B4FFF;font-weight:600;cursor:pointer;">자세히 보기 ▼</div>
+      </div>
+      <!-- Action buttons -->
+      <div style="display:flex;flex-direction:column;gap:8px;padding:8px 4px 16px;">
+        <button onclick="goTo('screen4')" class="btn-primary" style="font-size:15px;">준비됐어! 전화 받을게 📞</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-secondary" style="flex:1;font-size:12px;text-align:center;">⏰ 5분 뒤 전화</button>
+          <button class="btn-secondary" style="flex:1;font-size:12px;text-align:center;">오늘은 건너뛸게요</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 3b: EXPANDED BRIEFING ==================== -->
+  <div class="screen hidden-right" id="screen3b" style="background:#F8F9FA;">
+    <!-- Header -->
+    <div style="padding:54px 20px 12px;background:#fff;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span onclick="goTo('screen3')" style="cursor:pointer;font-size:20px;">←</span>
+        <span style="font-size:15px;font-weight:700;color:#1A1A2E;">전화 브리핑 상세</span>
+      </div>
+      <div id="briefCountdown" style="background:#5B4FFF;color:#fff;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;">📞 <span id="briefTimer">9:42</span> 후 전화</div>
+    </div>
+    <div class="scroll-hide" style="padding:16px 20px 120px;overflow-y:auto;height:calc(100% - 66px);">
+      <!-- Character card -->
+      <div style="background:linear-gradient(135deg,#5B4FFF,#7B6FFF);border-radius:18px;padding:20px;color:#fff;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:24px;">👩‍💼</div>
+          <div>
+            <div style="font-size:17px;font-weight:700;">Jennifer Park</div>
+            <div style="font-size:12px;opacity:0.8;">HR Director · Mango Corp</div>
+          </div>
+        </div>
+        <div style="font-size:12px;opacity:0.8;line-height:1.6;">테크 기업 HR 디렉터로 10년 경력. 직접적이고 구체적인 답변을 선호합니다. 지원 동기와 실무 경험에 관심이 많아요.</div>
+      </div>
+      <!-- 예상 질문 -->
+      <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">❓ 예상 질문 5개</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q1.</span> Could you please introduce yourself?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q2.</span> What is your greatest strength?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q3.</span> Why are you interested in this position?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q4.</span> Tell me about a challenge you overcame.</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q5.</span> Where do you see yourself in 5 years?</div>
+        </div>
+      </div>
+      <!-- Key expressions -->
+      <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">📝 핵심 표현 3개</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.1);border-radius:12px;padding:12px;">
+            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">I have X years of experience in...</div>
+            <div style="font-size:11px;color:#6B7280;">~분야에서 X년의 경험이 있습니다</div>
+            <div style="text-align:right;margin-top:6px;"><span style="font-size:18px;cursor:pointer;">🔊</span></div>
+          </div>
+          <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.1);border-radius:12px;padding:12px;">
+            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">My greatest strength is...</div>
+            <div style="font-size:11px;color:#6B7280;">저의 가장 큰 강점은 ~입니다</div>
+            <div style="text-align:right;margin-top:6px;"><span style="font-size:18px;cursor:pointer;">🔊</span></div>
+          </div>
+          <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.1);border-radius:12px;padding:12px;">
+            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">I'm passionate about...</div>
+            <div style="font-size:11px;color:#6B7280;">저는 ~에 열정을 가지고 있습니다</div>
+            <div style="text-align:right;margin-top:6px;"><span style="font-size:18px;cursor:pointer;">🔊</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Tips card -->
+      <div style="background:#FFF7ED;border:1px solid rgba(255,107,53,0.15);border-radius:16px;padding:18px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#FF6B35;margin-bottom:8px;">💡 면접 팁: STAR 기법</div>
+        <div style="font-size:12px;color:#1A1A2E;line-height:1.8;">
+          <b>S</b>ituation — 상황을 설명하세요<br>
+          <b>T</b>ask — 맡은 역할을 말하세요<br>
+          <b>A</b>ction — 취한 행동을 구체적으로<br>
+          <b>R</b>esult — 결과와 성과를 강조하세요
+        </div>
+      </div>
+      <!-- Fold button -->
+      <div onclick="goTo('screen3')" style="text-align:center;font-size:13px;color:#5B4FFF;font-weight:600;cursor:pointer;padding:8px;">접기 ▲</div>
+    </div>
+    <!-- Fixed bottom -->
+    <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;padding:14px 20px 32px;border-top:1px solid #F3F4F6;">
+      <button onclick="goTo('screen4')" class="btn-primary" style="font-size:15px;margin-bottom:8px;">준비됐어! 전화 받을게 📞</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" style="flex:1;font-size:12px;text-align:center;">⏰ 5분 뒤</button>
+        <button class="btn-secondary" style="flex:1;font-size:12px;text-align:center;" onclick="goTo('screen3')">돌아가기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 4: INCOMING CALL ==================== -->
+  <div class="screen hidden-right" id="screen4" style="background:linear-gradient(180deg,#0F172A 0%,#1E293B 100%);">
+    <div class="status-bar"><span class="time" style="color:#fff;">21:00</span><span class="icons" style="color:#fff;">📶 🔋</span></div>
+    <div style="padding:70px 28px 40px;text-align:center;color:#fff;display:flex;flex-direction:column;align-items:center;">
+      <!-- Label -->
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.6;margin-bottom:28px;">링글 AI 전화영어</div>
+      <!-- Avatar with pulse rings -->
+      <div style="position:relative;width:100px;height:100px;margin-bottom:24px;">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;z-index:2;">👩‍💼</div>
+      </div>
+      <h2 style="font-size:24px;font-weight:800;margin:0 0 4px;">Jennifer Park</h2>
+      <div style="font-size:13px;opacity:0.7;margin-bottom:4px;">면접관 · Mango Corp HR Director</div>
+      <div style="font-size:12px;opacity:0.5;margin-bottom:16px;">오늘 주제: 면접 자기소개</div>
+      <!-- Ringing animation -->
+      <div style="margin-bottom:8px;">
+        <span style="font-size:16px;animation:typing 1.2s infinite;display:inline-block;">링...</span>
+      </div>
+      <div id="ringCounter" style="font-size:12px;opacity:0.5;margin-bottom:20px;">벨소리 0초</div>
+      <!-- Encouragement card -->
+      <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:14px 18px;margin-bottom:32px;text-align:left;font-size:13px;line-height:1.6;color:rgba(255,255,255,0.9);">
+        톡에서 브리핑 확인했어요! 오늘 오전에 배운 표현 3개를 활용해보세요! 💪
+      </div>
+      <!-- Buttons -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:32px;">
+        <div style="text-align:center;">
+          <div onclick="showRejectSheet()" style="width:72px;height:72px;border-radius:50%;background:#6B7280;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;">✕</div>
+          <div style="font-size:12px;margin-top:6px;opacity:0.7;">거절</div>
+        </div>
+        <div style="text-align:center;">
+          <div onclick="goTo('screen5')" style="width:80px;height:80px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;box-shadow:0 0 24px rgba(34,197,94,0.4);">📞</div>
+          <div style="font-size:12px;margin-top:6px;opacity:0.7;">수신</div>
+        </div>
+      </div>
+    </div>
+    <!-- Reject backdrop -->
+    <div class="backdrop" id="rejectBackdrop" onclick="hideRejectSheet()"></div>
+    <!-- Reject bottom sheet -->
+    <div class="bottom-sheet" id="rejectSheet">
+      <div style="width:40px;height:4px;background:#D1D5DB;border-radius:2px;margin:0 auto 16px;"></div>
+      <div style="font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:16px;text-align:center;">지금은 전화받기 어려우신가요?</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+        <div onclick="hideRejectSheet();showToast('5분 뒤에 다시 전화할게요! ⏰')" style="display:flex;align-items:center;gap:12px;background:#F8F9FA;border-radius:14px;padding:14px 16px;cursor:pointer;">
+          <span style="font-size:22px;">⏰</span>
+          <div><div style="font-size:14px;font-weight:600;color:#1A1A2E;">5분 뒤</div><div style="font-size:11px;color:#6B7280;">잠시 후 다시 전화드릴게요</div></div>
+        </div>
+        <div onclick="hideRejectSheet();showToast('내일 같은 시간에 전화할게요! 📅')" style="display:flex;align-items:center;gap:12px;background:#F8F9FA;border-radius:14px;padding:14px 16px;cursor:pointer;">
+          <span style="font-size:22px;">📅</span>
+          <div><div style="font-size:14px;font-weight:600;color:#1A1A2E;">오늘은 건너뛸게요</div><div style="font-size:11px;color:#6B7280;">내일 같은 시간에 다시 연락드릴게요</div></div>
+        </div>
+        <div onclick="hideRejectSheet();showToast('원할 때 전화해주세요! 📞')" style="display:flex;align-items:center;gap:12px;background:#F8F9FA;border-radius:14px;padding:14px 16px;cursor:pointer;">
+          <span style="font-size:22px;">📞</span>
+          <div><div style="font-size:14px;font-weight:600;color:#1A1A2E;">내가 먼저 전화할게</div><div style="font-size:11px;color:#6B7280;">준비되면 직접 전화를 걸어주세요</div></div>
+        </div>
+      </div>
+      <button onclick="hideRejectSheet()" style="width:100%;padding:14px;background:#F3F4F6;border:none;border-radius:14px;font-size:14px;font-weight:600;color:#6B7280;cursor:pointer;">취소</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 5: CALL IN PROGRESS ==================== -->
+  <div class="screen hidden-right" id="screen5" style="background:#0F172A;">
+    <!-- Green call status bar -->
+    <div style="background:#16A34A;padding:54px 16px 8px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:12px;font-weight:600;">
+      <span>Ringle AI 통화 중 ●●●</span>
+      <span id="callTimer">00:00</span>
+      <span id="wordCount" style="font-size:11px;">발화량: 0단어</span>
+    </div>
+    <!-- Roleplay header -->
+    <div style="background:#1E293B;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:14px;">👩‍💼</div>
+        <span style="color:#fff;font-size:13px;font-weight:600;">Jennifer Park · Mango Corp</span>
+      </div>
+      <span style="background:#5B4FFF;color:#fff;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">면접 롤플레이</span>
+    </div>
+    <!-- Chat area -->
+    <div id="callChat" class="scroll-hide" style="padding:14px 16px;height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+    </div>
+    <!-- Subtitle area -->
+    <div id="subtitleArea" style="display:none;background:#1E293B;padding:8px 16px;border-top:1px solid #334155;">
+      <div id="subtitleText" style="font-size:12px;color:#94A3B8;text-align:center;"></div>
+    </div>
+    <!-- Hint card -->
+    <div id="callHintCard" style="display:none;background:#1E293B;border-top:1px solid #334155;padding:10px 16px;">
+      <div onclick="toggleHint()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+        <span style="font-size:12px;color:#FBBF24;font-weight:600;">💡 힌트</span>
+        <span style="font-size:11px;color:#94A3B8;" id="hintToggleLabel">접기 ▲</span>
+      </div>
+      <div id="hintContent" style="font-size:12px;color:#CBD5E1;margin-top:6px;"></div>
+    </div>
+    <!-- Bottom controls -->
+    <div style="position:absolute;bottom:0;left:0;right:0;background:#0F172A;padding:12px 20px 32px;border-top:1px solid #1E293B;">
+      <div style="display:flex;justify-content:space-around;margin-bottom:12px;">
+        <div style="text-align:center;cursor:pointer;">
+          <div style="width:48px;height:48px;border-radius:50%;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">🔇</div>
+          <div style="font-size:10px;color:#94A3B8;margin-top:4px;">음소거</div>
+        </div>
+        <div onclick="toggleSubtitle()" style="text-align:center;cursor:pointer;">
+          <div id="subtitleBtn" style="width:48px;height:48px;border-radius:50%;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">💬</div>
+          <div style="font-size:10px;color:#94A3B8;margin-top:4px;">자막</div>
+        </div>
+        <div onclick="goTo('screen6')" style="text-align:center;cursor:pointer;">
+          <div style="width:48px;height:48px;border-radius:50%;background:#EF4444;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto;">📵</div>
+          <div style="font-size:10px;color:#94A3B8;margin-top:4px;">전화끊기</div>
+        </div>
+      </div>
+      <button id="callAdvBtn" onclick="advanceCall()" style="display:none;width:100%;padding:14px;background:#5B4FFF;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;">대화 계속하기 🎤</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 6: GROW REPORT ==================== -->
+  <div class="screen hidden-right" id="screen6" style="background:#F8F9FA;">
+    <div class="status-bar"><span class="time" style="color:#1A1A2E;">21:07</span><span class="icons" style="color:#1A1A2E;">📶 🔋</span></div>
+    <div class="scroll-hide" style="padding:54px 0 100px;overflow-y:auto;height:100%;">
+      <!-- Celebration header -->
+      <div style="background:linear-gradient(135deg,#7C3AED,#5B4FFF);padding:28px 24px;text-align:center;color:#fff;">
+        <div style="font-size:40px;margin-bottom:8px;">🎉</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:4px;">오늘의 통화 완료!</div>
+        <div style="font-size:13px;opacity:0.8;margin-bottom:12px;">면접관 롤플레이 · 6분 32초</div>
+        <div class="streak-glow" style="display:inline-block;background:rgba(255,255,255,0.2);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;">🔥 스트릭 15일 달성!</div>
+      </div>
+      <div style="padding:16px 20px;">
+        <!-- CAFP section -->
+        <div style="background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">📊 CAFP 분석</div>
+          <div style="display:flex;justify-content:center;"><canvas id="radarChart" width="280" height="240"></canvas></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+            <div style="background:#F8F7FF;border-radius:12px;padding:10px;text-align:center;">
+              <div style="font-size:22px;font-weight:800;color:#7C3AED;">78</div>
+              <div style="font-size:11px;color:#6B7280;">Complexity</div>
+            </div>
+            <div style="background:#F0FDF4;border-radius:12px;padding:10px;text-align:center;">
+              <div style="font-size:22px;font-weight:800;color:#22C55E;">85</div>
+              <div style="font-size:11px;color:#6B7280;">Accuracy</div>
+            </div>
+            <div style="background:#FFF7ED;border-radius:12px;padding:10px;text-align:center;">
+              <div style="font-size:22px;font-weight:800;color:#F97316;">71</div>
+              <div style="font-size:11px;color:#6B7280;">Fluency</div>
+            </div>
+            <div style="background:#FEF2F2;border-radius:12px;padding:10px;text-align:center;">
+              <div style="font-size:22px;font-weight:800;color:#EF4444;">69</div>
+              <div style="font-size:11px;color:#6B7280;">Pronunciation</div>
+            </div>
+          </div>
+        </div>
+        <!-- Word count card -->
+        <div style="background:#fff;border-radius:18px;padding:16px 18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">💬 발화량: 142단어</div>
+          <div style="font-size:12px;color:#22C55E;font-weight:600;">어제보다 +18단어 증가 📈</div>
+        </div>
+        <!-- Expression corrections -->
+        <div style="background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">✏️ 표현 교정 2개</div>
+          <div style="background:#FEF2F2;border-radius:12px;padding:12px;margin-bottom:10px;">
+            <div style="font-size:12px;color:#EF4444;margin-bottom:4px;">❌ "experience for"</div>
+            <div style="font-size:13px;color:#22C55E;font-weight:600;margin-bottom:4px;">✅ "years of experience in"</div>
+            <div style="font-size:11px;color:#6B7280;">전치사 'for' 대신 'in'을 사용하고, 'years of'를 앞에 붙여 더 자연스럽게 표현해요.</div>
+          </div>
+          <div style="background:#FEF2F2;border-radius:12px;padding:12px;">
+            <div style="font-size:12px;color:#EF4444;margin-bottom:4px;">❌ "am good at to analyze"</div>
+            <div style="font-size:13px;color:#22C55E;font-weight:600;margin-bottom:4px;">✅ "excel at analyzing"</div>
+            <div style="font-size:11px;color:#6B7280;">'good at' 뒤에는 동명사(-ing)를 쓰고, 'excel at'으로 바꾸면 더 세련된 표현이 돼요.</div>
+          </div>
+        </div>
+        <!-- AI Talk feedback -->
+        <div style="background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:10px;">💬 AI 톡으로 피드백 요약을 보내드렸어요!</div>
+          <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.12);border-radius:12px;padding:12px;margin-bottom:10px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">🤖</div>
+              <div style="font-size:12px;color:#1A1A2E;line-height:1.5;">오늘 면접 롤플레이 잘 하셨어요! 특히 STAR 기법을 잘 활용했어요. 교정받은 표현 2개를 복습해보세요 👇</div>
+            </div>
+          </div>
+          <div onclick="goTo('screen2')" style="text-align:center;font-size:13px;color:#5B4FFF;font-weight:600;cursor:pointer;">AI 톡에서 확인하기 →</div>
+        </div>
+        <!-- Mini quiz -->
+        <div style="background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">📝 1분 복습 퀴즈</div>
+          <div style="font-size:14px;color:#1A1A2E;margin-bottom:12px;text-align:center;font-weight:500;">I have ___ meeting tomorrow.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <button onclick="handleQuiz('a')" style="padding:12px;background:#F3F4F6;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;color:#1A1A2E;">a</button>
+            <button onclick="handleQuiz('an')" style="padding:12px;background:#F3F4F6;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;color:#1A1A2E;">an</button>
+            <button onclick="handleQuiz('the')" style="padding:12px;background:#F3F4F6;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;color:#1A1A2E;">the</button>
+            <button onclick="handleQuiz('none')" style="padding:12px;background:#F3F4F6;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;color:#1A1A2E;">-</button>
+          </div>
+          <div id="quizResult"></div>
+        </div>
+        <!-- Tomorrow connection -->
+        <div style="background:linear-gradient(135deg,#F8F7FF,#F0EEFF);border:1px solid rgba(91,79,255,0.15);border-radius:18px;padding:18px;margin-bottom:14px;">
+          <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:6px;">🎯 내일 AI 전화에서 이어서 연습해요!</div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:14px;">오늘 교정받은 표현을 내일 시나리오에 자동 포함</div>
+          <button onclick="showToast('내일 21:00 AI 전화 예약 완료! 📅')" style="width:100%;padding:14px;background:#5B4FFF;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;">내일 AI 전화 예약하기 📅</button>
+        </div>
+      </div>
+      <!-- Bottom nav -->
+      <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:8px 0 20px;background:#fff;border-top:1px solid #F3F4F6;">
+        <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
+        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
+        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Floating Before/After Button -->
+<button onclick="toggleBeforeAfter()" style="position:fixed;bottom:20px;right:20px;background:#5B4FFF;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(91,79,255,0.4);z-index:1000;">📊 Before/After</button>
+
+<!-- Before/After Modal -->
+<div id="beforeAfterModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1001;display:none;align-items:center;justify-content:center;" onclick="toggleBeforeAfter()">
+  <div onclick="event.stopPropagation()" style="background:#fff;border-radius:20px;max-width:420px;width:90%;max-height:80vh;overflow-y:auto;padding:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="margin:0;font-size:18px;font-weight:800;color:#1A1A2E;">📊 Before / After</h3>
+      <span onclick="toggleBeforeAfter()" style="cursor:pointer;font-size:20px;color:#6B7280;">✕</span>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:700;color:#EF4444;margin-bottom:8px;">❌ Before: 기존 AI 전화영어</div>
+      <ul style="font-size:12px;color:#6B7280;line-height:1.8;padding-left:16px;margin:0;">
+        <li>갑자기 전화가 와서 당황 (수신 거절률 40%)</li>
+        <li>맥락 없는 대화 → 학습 효과 낮음</li>
+        <li>통화 종료 후 피드백 없음</li>
+        <li>다음 학습과의 연결 끊김</li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#22C55E;margin-bottom:8px;">✅ After: RING LOOP</div>
+      <ul style="font-size:12px;color:#1A1A2E;line-height:1.8;padding-left:16px;margin:0;">
+        <li>AI 톡이 사전 브리핑으로 전화 수신 준비</li>
+        <li>시나리오 기반 롤플레이 → 몰입도 UP</li>
+        <li>CAFP 분석 + 표현 교정 리포트</li>
+        <li>복습 퀴즈 → 다음 전화로 자동 연결</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== NAVIGATION BUTTONS ==================== -->
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;justify-content:center;max-width:500px;">
+  <button onclick="goTo('screen1')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">1. 온보딩</button>
+  <button onclick="goTo('screen1b')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">1b. 롤플레이</button>
+  <button onclick="goTo('screen1c')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">1c. AHA</button>
+  <button onclick="goTo('screen2')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">2. AI톡</button>
+  <button onclick="goTo('screen3')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">3. 브리핑</button>
+  <button onclick="goTo('screen3b')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">3b. 상세</button>
+  <button onclick="goTo('screen4')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">4. 전화수신</button>
+  <button onclick="goTo('screen5')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">5. 통화중</button>
+  <button onclick="goTo('screen6')" style="background:#333;color:#fff;border:1px solid #555;border-radius:8px;padding:8px 12px;font-size:11px;cursor:pointer;">6. 리포트</button>
+</div>
+
+<script>
+// ==================== STATE ====================
+let currentScreen = 'screen1';
+let rpStep = 0, rpTimerVal = 180, rpTimerInterval = null;
+let chatStep = 0, chatCompleted = false, chatInterval = null;
+let briefTimerVal = 582, briefTimerInterval = null;
+let callStep = 0, callTimerVal = 0, callTimerInterval = null;
+
+// ==================== SCREEN NAVIGATION ====================
+function goTo(id) {
+  const screens = document.querySelectorAll('.screen');
+  const allIds = ['screen1','screen1b','screen1c','screen2','screen3','screen3b','screen4','screen5','screen6'];
+  const fromIdx = allIds.indexOf(currentScreen);
+  const toIdx = allIds.indexOf(id);
+  screens.forEach(s => {
+    if (s.id === id) { s.className = 'screen active'; }
+    else if (allIds.indexOf(s.id) < toIdx) { s.className = 'screen hidden-left'; }
+    else { s.className = 'screen hidden-right'; }
+  });
+  currentScreen = id;
+  // Cleanup on leave
+  clearInterval(ringInterval);
+  // Init screens on enter
+  if (id === 'screen1b') initRoleplay();
+  if (id === 'screen2') initChat();
+  if (id === 'screen3b') startBriefTimer();
+  if (id === 'screen4') startRingCounter();
+  if (id === 'screen5') { startCallTimer(); initCall(); }
+  if (id === 'screen6') { clearInterval(callTimerInterval); setTimeout(() => drawRadarChart(), 400); }
+}
+
+// ==================== TOAST ====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ==================== ROLEPLAY (Screen 1b) ====================
+const rpData = [
+  { type:'ai', text:"Hello! Welcome to Mango Corp. I'm Jennifer Park, HR Director. Could you please introduce yourself?" },
+  { type:'hint', text:'💡 "My name is [이름], and I have [X] years of experience in..."' },
+  { type:'user', text:"Hi, my name is Minjun. I have 3 years of experience in digital marketing." },
+  { type:'ai', text:"That's interesting! What would you say is your greatest strength?" },
+  { type:'hint', text:'💡 "My greatest strength is..."' },
+  { type:'user', text:"My greatest strength is data analysis. I can turn numbers into meaningful insights." },
+  { type:'ai', text:"Impressive! Why are you interested in this position at Mango Corp?" },
+  { type:'hint', text:'💡 "I\'m interested because..."' },
+  { type:'user', text:"I'm passionate about building brand strategies that connect with people." },
+];
+
+function initRoleplay() {
+  if (rpStep > 0) return; // already started
+  const chat = document.getElementById('roleplayChat');
+  chat.innerHTML = '';
+  rpStep = 0;
+  rpTimerVal = 180;
+  clearInterval(rpTimerInterval);
+  rpTimerInterval = setInterval(() => {
+    rpTimerVal--;
+    if (rpTimerVal <= 0) { clearInterval(rpTimerInterval); rpTimerVal = 0; }
+    const m = Math.floor(rpTimerVal / 60), s = rpTimerVal % 60;
+    document.getElementById('rpTimer').textContent = m + ':' + String(s).padStart(2, '0');
+  }, 1000);
+  advanceRoleplayAuto();
+}
+
+function advanceRoleplayAuto() {
+  if (rpStep >= rpData.length) { finishRoleplay(); return; }
+  const item = rpData[rpStep];
+  const chat = document.getElementById('roleplayChat');
+  const btn = document.getElementById('rpActionBtn');
+  if (item.type === 'ai') {
+    // Show typing then message
+    const dots = addTypingDots(chat);
+    setTimeout(() => {
+      chat.removeChild(dots);
+      addAIBubble(chat, item.text);
+      updateRpProgress();
+      rpStep++;
+      setTimeout(() => advanceRoleplayAuto(), 400);
+    }, 1200);
+  } else if (item.type === 'hint') {
+    addHintBubble(chat, item.text);
+    rpStep++;
+    btn.style.display = 'block';
+    // Wait for user click
+  } else if (item.type === 'user') {
+    btn.style.display = 'none';
+    const dots = addTypingDots(chat, true);
+    setTimeout(() => {
+      chat.removeChild(dots);
+      addUserBubble(chat, item.text);
+      updateRpProgress();
+      rpStep++;
+      chat.scrollTop = chat.scrollHeight;
+      setTimeout(() => advanceRoleplayAuto(), 600);
+    }, 1500);
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function advanceRoleplay() {
+  // Called by button click - advance past hint+user
+  advanceRoleplayAuto();
+}
+
+function finishRoleplay() {
+  clearInterval(rpTimerInterval);
+  const chat = document.getElementById('roleplayChat');
+  const btn = document.getElementById('rpActionBtn');
+  btn.style.display = 'none';
+  // Completion overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'text-align:center;padding:24px;background:linear-gradient(135deg,rgba(91,79,255,0.08),rgba(255,107,53,0.08));border-radius:16px;margin-top:8px;animation:bubbleIn 0.4s ease-out;';
+  overlay.innerHTML = '<div style="font-size:40px;margin-bottom:8px;">🎉</div><div style="font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">롤플레이 완료!</div><div style="font-size:12px;color:#6B7280;">6턴 대화를 모두 마쳤어요</div>';
+  chat.appendChild(overlay);
+  chat.scrollTop = chat.scrollHeight;
+  document.getElementById('rpProgress').style.width = '100%';
+  document.getElementById('rpTurnLabel').textContent = '6/6 턴';
+  setTimeout(() => goTo('screen1c'), 2200);
+}
+
+function updateRpProgress() {
+  const aiTurns = rpData.filter((d, i) => i < rpStep && d.type === 'ai').length + (rpData[rpStep-1]?.type === 'ai' ? 1 : 0);
+  const userTurns = rpData.filter((d, i) => i < rpStep && d.type === 'user').length + (rpData[rpStep-1]?.type === 'user' ? 1 : 0);
+  const total = Math.min(aiTurns + userTurns, 6);
+  document.getElementById('rpProgress').style.width = (total / 6 * 100) + '%';
+  document.getElementById('rpTurnLabel').textContent = total + '/6 턴';
+}
+
+// ==================== CHAT HELPERS ====================
+function addTypingDots(container, isUser) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:flex;gap:8px;' + (isUser ? 'justify-content:flex-end;' : '');
+  if (!isUser) {
+    const av = document.createElement('div');
+    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+    av.textContent = '🤖';
+    wrapper.appendChild(av);
+  }
+  const bubble = document.createElement('div');
+  bubble.style.cssText = 'padding:12px 16px;border-radius:18px;' + (isUser ? 'background:#5B4FFF;border-bottom-right-radius:4px;' : 'background:#F3F4F6;border-bottom-left-radius:4px;');
+  bubble.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+  wrapper.appendChild(bubble);
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+  return wrapper;
+}
+
+function addAIBubble(container, text) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:flex;gap:8px;';
+  const av = document.createElement('div');
+  av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+  av.textContent = '🤖';
+  wrapper.appendChild(av);
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble chat-ai';
+  bubble.innerHTML = text;
+  wrapper.appendChild(bubble);
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+function addUserBubble(container, text) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:flex;justify-content:flex-end;';
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble chat-user';
+  bubble.textContent = text;
+  wrapper.appendChild(bubble);
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+function addHintBubble(container, text) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'margin-left:36px;';
+  const bubble = document.createElement('div');
+  bubble.style.cssText = 'background:#FFF7ED;border:1px solid rgba(255,107,53,0.2);border-radius:12px;padding:10px 14px;font-size:12px;color:#FF6B35;animation:bubbleIn 0.3s ease-out;';
+  bubble.textContent = text;
+  wrapper.appendChild(bubble);
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ==================== AI TALK CHAT (Screen 2) ====================
+const chatData = [
+  { type:'date', text:'오늘 오전 9:12' },
+  { type:'ai', text:'좋은 아침이에요! ☀️ 오늘 하루 어떤 일정이 있어요?<br><span style="color:#5B4FFF;font-weight:500;">What\'s on your schedule today?</span>', delay:800 },
+  { type:'dots', delay:1200 },
+  { type:'user', text:'오늘 오후에 팀장님 앞에서 분기 보고 있어요 😅', delay:600 },
+  { type:'dots', delay:1500 },
+  { type:'ai', html: true, text:`분기 보고! 긴장되겠다 😊<br>영어로 하면 이렇게 말할 수 있어요:
+    <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.12);border-radius:12px;padding:12px;margin:10px 0;">
+      <div style="font-size:13px;font-weight:600;color:#5B4FFF;">"I have a quarterly report presentation this afternoon."</div>
+      <div style="font-size:11px;color:#6B7280;margin-top:4px;">오늘 오후에 분기 보고 발표가 있어요</div>
+    </div>
+    혹시 보고할 때 쓸 표현 연습해볼까요?`, delay:800 },
+  { type:'dots', delay:800 },
+  { type:'user', text:'좋아요! 어떤 표현이 있을까요?', delay:600 },
+  { type:'dots', delay:1800 },
+  { type:'ai', html: true, text:`비즈니스 보고에 자주 쓰는 표현이에요! 👇
+    <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.12);border-radius:12px;padding:14px;margin:10px 0;">
+      <div style="font-size:11px;font-weight:600;color:#5B4FFF;margin-bottom:8px;">📚 오늘의 표현 3개</div>
+      <div style="font-size:12px;margin-bottom:6px;">1. <b>"Let me walk you through the numbers."</b><br><span style="color:#6B7280;font-size:11px;">숫자를 함께 살펴보겠습니다</span></div>
+      <div style="font-size:12px;margin-bottom:6px;">2. <b>"Compared to last quarter..."</b><br><span style="color:#6B7280;font-size:11px;">지난 분기 대비...</span></div>
+      <div style="font-size:12px;">3. <b>"The key takeaway is..."</b><br><span style="color:#6B7280;font-size:11px;">핵심 요점은...</span></div>
+    </div>
+    이따 전화로 실전 연습해볼까? 📞<br>분기 보고 시나리오로 준비해둘게!
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button onclick="handleChatBtn('accept')" style="background:#5B4FFF;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">좋아! 👍</button>
+      <button onclick="handleChatBtn('time')" style="background:#F3F4F6;color:#1A1A2E;border:none;border-radius:20px;padding:8px 16px;font-size:12px;cursor:pointer;">시간 변경</button>
+      <button onclick="handleChatBtn('skip')" style="background:#F3F4F6;color:#1A1A2E;border:none;border-radius:20px;padding:8px 16px;font-size:12px;cursor:pointer;">오늘은 패스</button>
+    </div>`, delay:600 },
+];
+
+function initChat() {
+  if (chatCompleted) { renderAllChat(); return; }
+  if (chatStep > 0) return;
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  chatStep = 0;
+  advanceChat();
+}
+
+function advanceChat() {
+  if (chatStep >= chatData.length) { chatCompleted = true; return; }
+  const item = chatData[chatStep];
+  const area = document.getElementById('chatArea');
+
+  if (item.type === 'date') {
+    const d = document.createElement('div');
+    d.style.cssText = 'text-align:center;font-size:11px;color:#9CA3AF;padding:8px 0;';
+    d.textContent = item.text;
+    area.appendChild(d);
+    chatStep++;
+    setTimeout(() => advanceChat(), item.delay || 400);
+  } else if (item.type === 'ai') {
+    const dots = addTypingDots(area, false);
+    setTimeout(() => {
+      area.removeChild(dots);
+      addAIBubble(area, item.text);
+      chatStep++;
+      setTimeout(() => advanceChat(), item.delay || 600);
+    }, 1000);
+  } else if (item.type === 'user') {
+    addUserBubble(area, item.text);
+    chatStep++;
+    setTimeout(() => advanceChat(), item.delay || 600);
+  } else if (item.type === 'dots') {
+    const dots = addTypingDots(area, false);
+    setTimeout(() => {
+      area.removeChild(dots);
+      chatStep++;
+      advanceChat();
+    }, item.delay || 1000);
+  }
+  area.scrollTop = area.scrollHeight;
+}
+
+function skipChat() {
+  chatCompleted = true;
+  chatStep = chatData.length;
+  renderAllChat();
+  document.getElementById('skipChatBtn').style.display = 'none';
+}
+
+function renderAllChat() {
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  chatData.forEach(item => {
+    if (item.type === 'date') {
+      const d = document.createElement('div');
+      d.style.cssText = 'text-align:center;font-size:11px;color:#9CA3AF;padding:8px 0;';
+      d.textContent = item.text;
+      area.appendChild(d);
+    } else if (item.type === 'ai') {
+      addAIBubble(area, item.text);
+    } else if (item.type === 'user') {
+      addUserBubble(area, item.text);
+    }
+    // skip 'dots' type
+  });
+  area.scrollTop = area.scrollHeight;
+  document.getElementById('skipChatBtn').style.display = 'none';
+}
+
+function handleChatBtn(action) {
+  if (action === 'accept') {
+    showToast('21:00 전화 예약 완료! 📞');
+    setTimeout(() => goTo('screen3'), 2000);
+  } else if (action === 'time') {
+    showToast('시간 변경 기능은 준비 중이에요');
+  } else if (action === 'skip') {
+    showToast('오늘은 패스할게요 👋');
+  }
+}
+
+// ==================== BRIEF TIMER (Screen 3b) ====================
+function startBriefTimer() {
+  clearInterval(briefTimerInterval);
+  briefTimerVal = 582;
+  briefTimerInterval = setInterval(() => {
+    briefTimerVal--;
+    if (briefTimerVal <= 0) { clearInterval(briefTimerInterval); briefTimerVal = 0; }
+    const m = Math.floor(briefTimerVal / 60), s = briefTimerVal % 60;
+    document.getElementById('briefTimer').textContent = m + ':' + String(s).padStart(2, '0');
+  }, 1000);
+}
+
+// ==================== CALL TIMER (Screen 4/5) ====================
+function startCallTimer() {
+  clearInterval(callTimerInterval);
+  callTimerVal = 0;
+  callTimerInterval = setInterval(() => {
+    callTimerVal++;
+    const m = Math.floor(callTimerVal / 60), s = callTimerVal % 60;
+    const el = document.getElementById('callTimer');
+    if (el) el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }, 1000);
+}
+
+// ==================== SCREEN 4: REJECT SHEET ====================
+function showRejectSheet() {
+  document.getElementById('rejectBackdrop').classList.add('show');
+  document.getElementById('rejectSheet').classList.add('show');
+}
+function hideRejectSheet() {
+  document.getElementById('rejectBackdrop').classList.remove('show');
+  document.getElementById('rejectSheet').classList.remove('show');
+}
+
+// ==================== SCREEN 4: RING COUNTER ====================
+let ringInterval;
+function startRingCounter() {
+  let sec = 0;
+  clearInterval(ringInterval);
+  ringInterval = setInterval(() => {
+    sec++;
+    const el = document.getElementById('ringCounter');
+    if (el) el.textContent = '벨소리 ' + sec + '초';
+  }, 1000);
+}
+
+// ==================== SCREEN 5: CALL CONVERSATION ====================
+let subtitleOn = false, hintOpen = true;
+const callConvo = [
+  { type:'ai', text:"Hello! Thank you for coming in today. Let me start by asking - could you briefly introduce yourself and your background?", sub:"안녕하세요! 오늘 와주셔서 감사합니다. 먼저 자기소개와 경력을 간단히 말씀해주시겠어요?", hint:"I have [X] years of experience in..." },
+  { type:'user', text:"Hi Jennifer, I'm Minjun Kim. I've been working in digital marketing for 3 years, specializing in data-driven campaign strategies.", words:20 },
+  { type:'ai', text:"That sounds impressive! Can you walk me through a specific achievement you're proud of?", sub:"인상적이네요! 자랑스러운 성과 하나를 구체적으로 이야기해주시겠어요?", hint:"One of my key achievements was..." },
+  { type:'user', text:"Last quarter, I led a campaign that increased our conversion rate by 35%. I used A/B testing and customer segmentation to optimize our approach.", words:52 },
+  { type:'ai', text:"Very impressive results. Let me walk you through our quarterly targets - how would you approach improving our current marketing ROI?", sub:"정말 인상적인 성과네요. 우리 분기 목표를 보면 - 현재 마케팅 ROI를 어떻게 개선하시겠어요?", hint:"I would approach this by..." },
+  { type:'user', text:"I believe we can improve ROI by focusing on high-performing channels and implementing more rigorous tracking. The key takeaway from my experience is that data-driven decisions always outperform intuition.", words:85 },
+  { type:'ai', text:"Excellent! You've shown great communication skills today. Thank you for your time, and we'll be in touch soon.", sub:"훌륭해요! 오늘 뛰어난 커뮤니케이션 능력을 보여주셨어요. 시간 내주셔서 감사합니다, 곧 연락드릴게요.", end:true },
+];
+
+function initCall() {
+  callStep = 0;
+  const chat = document.getElementById('callChat');
+  chat.innerHTML = '';
+  document.getElementById('callAdvBtn').style.display = 'none';
+  document.getElementById('subtitleArea').style.display = 'none';
+  document.getElementById('callHintCard').style.display = 'none';
+  document.getElementById('wordCount').textContent = '발화량: 0단어';
+  // Auto-start step 0
+  setTimeout(() => showCallStep(), 600);
+}
+
+function showCallStep() {
+  if (callStep >= callConvo.length) return;
+  const item = callConvo[callStep];
+  const chat = document.getElementById('callChat');
+  if (item.type === 'ai') {
+    const dots = addCallTypingDots(chat);
+    setTimeout(() => {
+      chat.removeChild(dots);
+      addCallAIBubble(chat, item.text);
+      if (item.sub) {
+        document.getElementById('subtitleText').textContent = item.sub;
+        if (subtitleOn) document.getElementById('subtitleArea').style.display = 'block';
+      }
+      if (item.hint) {
+        document.getElementById('callHintCard').style.display = 'block';
+        document.getElementById('hintContent').textContent = '💡 "' + item.hint + '"';
+      }
+      if (item.end) {
+        document.getElementById('callAdvBtn').style.display = 'none';
+        document.getElementById('callHintCard').style.display = 'none';
+        setTimeout(() => {
+          const msg = document.createElement('div');
+          msg.style.cssText = 'text-align:center;font-size:13px;color:#94A3B8;padding:12px;';
+          msg.textContent = '통화가 종료됩니다...';
+          chat.appendChild(msg);
+          chat.scrollTop = chat.scrollHeight;
+        }, 800);
+        setTimeout(() => goTo('screen6'), 2000);
+      } else {
+        document.getElementById('callAdvBtn').style.display = 'block';
+      }
+      callStep++;
+      chat.scrollTop = chat.scrollHeight;
+    }, 1200);
+  }
+}
+
+function advanceCall() {
+  if (callStep >= callConvo.length) return;
+  const item = callConvo[callStep];
+  const chat = document.getElementById('callChat');
+  const btn = document.getElementById('callAdvBtn');
+  btn.style.display = 'none';
+  document.getElementById('callHintCard').style.display = 'none';
+  if (item.type === 'user') {
+    const dots = addCallTypingDots(chat, true);
+    setTimeout(() => {
+      chat.removeChild(dots);
+      addCallUserBubble(chat, item.text);
+      if (item.words) document.getElementById('wordCount').textContent = '발화량: ' + item.words + '단어';
+      chat.scrollTop = chat.scrollHeight;
+      callStep++;
+      // Next is AI
+      setTimeout(() => showCallStep(), 600);
+    }, 1500);
+  }
+}
+
+function addCallTypingDots(container, isUser) {
+  const w = document.createElement('div');
+  w.style.cssText = 'display:flex;gap:8px;' + (isUser ? 'justify-content:flex-end;' : '');
+  if (!isUser) {
+    const av = document.createElement('div');
+    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+    av.textContent = '👩‍💼';
+    w.appendChild(av);
+  }
+  const b = document.createElement('div');
+  b.style.cssText = 'padding:12px 16px;border-radius:18px;' + (isUser ? 'background:#5B4FFF;border-bottom-right-radius:4px;' : 'background:#1E293B;border-bottom-left-radius:4px;');
+  b.innerHTML = '<span class="typing-dot" style="background:#94A3B8;"></span><span class="typing-dot" style="background:#94A3B8;"></span><span class="typing-dot" style="background:#94A3B8;"></span>';
+  w.appendChild(b);
+  container.appendChild(w);
+  container.scrollTop = container.scrollHeight;
+  return w;
+}
+
+function addCallAIBubble(container, text) {
+  const w = document.createElement('div');
+  w.style.cssText = 'display:flex;gap:8px;';
+  const av = document.createElement('div');
+  av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+  av.textContent = '👩‍💼';
+  w.appendChild(av);
+  const b = document.createElement('div');
+  b.style.cssText = 'max-width:80%;padding:12px 16px;border-radius:18px;border-bottom-left-radius:4px;background:#1E293B;color:#E2E8F0;font-size:14px;line-height:1.6;animation:bubbleIn 0.3s ease-out;';
+  b.textContent = text;
+  w.appendChild(b);
+  container.appendChild(w);
+}
+
+function addCallUserBubble(container, text) {
+  const w = document.createElement('div');
+  w.style.cssText = 'display:flex;justify-content:flex-end;';
+  const b = document.createElement('div');
+  b.style.cssText = 'max-width:80%;padding:12px 16px;border-radius:18px;border-bottom-right-radius:4px;background:#5B4FFF;color:#fff;font-size:14px;line-height:1.6;animation:bubbleIn 0.3s ease-out;';
+  b.textContent = text;
+  w.appendChild(b);
+  container.appendChild(w);
+}
+
+function toggleHint() {
+  const c = document.getElementById('hintContent');
+  hintOpen = !hintOpen;
+  c.style.display = hintOpen ? 'block' : 'none';
+  document.getElementById('hintToggleLabel').textContent = hintOpen ? '접기 ▲' : '펼치기 ▼';
+}
+
+function toggleSubtitle() {
+  subtitleOn = !subtitleOn;
+  const area = document.getElementById('subtitleArea');
+  const btn = document.getElementById('subtitleBtn');
+  area.style.display = subtitleOn ? 'block' : 'none';
+  btn.style.background = subtitleOn ? '#5B4FFF' : '#1E293B';
+}
+
+// ==================== SCREEN 6: RADAR CHART ====================
+function drawRadarChart() {
+  const canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 280, H = 240, cx = W/2, cy = H/2 + 5, R = 85;
+  ctx.clearRect(0, 0, W, H);
+  const labels = ['Complexity','Accuracy','Fluency','Pronunciation'];
+  const values = [78, 85, 71, 69];
+  const angles = labels.map((_, i) => (Math.PI * 2 * i / 4) - Math.PI / 2);
+  // Grid
+  [0.25, 0.5, 0.75, 1].forEach(s => {
+    ctx.beginPath();
+    angles.forEach((a, i) => {
+      const x = cx + Math.cos(a) * R * s, y = cy + Math.sin(a) * R * s;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = '#E5E7EB';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+  // Axes
+  angles.forEach(a => {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+    ctx.strokeStyle = '#E5E7EB';
+    ctx.stroke();
+  });
+  // Data polygon
+  ctx.beginPath();
+  angles.forEach((a, i) => {
+    const r = R * values[i] / 100;
+    const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(91, 79, 255, 0.2)';
+  ctx.fill();
+  ctx.strokeStyle = '#5B4FFF';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Data points
+  const colors = ['#7C3AED','#22C55E','#F97316','#EF4444'];
+  angles.forEach((a, i) => {
+    const r = R * values[i] / 100;
+    const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+  });
+  // Labels
+  ctx.font = '11px Noto Sans KR';
+  ctx.fillStyle = '#6B7280';
+  ctx.textAlign = 'center';
+  const labelOff = 16;
+  labels.forEach((l, i) => {
+    const x = cx + Math.cos(angles[i]) * (R + labelOff);
+    const y = cy + Math.sin(angles[i]) * (R + labelOff) + 4;
+    ctx.fillText(l, x, y);
+  });
+}
+
+// ==================== SCREEN 6: QUIZ ====================
+function handleQuiz(answer) {
+  const result = document.getElementById('quizResult');
+  if (answer === 'a') {
+    result.innerHTML = '<div style="color:#22C55E;font-weight:600;padding:8px;font-size:13px;">🎉 정답! "a meeting" - 셀 수 있는 명사 앞에 부정관사 a를 붙여요.</div>';
+  } else {
+    result.innerHTML = '<div style="color:#EF4444;font-weight:600;padding:8px;font-size:13px;">아쉬워요! 정답은 "a"예요. 셀 수 있는 명사 앞에 부정관사를 써주세요.</div>';
+  }
+}
+
+// ==================== BEFORE/AFTER MODAL ====================
+function toggleBeforeAfter() {
+  const m = document.getElementById('beforeAfterModal');
+  if (m.style.display === 'flex') { m.style.display = 'none'; }
+  else { m.style.display = 'flex'; }
+}
+
+</script>
+</body>
+</html>
