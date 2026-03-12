@@ -376,7 +376,8 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
           </label>
         </div>
         <button onclick="saveApiSettings()" style="width:100%;padding:14px;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">저장하기</button>
-        <button onclick="resetLiveChat()" style="width:100%;padding:10px;background:none;color:#EF4444;border:none;font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit;">🗑 대화 초기화</button>
+        <button onclick="resetApiKey()" style="width:100%;padding:10px;background:none;color:#EF4444;border:none;font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit;">🔑 API 키 초기화</button>
+        <button onclick="resetLiveChat()" style="width:100%;padding:10px;background:none;color:#999;border:none;font-size:12px;cursor:pointer;margin-top:4px;font-family:inherit;">🗑 대화 초기화</button>
       </div>
     </div>
   </div>
@@ -1885,6 +1886,14 @@ function updateApiBannerState(ok) {
     b.innerHTML = '🔑 API 키를 설정해주세요 (탭하여 설정)';
     s.innerHTML = '<span style="color:#9CA3AF;">● 오프라인</span>';
   }
+}
+
+function resetApiKey() {
+  liveChat.apiKey = '';
+  localStorage.removeItem('ringle_api_key');
+  document.getElementById('apiKeyField').value = '';
+  updateApiBannerState(false);
+  showToast('🔑 API 키가 초기화되었습니다');
 }
 
 function resetLiveChat() {
