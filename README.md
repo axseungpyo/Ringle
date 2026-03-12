@@ -2,6 +2,10 @@
 
 > 제5회 링글 서비스 기획 & 마케팅 공모전 | 서비스 기획 부문
 
+<p align="center">
+  <img src="image/concept_board.png" alt="RING LOOP 컨셉보드" width="700"/>
+</p>
+
 ---
 
 ## 문제
