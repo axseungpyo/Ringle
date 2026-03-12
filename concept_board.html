@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RING LOOP Concept Board</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+
+  body {
+    background: #C8CCD4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .board-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .board {
+    width: 800px;
+    height: 1131px;
+    background: #F5F4FA;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* =========================================
+     HEADER — Bold gradient block for impact
+     ========================================= */
+  .header-section {
+    background: linear-gradient(135deg, #3B2D8B 0%, #5B4FFF 50%, #7C6FFF 100%);
+    padding: 34px 56px 30px;
+    z-index: 10;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .ringle-logo {
+    position: absolute;
+    top: 16px; right: 20px;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .header-gradient-fade {
+    height: 28px;
+    background: linear-gradient(180deg, #7C6FFF 0%, #C4BFFF 40%, #E4E2F8 75%, #F5F4FA 100%);
+    z-index: 5;
+    flex-shrink: 0;
+  }
+
+  .header-section::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .header-section::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -30px;
+    width: 150px; height: 150px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 6px 20px;
+    border-radius: 30px;
+    letter-spacing: -0.2px;
+  }
+
+  .slogan-area p {
+    color: rgba(255,255,255,0.8);
+    font-size: 14.5px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .slogan-area h1 {
+    font-size: 38px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1.35;
+    letter-spacing: -1.5px;
+  }
+
+  .slogan-area h1 .hl-yellow { color: #FDE68A; }
+  .slogan-area h1 .hl-accent { color: #FED7AA; }
+
+  /* =========================================
+     VISUAL SECTION (3-column)
+     ========================================= */
+  .visual-section {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px 0;
+    z-index: 10;
+    height: 490px;
+    flex-shrink: 0;
+  }
+
+  /* SVG Lines */
+  .connection-lines {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+  .path-line { fill: none; stroke-width: 1.5; stroke-dasharray: 6 6; animation: dash 20s linear infinite; }
+  .path-left { stroke: #A78BFA; opacity: 0.35; }
+  .path-right { stroke: #34D399; opacity: 0.35; }
+  @keyframes dash { to { stroke-dashoffset: -1000; } }
+
+  /* Side Panels */
+  .side-panel {
+    width: 192px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 10;
+  }
+
+  .info-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07), 0 0.5px 2px rgba(0,0,0,0.04);
+    color: #1A1A2E;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .info-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3.5px;
+    border-top-left-radius: 16px; border-top-right-radius: 16px;
+  }
+  .card-red::before { background: linear-gradient(90deg, #DC2626, #EF4444); }
+  .card-purple::before { background: linear-gradient(90deg, #5B4FFF, #7C6FFF); }
+  .card-accent::before { background: linear-gradient(90deg, #EA580C, #F97316); }
+  .card-green::before { background: linear-gradient(90deg, #059669, #10B981); }
+
+  .ic-header {
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 7px; font-size: 10px; font-weight: 800;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .header-red { color: #DC2626; }
+  .header-purple { color: #5B4FFF; }
+  .header-accent { color: #EA580C; }
+  .header-green { color: #059669; }
+
+  .ic-title { font-size: 14px; font-weight: 800; margin-bottom: 5px; color: #1A1A2E; line-height: 1.35; }
+  .ic-desc { font-size: 11px; color: #64748B; line-height: 1.55; font-weight: 500; }
+
+  /* =========================================
+     CENTER: iPhone Mockup (15% taller)
+     ========================================= */
+  .iphone-mockup {
+    width: 260px;
+    height: 483px;
+    background: #FFFFFF;
+    border-radius: 38px;
+    border: 8px solid #1A1A2E;
+    box-shadow:
+      0 0 0 1.5px #2D2B55,
+      0 25px 60px rgba(30,20,80,0.28),
+      0 8px 20px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+    transform: translateY(-4px);
+  }
+
+  .iphone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 88px; height: 22px; background: #1A1A2E;
+    border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; z-index: 30;
+  }
+
+  .app-header {
+    padding: 30px 12px 8px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #EEEEF5;
+    z-index: 20;
+    flex-shrink: 0;
+  }
+
+  .app-header .avatar {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #5B4FFF, #7B6FFF);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: white;
+  }
+
+  .app-header .h-info { flex: 1; }
+  .app-header .h-name { font-size: 13px; font-weight: 700; color: #1A1A2E; }
+  .app-header .h-status { font-size: 9px; color: #22C55E; font-weight: 600; }
+  .app-header .h-online { display: inline-block; width: 5px; height: 5px; background: #22C55E; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
+
+  .chat-area {
+    flex: 1;
+    background: #F3F2FA;
+    padding: 10px 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .chat-area::-webkit-scrollbar { width: 0; }
+
+  .msg-row { display: flex; width: 100%; align-items: flex-start; }
+  .msg-row.ai { justify-content: flex-start; }
+  .msg-row.user { justify-content: flex-end; }
+
+  .msg-av {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: linear-gradient(135deg, #5B4FFF, #7B6FFF);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: white; flex-shrink: 0; margin-right: 6px; margin-top: 2px;
+  }
+
+  .msg-bubble {
+    max-width: 78%;
+    padding: 8px 11px;
+    border-radius: 14px;
+    font-size: 10.5px;
+    line-height: 1.55;
+    word-break: keep-all;
+  }
+
+  .msg-row.ai .msg-bubble {
+    background: #FFFFFF;
+    color: #1A1A2E;
+    border-top-left-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .msg-row.user .msg-bubble {
+    background: linear-gradient(135deg, #5B4FFF, #6B5FFF);
+    color: #fff;
+    border-top-right-radius: 3px;
+  }
+
+  .eng-hl {
+    background: #EDE9FE;
+    color: #5B4FFF;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+  }
+
+  .scenario-mini {
+    background: #fff;
+    border: 1.5px solid #E2E0F0;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-top: 6px;
+  }
+
+  .scenario-mini .sm-tag {
+    font-size: 8px; font-weight: 800; color: #5B4FFF;
+    background: #EDE9FE; padding: 2px 6px; border-radius: 4px;
+    display: inline-block; margin-bottom: 5px;
+  }
+
+  .scenario-mini .sm-title { font-size: 11px; font-weight: 800; color: #1A1A2E; margin-bottom: 3px; }
+  .scenario-mini .sm-desc { font-size: 9px; color: #64748B; line-height: 1.4; }
+
+  .scenario-mini .sm-cta {
+    margin-top: 6px;
+    background: linear-gradient(135deg, #5B4FFF, #7B6FFF);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 6px;
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  .input-bar {
+    padding: 6px 10px 14px;
+    background: #fff;
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    border-top: 1px solid #EEEEF5;
+  }
+
+  .input-bar input {
+    flex: 1; background: #F3F4F6; border: none; border-radius: 16px;
+    padding: 0 12px; font-size: 10px; outline: none; color: #1A1A2E;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .input-bar .send-btn {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #5B4FFF, #7B6FFF);
+    color: white; border: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; cursor: pointer;
+  }
+
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 5px 0 10px;
+    background: #fff;
+    border-top: 1px solid #EEEEF5;
+    flex-shrink: 0;
+  }
+  .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 8px; color: #B0AECF; }
+  .bnav-item.active { color: #5B4FFF; }
+  .bnav-item i { font-size: 12px; }
+
+  /* =========================================
+     RING LOOP Flow Section (LARGE)
+     ========================================= */
+  .flow-section {
+    padding: 20px 36px 16px;
+    z-index: 10;
+    position: relative;
+  }
+
+  .flow-section-title {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .flow-section-title .fst-badge {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 800; color: #5B4FFF;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .flow-section-title h2 {
+    font-size: 22px; font-weight: 900; color: #1A1A2E;
+    letter-spacing: -0.5px;
+  }
+
+  .flow-section-title h2 span { color: #5B4FFF; }
+
+  /* Flow Cards — Filled colored backgrounds */
+  .flow-card {
+    flex: 1;
+    border-radius: 18px;
+    padding: 22px 16px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .flow-card.fc-ready {
+    background: linear-gradient(160deg, #5B4FFF 0%, #7C6FFF 100%);
+    box-shadow: 0 6px 24px rgba(91,79,255,0.25);
+  }
+  .flow-card.fc-in {
+    background: linear-gradient(160deg, #EA580C 0%, #F97316 100%);
+    box-shadow: 0 6px 24px rgba(234,88,12,0.25);
+  }
+  .flow-card.fc-grow {
+    background: linear-gradient(160deg, #059669 0%, #10B981 100%);
+    box-shadow: 0 6px 24px rgba(5,150,105,0.25);
+  }
+
+  .flow-card .fc-icon {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin: 0 auto 12px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .flow-card .fc-phase {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 1.5px; margin-bottom: 5px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .flow-card .fc-title {
+    font-size: 16px; font-weight: 800; color: #FFFFFF;
+    margin-bottom: 7px; letter-spacing: -0.3px;
+  }
+
+  .flow-card .fc-desc {
+    font-size: 11.5px; color: rgba(255,255,255,0.85); line-height: 1.55; font-weight: 500;
+  }
+
+  .flow-card .fc-desc strong { color: #FFFFFF; font-weight: 700; }
+
+  .flow-arrow-col {
+    display: flex; align-items: center; justify-content: center;
+    color: #C4B5FD; font-size: 18px;
+    flex-shrink: 0;
+    padding: 0 4px;
+  }
+
+  /* =========================================
+     KPI + Footer (Compact)
+     ========================================= */
+  .bottom-section {
+    padding: 0 36px 22px;
+    z-index: 10;
+    position: relative;
+    margin-top: auto;
+  }
+
+  .kpi-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .kpi-mini {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 14px;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .kpi-mini .km-val {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900; line-height: 1;
+  }
+
+  .kpi-mini .km-val.purple { font-size: 26px; color: #5B4FFF; }
+  .kpi-mini .km-val.green { font-size: 26px; color: #059669; }
+
+  .kpi-mini .km-from {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; color: #B0AECF;
+    text-decoration: line-through; margin-right: 4px;
+  }
+
+  .kpi-mini .km-arrow { color: #C4B5FD; font-size: 11px; margin: 0 3px; }
+
+  .kpi-mini .km-info { display: flex; flex-direction: column; gap: 1px; }
+  .kpi-mini .km-label { font-size: 11px; color: #374151; font-weight: 700; }
+  .kpi-mini .km-desc { font-size: 10px; color: #9CA3AF; font-weight: 500; }
+
+  /* Footer */
+  .footer-strip {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 900; color: #1A1A2E; letter-spacing: 0.3px;
+  }
+  .footer-logo i { color: #5B4FFF; margin-right: 4px; font-size: 13px; }
+
+  .footer-copy { font-size: 10.5px; color: #6B7280; font-weight: 400; }
+  .footer-tags { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 600; color: #B0AECF; letter-spacing: 0.3px; }
+</style>
+</head>
+<body>
+
+<div class="board-wrapper" id="boardWrapper">
+  <div class="board">
+
+    <!-- 1. Header — Bold purple gradient -->
+    <div class="header-section">
+      <img src="image/ringle-rogo1.png" alt="Ringle" class="ringle-logo">
+      <div class="badge-row">
+        <div class="badge">제5회 링글 서비스 기획 & 마케팅 공모전</div>
+      </div>
+      <div class="slogan-area">
+        <p>AI 전화영어 수신 거절률 40%의 해결책</p>
+        <h1>
+          <span class="hl-yellow">카톡</span>처럼 매일 열면,<br>
+          AI가 나만의 <span class="hl-accent">영어 코치</span>가 된다.
+        </h1>
+      </div>
+    </div>
+
+    <!-- Gradient transition -->
+    <div class="header-gradient-fade"></div>
+
+    <!-- 2. Visual Section -->
+    <div class="visual-section">
+
+      <svg class="connection-lines" viewBox="0 0 800 490">
+        <path class="path-line path-left" d="M 208 160 C 238 160, 258 210, 278 210" />
+        <path class="path-line path-left" d="M 208 330 C 238 330, 258 280, 278 280" />
+        <path class="path-line path-right" d="M 522 210 C 542 210, 562 160, 592 160" />
+        <path class="path-line path-right" d="M 522 280 C 542 280, 562 330, 592 330" />
+      </svg>
+
+      <!-- Left Panel -->
+      <div class="side-panel">
+        <div class="info-card card-red">
+          <div class="ic-header header-red"><i class="fa-solid fa-triangle-exclamation"></i> PAIN POINT</div>
+          <div class="ic-title">거절률 40%의 원인</div>
+          <div class="ic-desc">준비 없이 울리는 전화벨은 공포를 만들고, 반복 거절은 학습 이탈로 이어집니다.</div>
+        </div>
+        <div class="info-card card-purple">
+          <div class="ic-header header-purple"><i class="fa-regular fa-comments"></i> READY — AI 톡</div>
+          <div class="ic-title">친구처럼 톡하면<br>맥락이 만들어진다</div>
+          <div class="ic-desc">편하게 안부를 나누면, 대화 속에서 오늘의 학습 주제가 자연스럽게 만들어집니다.</div>
+        </div>
+      </div>
+
+      <!-- Center: iPhone Mockup -->
+      <div class="iphone-mockup">
+        <div class="iphone-notch"></div>
+
+        <div class="app-header">
+          <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="h-info">
+            <div class="h-name">AI 톡 · Ringly</div>
+            <div class="h-status"><span class="h-online"></span>온라인</div>
+          </div>
+        </div>
+
+        <div class="chat-area">
+          <div class="msg-row ai">
+            <div class="msg-av"><i class="fa-solid fa-robot" style="font-size:9px;"></i></div>
+            <div class="msg-bubble">Hey! 오늘 하루 어땠어? 😊<br>회사에서 무슨 일 있었어?</div>
+          </div>
+
+          <div class="msg-row user">
+            <div class="msg-bubble">분기 보고 발표했는데 영어 질문 받아서 완전 당황했어 ㅠㅠ</div>
+          </div>
+
+          <div class="msg-row ai">
+            <div class="msg-av"><i class="fa-solid fa-robot" style="font-size:9px;"></i></div>
+            <div class="msg-bubble">
+              아 진짜? 즉석 Q&A 제일 당황스럽지 ㅠ<br>
+              그때 <span class="eng-hl">"Let me walk you through"</span> 쓰면 시간 벌면서 정리 가능!
+            </div>
+          </div>
+
+          <div class="msg-row user">
+            <div class="msg-bubble">오 그런 표현 몰랐어 ㅋㅋ 다음엔 써봐야지</div>
+          </div>
+
+          <div class="msg-row ai">
+            <div class="msg-av"><i class="fa-solid fa-robot" style="font-size:9px;"></i></div>
+            <div class="msg-bubble">이따 9시에 이 주제로 전화 연습 해볼래?<br>면접관 역할 해줄게! 📞</div>
+          </div>
+
+          <div class="msg-row user">
+            <div class="msg-bubble">좋아! 해보자 💪</div>
+          </div>
+
+          <!-- Scenario Card -->
+          <div class="scenario-mini">
+            <div class="sm-tag">✨ 시나리오 자동 생성</div>
+            <div class="sm-title">🎯 분기 보고 Q&A 대응</div>
+            <div class="sm-desc">
+              AI 페르소나: Alex Kim · Marketing Director<br>
+              핵심 표현: "walk you through", "compared to..."
+            </div>
+            <div class="sm-cta">📞 오후 9:00 전화 연습 시작</div>
+          </div>
+        </div>
+
+        <div class="input-bar">
+          <input type="text" placeholder="메시지를 입력하세요..." readonly>
+          <div class="send-btn"><i class="fa-solid fa-paper-plane" style="font-size:9px;"></i></div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="bnav-item"><i class="fa-solid fa-house"></i>홈</div>
+          <div class="bnav-item active"><i class="fa-solid fa-comment"></i>AI톡</div>
+          <div class="bnav-item"><i class="fa-solid fa-phone"></i>전화</div>
+          <div class="bnav-item"><i class="fa-solid fa-user"></i>MY</div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="side-panel">
+        <div class="info-card card-accent">
+          <div class="ic-header header-accent"><i class="fa-solid fa-phone-volume"></i> IN — AI 전화</div>
+          <div class="ic-title">준비된 상태로<br>자신있게 통화</div>
+          <div class="ic-desc">톡 대화가 롤플레이 시나리오로 변환되어, 면접관·동료 캐릭터와 실전 대화합니다.</div>
+        </div>
+        <div class="info-card card-green">
+          <div class="ic-header header-green"><i class="fa-solid fa-chart-line"></i> GROW — 피드백</div>
+          <div class="ic-title">오늘의 약점이<br>내일의 학습 재료</div>
+          <div class="ic-desc">교정 피드백이 톡으로 전달되고, 다음 전화 시나리오에 반영되어 루프가 완성됩니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RING LOOP Flow (LARGE) -->
+    <div class="flow-section">
+      <div class="flow-section-title">
+        <div class="fst-badge">RING LOOP</div>
+        <h2>끊기지 않는 <span>영어 학습 루프</span></h2>
+      </div>
+
+      <div style="display: flex; gap: 0; align-items: stretch;">
+        <div style="flex:1;">
+          <div class="flow-card fc-ready">
+            <div class="fc-icon">💬</div>
+            <div class="fc-phase">READY</div>
+            <div class="fc-title">AI 톡 예열</div>
+            <div class="fc-desc"><strong>친구처럼 대화</strong>하며 맥락 수집<br>자연스러운 전화 전환 제안</div>
+          </div>
+        </div>
+        <div class="flow-arrow-col"><i class="fa-solid fa-chevron-right"></i></div>
+        <div style="flex:1;">
+          <div class="flow-card fc-in">
+            <div class="fc-icon">📞</div>
+            <div class="fc-phase">IN</div>
+            <div class="fc-title">맥락형 롤플레이</div>
+            <div class="fc-desc">톡에서 이어진 <strong>준비된 전화</strong><br>캐릭터 몰입 실전 대화</div>
+          </div>
+        </div>
+        <div class="flow-arrow-col"><i class="fa-solid fa-chevron-right"></i></div>
+        <div style="flex:1;">
+          <div class="flow-card fc-grow">
+            <div class="fc-icon">📈</div>
+            <div class="fc-phase">GROW</div>
+            <div class="fc-title">피드백 루프</div>
+            <div class="fc-desc"><strong>오늘 약점</strong>이 내일 톡 재료로<br>끊기지 않는 학습 사이클</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. KPI + Footer (Compact) -->
+    <div class="bottom-section">
+      <div class="kpi-row">
+        <div class="kpi-mini">
+          <div>
+            <span class="km-from">40%</span>
+            <span class="km-arrow">→</span>
+            <span class="km-val purple">25%</span>
+          </div>
+          <div class="km-info">
+            <span class="km-label">수신 거절률 감소</span>
+            <span class="km-desc">AI 톡 예열로 거절 최소화</span>
+          </div>
+        </div>
+        <div class="kpi-mini">
+          <div class="km-val green">2.4<span style="font-size:14px;">배</span></div>
+          <div class="km-info">
+            <span class="km-label">결제 전환율</span>
+            <span class="km-desc">롤플레이 경험자 기준</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-strip">
+        <div class="footer-logo"><i class="fa-solid fa-circle-nodes"></i>Ringle · RING LOOP</div>
+        <div class="footer-copy">대화할수록 나를 알아가는 AI, 준비된 전화가 영어를 바꿉니다</div>
+        <div class="footer-tags">#AI스피킹 #직장인영어 #RINGLOOP</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function scaleBoard() {
+    const board = document.querySelector('.board');
+    const scale = Math.min((window.innerWidth - 40) / 800, (window.innerHeight - 40) / 1131);
+    board.style.transform = scale < 1 ? `scale(${scale})` : 'scale(1)';
+    board.style.transformOrigin = 'center center';
+  }
+  window.addEventListener('resize', scaleBoard);
+  setTimeout(scaleBoard, 100);
+</script>
+
+</body>
+</html>

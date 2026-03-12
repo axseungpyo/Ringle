@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RING LOOP Concept Board - Center Layout</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+
+  body {
+    background: #111827; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; 
+  }
+
+  .board-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* A4 Portrait (210 x 297mm 비율) */
+  .board {
+    width: 800px;   
+    height: 1131px; 
+    background-color: #0A0F1C;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* =========================================
+     Background Ambient Glows
+     ========================================= */
+  .bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    z-index: 0;
+  }
+  /* 블루 & 옐로우(카톡 테마 매칭) 글로우 */
+  .glow-ready { width: 500px; height: 500px; background: #3B82F6; top: -100px; left: -150px; opacity: 0.3; }
+  .glow-center { width: 400px; height: 400px; background: #FEE500; top: 30%; left: 50%; transform: translateX(-50%); opacity: 0.15; }
+  .glow-grow { width: 500px; height: 500px; background: #10B981; bottom: -100px; right: -150px; opacity: 0.2; }
+
+  .grid-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+  }
+
+  /* =========================================
+     1. Header Area (Typography)
+     ========================================= */
+  .header-section {
+    padding: 50px 56px 0;
+    z-index: 10;
+    position: relative;
+    text-align: center;
+  }
+  
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .badge {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    color: #94A3B8;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 24px;
+    border-radius: 30px;
+    letter-spacing: -0.2px;
+  }
+
+  .slogan-area p {
+    color: #60A5FA;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+  }
+
+  .slogan-area h1 {
+    font-size: 52px;
+    font-weight: 900;
+    color: #FFFFFF;
+    line-height: 1.3;
+    letter-spacing: -1.5px;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+
+  .slogan-area h1 span.hl-yellow { color: #FEE500; text-shadow: 0 0 20px rgba(254, 229, 0, 0.4); }
+  .slogan-area h1 span.hl-blue { color: #60A5FA; text-shadow: 0 0 20px rgba(96, 165, 250, 0.4); }
+
+  /* =========================================
+     2. Visual Area (Center 3-Column Layout)
+     ========================================= */
+  .visual-section {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding: 0 40px;
+    z-index: 10;
+  }
+
+  /* SVG 연결선 */
+  .connection-lines {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .path-line {
+    fill: none; stroke-width: 2; stroke-dasharray: 6 6;
+    animation: dash 20s linear infinite;
+  }
+  .path-left { stroke: #60A5FA; opacity: 0.5; }
+  .path-right { stroke: #FEE500; opacity: 0.5; }
+  @keyframes dash { to { stroke-dashoffset: -1000; } }
+
+  /* --- Left/Right Content Panels --- */
+  .side-panel {
+    width: 210px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    z-index: 10;
+  }
+
+  .info-card {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    color: white;
+    position: relative;
+  }
+
+  .info-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+  .card-red::before { background: #EF4444; }
+  .card-blue::before { background: #3B82F6; }
+  .card-yellow::before { background: #FEE500; }
+  .card-green::before { background: #10B981; }
+
+  .ic-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+  .header-red { color: #FCA5A5; }
+  .header-blue { color: #93C5FD; }
+  .header-yellow { color: #FDE047; }
+  .header-green { color: #6EE7B7; }
+
+  .ic-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; color: #F8FAFC; line-height: 1.3;}
+  .ic-desc { font-size: 13px; color: #94A3B8; line-height: 1.5; font-weight: 500;}
+
+  /* --- Center iPhone Mockup (Kakao Theme) --- */
+  .iphone-mockup {
+    width: 280px;
+    height: 560px;
+    background: #FFFFFF;
+    border-radius: 40px;
+    border: 10px solid #1E293B;
+    box-shadow: 0 0 0 2px #334155, 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(255,255,255,0.2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+    transform: translateY(-10px);
+  }
+
+  .iphone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 26px; background: #1E293B;
+    border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 30;
+  }
+
+  /* 카톡 스타일 헤더 */
+  .app-header {
+    padding: 40px 16px 12px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    z-index: 20;
+  }
+  
+  .app-header .avatar {
+    width: 32px; height: 32px;
+    background: #1E293B; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; color: white;
+    font-size: 14px;
+  }
+
+  /* 카톡 스타일 챗 배경 */
+  .chat-area {
+    flex: 1;
+    background: #B2C7D9; /* 카카오톡 기본 배경색 */
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chat-area::-webkit-scrollbar { width: 0; }
+
+  .bubble-row { display: flex; width: 100%; animation: slideUp 0.3s ease-out; }
+  .bubble-row.ai { justify-content: flex-start; }
+  .bubble-row.user { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.4;
+    border-radius: 14px;
+    word-break: keep-all;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-weight: 500;
+  }
+
+  /* 카톡 스타일 말풍선 컬러 */
+  .bubble-row.ai .bubble {
+    background: #FFFFFF;
+    color: #1A1A1C;
+    border-top-left-radius: 4px;
+  }
+
+  .bubble-row.user .bubble {
+    background: #FEE500;
+    color: #1A1A1C;
+    border-top-right-radius: 4px;
+  }
+
+  @keyframes slideUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+  .input-area {
+    padding: 10px 14px 20px;
+    background: #FFFFFF;
+    display: flex;
+    gap: 8px;
+  }
+
+  .input-area input {
+    flex: 1;
+    background: #F5F6F8;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 0 16px;
+    font-size: 13px;
+    outline: none;
+    color: #1A1A1C;
+  }
+  .input-area input:focus { border-color: #E2E8F0; }
+
+  .input-area button {
+    width: 36px; height: 36px;
+    background: #FEE500;
+    color: #3A1D1D;
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.2s;
+  }
+  .input-area button:active { transform: scale(0.95); }
+
+  .typing-indicator {
+    display: none; align-items: center; gap: 4px; padding: 12px 14px;
+    background: white; border-radius: 14px; border-top-left-radius: 4px; width: fit-content;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .dot { width: 6px; height: 6px; background: #94A3B8; border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
+  .dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
+
+  /* =========================================
+     3. Flow & Data Area (Bottom)
+     ========================================= */
+  .bottom-section {
+    padding: 0 40px 30px;
+    z-index: 10;
+    position: relative;
+    margin-top: 10px;
+  }
+
+  /* 3단계 Flow Diagram */
+  .flow-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 20px 32px;
+    margin-bottom: 24px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+  }
+
+  .flow-item { display: flex; flex-direction: column; gap: 6px; width: 30%; }
+  
+  .flow-badge-title {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 800; color: white; letter-spacing: 0.5px;
+  }
+  
+  .flow-badge-title i { font-size: 16px; }
+  .ready-color { color: #60A5FA; }
+  .in-color { color: #34D399; }
+  .grow-color { color: #FBBF24; }
+
+  .flow-text { font-size: 13px; color: #94A3B8; line-height: 1.4; font-weight: 500; }
+  .flow-arrow { color: rgba(255, 255, 255, 0.15); font-size: 20px; }
+
+  /* 핵심 수치 카드 2개 */
+  .kpi-wrapper {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    flex: 1;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 26px 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  }
+
+  .kpi-card::after {
+    content: ''; position: absolute; top: -20px; right: -20px; width: 120px; height: 120px;
+    border-radius: 50%; filter: blur(50px); z-index: -1;
+  }
+  .kpi-card.green::after { background: rgba(16, 185, 129, 0.25); }
+  .kpi-card.blue::after { background: rgba(59, 130, 246, 0.25); }
+
+  .kpi-card .kpi-label { font-size: 15px; font-weight: 700; color: #CBD5E1; margin-bottom: 8px; }
+  
+  .kpi-card .kpi-val { 
+    font-family: 'Inter', sans-serif;
+    font-size: 32px; font-weight: 900; color: white; line-height: 1.1; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .kpi-card .kpi-val span.highlight-g { color: #34D399; font-size: 46px; text-shadow: 0 0 20px rgba(52,211,153,0.4); }
+  .kpi-card .kpi-val span.highlight-b { color: #60A5FA; font-size: 46px; text-shadow: 0 0 20px rgba(96,165,250,0.4); }
+  
+  .kpi-card .kpi-desc { font-size: 14px; font-weight: 500; color: #94A3B8; }
+
+  /* Footer Strip */
+  .footer-strip {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
+  .footer-logo i { color: #34D399; margin-right: 6px; }
+  .footer-copy { font-size: 14px; color: #94A3B8; font-weight: 400; letter-spacing: -0.3px; }
+  .footer-tags { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<div class="board-wrapper" id="boardWrapper">
+  <div class="board">
+
+    <!-- Ambient Backgrounds -->
+    <div class="bg-glow glow-ready"></div>
+    <div class="bg-glow glow-center"></div>
+    <div class="bg-glow glow-grow"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- 1. Header Typography -->
+    <div class="header-section">
+      <div class="badge-row">
+        <div class="badge">제5회 링글 서비스 기획 & 마케팅 공모전</div>
+      </div>
+      <div class="slogan-area">
+        <p>전화영어 수신 거절률 40%의 해결책</p>
+        <h1>
+          <span class="hl-yellow">카톡</span>처럼 매일 열면,<br>
+          AI가 나만의 <span class="hl-blue">영어 코치</span>가 된다.
+        </h1>
+      </div>
+    </div>
+
+    <!-- 2. Visual / Center Layout -->
+    <div class="visual-section">
+      
+      <!-- SVG Connection Lines -->
+      <svg class="connection-lines" viewBox="0 0 800 500">
+        <!-- From Left Panel to Phone -->
+        <path class="path-line path-left" d="M 230 180 C 260 180, 270 250, 300 250" />
+        <path class="path-line path-left" d="M 230 350 C 260 350, 270 300, 300 300" />
+        <!-- From Phone to Right Panel -->
+        <path class="path-line path-right" d="M 500 250 C 530 250, 540 180, 570 180" />
+        <path class="path-line path-right" d="M 500 300 C 530 300, 540 350, 570 350" />
+      </svg>
+
+      <!-- Left Panel: Problem & Input -->
+      <div class="side-panel">
+        <div class="info-card card-red">
+          <div class="ic-header header-red"><i class="fa-solid fa-triangle-exclamation"></i> Pain Point</div>
+          <div class="ic-title">거절률 40%의 핵심</div>
+          <div class="ic-desc">준비되지 않은 상태에서 울리는 전화는 바쁜 직장인에게 학습이 아닌 공포와 이탈의 원인이 됩니다.</div>
+        </div>
+        <div class="info-card card-blue">
+          <div class="ic-header header-blue"><i class="fa-regular fa-comments"></i> 1. Ready (AI 톡)</div>
+          <div class="ic-title">일상의 맥락 수집</div>
+          <div class="ic-desc">카톡처럼 편안하게 안부와 고민을 나누면, 대화 속에서 자연스럽게 직무와 영어가 필요한 상황이 파악됩니다.</div>
+        </div>
+      </div>
+
+      <!-- Center: iPhone Mockup (Kakao Theme) -->
+      <div class="iphone-mockup">
+        <div class="iphone-notch"></div>
+        <div class="app-header">
+          <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: #1E293B;">Ringly (AI 튜터) <span style="background: #FEE500; color: #3A1D1D; font-size: 9px; padding: 2px 6px; border-radius: 6px; margin-left: 4px; vertical-align: middle;">✨ Live</span></div>
+            <div style="font-size: 11px; color: #64748B; font-weight: 500; margin-top: 2px;">나의 영어 코치</div>
+          </div>
+        </div>
+        
+        <div class="chat-area" id="chat-history">
+          <div class="bubble-row ai">
+            <div class="bubble">안녕! 오늘 회사에서 무슨 일 있었어? 😊 편하게 한글로 말해줘!</div>
+          </div>
+          <!-- Typing Indicator -->
+          <div id="typing-indicator" class="bubble-row ai" style="display: none;">
+            <div class="typing-indicator" style="display: flex;">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-area">
+          <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+          <button id="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
+
+      <!-- Right Panel: Output & Magic -->
+      <div class="side-panel">
+        <div class="info-card card-yellow">
+          <div class="ic-header header-yellow"><i class="fa-solid fa-wand-magic-sparkles"></i> Context Engine</div>
+          <div class="ic-title">시나리오 자동 생성</div>
+          <div class="ic-desc">LCP(Learn-Context-Practice) 변환 엔진이 대화 내용을 즉시 <strong>맞춤형 전화 롤플레이 대본</strong>으로 생성합니다.</div>
+        </div>
+        <div class="info-card card-green">
+          <div class="ic-header header-green"><i class="fa-solid fa-phone-volume"></i> 2. In & 3. Grow</div>
+          <div class="ic-title">준비된 상태로 몰입</div>
+          <div class="ic-desc">미리 브리핑된 주제로 자신 있게 전화를 받습니다. 통화 후 피드백은 다시 다음 톡의 재료로 이어집니다.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. Flow & KPI -->
+    <div class="bottom-section">
+      
+      <!-- 3분할 Flow -->
+      <div class="flow-wrapper">
+        <div class="flow-item">
+          <div class="flow-badge-title ready-color"><i class="fa-regular fa-comments"></i> READY</div>
+          <div class="flow-text"><strong style="color:#E2E8F0;">AI 톡 예열</strong><br>친구처럼 대화하며 맥락 수집</div>
+        </div>
+        <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="flow-item">
+          <div class="flow-badge-title in-color"><i class="fa-solid fa-phone-volume"></i> IN</div>
+          <div class="flow-text"><strong style="color:#E2E8F0;">맥락형 롤플레이</strong><br>톡에서 이어진 준비된 전화 몰입</div>
+        </div>
+        <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="flow-item">
+          <div class="flow-badge-title grow-color"><i class="fa-solid fa-chart-line"></i> GROW</div>
+          <div class="flow-text"><strong style="color:#E2E8F0;">피드백 루프</strong><br>오늘의 약점을 내일의 톡 재료로</div>
+        </div>
+      </div>
+
+      <!-- 핵심 수치 카드 -->
+      <div class="kpi-wrapper">
+        <div class="kpi-card green">
+          <div class="kpi-label">수신 거절률 획기적 개선</div>
+          <div class="kpi-val">40% <span style="color: #475569; margin: 0 10px;"><i class="fa-solid fa-arrow-right-long"></i></span> <span class="highlight-g">25%</span></div>
+          <div class="kpi-desc">준비되지 않은 통화의 공포를 없앱니다.</div>
+        </div>
+        
+        <div class="kpi-card blue">
+          <div class="kpi-label">롤플레이 경험 시 결제 전환율</div>
+          <div class="kpi-val">미사용 대비 <span class="highlight-b" style="margin-left: 12px;">2.4배</span></div>
+          <div class="kpi-desc">AHA Moment를 일상 루틴으로 만듭니다.</div>
+        </div>
+      </div>
+
+      <!-- Footer Strip -->
+      <div class="footer-strip">
+        <div class="footer-logo"><i class="fa-solid fa-circle-nodes"></i>Ringle · RING LOOP</div>
+        <div class="footer-copy">대화할수록 나를 알아가는 AI, 준비된 전화가 영어를 바꿉니다</div>
+        <div class="footer-tags">#AI스피킹 #직장인영어 #서비스기획</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // 1. Board Scaling Logic (프리뷰 창 크기에 맞게 자동 축소/확대)
+  function scaleBoard() {
+    const board = document.querySelector('.board');
+    const availableWidth = window.innerWidth - 40;
+    const availableHeight = window.innerHeight - 40;
+    // A4 Ratio: 800 x 1131
+    const scale = Math.min(availableWidth / 800, availableHeight / 1131);
+    
+    if(scale < 1) {
+      board.style.transform = `scale(${scale})`;
+    } else {
+      board.style.transform = `scale(1)`;
+    }
+  }
+  window.addEventListener('resize', scaleBoard);
+  setTimeout(scaleBoard, 100);
+
+  // 2. Gemini API Live Chat Logic
+  const apiKey = ""; // API Key injected by environment
+  const model = "gemini-2.5-flash-preview-09-2025"; 
+  
+  const chatHistoryUI = document.getElementById("chat-history");
+  const chatInput = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const typingIndicator = document.getElementById("typing-indicator");
+
+  let conversationContext = [];
+
+  const systemInstruction = `
+    너의 이름은 'Ringly(링리)'이고, Ringle 앱의 친절하고 유쾌한 AI 영어 튜터야.
+    마치 카카오톡에서 친구와 대화하듯, 사용자와 한국어 반말로 대화하면서 직장 생활이나 일상에 대해 가볍게 물어봐줘.
+    사용자가 대답하면:
+    1. 깊이 공감해주기 (이모지 적극 활용)
+    2. 상황에 딱 맞는 유용한 비즈니스/일상 영어 표현 1~2개를 큰따옴표 안에 넣어서 자연스럽게 알려주기
+    3. 마지막에 "이따가 이 주제로 짧게 영어 전화 롤플레이 연습 해볼래? 📞" 라고 가볍게 제안하기.
+    응답은 모바일 메신저 채팅처럼 너무 길지 않게 2~4문장 내외로 작성해줘.
+  `;
+
+  function scrollToBottom() {
+    chatHistoryUI.scrollTop = chatHistoryUI.scrollHeight;
+  }
+
+  function addMessageToUI(text, isAI) {
+    const row = document.createElement('div');
+    row.className = `bubble-row ${isAI ? 'ai' : 'user'}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    
+    // Bold formatting and line breaks
+    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formattedText = formattedText.replace(/\n/g, '<br>');
+
+    bubble.innerHTML = formattedText;
+    row.appendChild(bubble);
+    
+    chatHistoryUI.insertBefore(row, typingIndicator);
+    scrollToBottom();
+  }
+
+  async function fetchGeminiWithRetry(userText) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const payload = {
+      contents: [
+        ...conversationContext,
+        { role: "user", parts: [{ text: userText }] }
+      ],
+      systemInstruction: { parts: [{ text: systemInstruction }] }
+    };
+
+    let delay = 1000;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error("API Error");
+        
+        const data = await response.json();
+        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        conversationContext.push({ role: "user", parts: [{ text: userText }] });
+        conversationContext.push({ role: "model", parts: [{ text: aiText }] });
+        
+        return aiText;
+      } catch (err) {
+        await new Promise(res => setTimeout(res, delay));
+        delay *= 2;
+      }
+    }
+    return "앗, 잠깐 통신이 지연되고 있어 🥲 조금 뒤에 다시 말해줄래?";
+  }
+
+  async function handleSend() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    chatInput.value = "";
+    chatInput.disabled = true;
+    sendBtn.disabled = true;
+
+    addMessageToUI(text, false);
+
+    typingIndicator.style.display = "flex";
+    chatHistoryUI.appendChild(typingIndicator); 
+    scrollToBottom();
+
+    const aiResponse = await fetchGeminiWithRetry(text);
+
+    typingIndicator.style.display = "none";
+    addMessageToUI(aiResponse, true);
+
+    chatInput.disabled = false;
+    sendBtn.disabled = false;
+    chatInput.focus();
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+  chatInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") handleSend();
+  });
+</script>
+
+</body>
+</html>
