@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RING LOOP MVP Prototype</title>
+<title>RING LOOP Prototype — AI 전화영어 수신 경험 개선</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -93,6 +93,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 
 .scroll-hide::-webkit-scrollbar{display:none;} .scroll-hide{-ms-overflow-style:none;scrollbar-width:none;}
 
+
 /* Live Chat Styles */
 .live-chat-msg{display:flex;margin-bottom:12px;align-items:flex-start;animation:bubbleIn 0.3s ease-out;}
 .live-chat-msg.user-msg{flex-direction:row-reverse;}
@@ -151,137 +152,14 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 .tts-toggle-switch input:checked + .tts-toggle-slider{background:#5B4FFF;}
 .tts-toggle-switch input:checked + .tts-toggle-slider::before{transform:translateX(20px);}
 
-/* ==================== DARK MODE ==================== */
-.phone-frame {
-  --bg-primary: #ffffff;
-  --bg-secondary: #F8F9FA;
-  --bg-tertiary: #f5f5fa;
-  --bg-card: #ffffff;
-  --bg-input: #F3F4F6;
-  --text-primary: #1A1A2E;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
-  --border-color: #F3F4F6;
-  --chat-ai-bg: #ffffff;
-  --chat-ai-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
-.phone-frame.dark {
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --bg-tertiary: #1a1a2e;
-  --bg-card: #1E293B;
-  --bg-input: #1E293B;
-  --text-primary: #E2E8F0;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --border-color: #334155;
-  --chat-ai-bg: #1E293B;
-  --chat-ai-shadow: none;
-}
-
-/* Screen 1b: Roleplay */
-.phone-frame.dark #screen1b { background: var(--bg-primary) !important; }
-.phone-frame.dark #screen1b > div:nth-child(2) { background: var(--bg-secondary) !important; }
-.phone-frame.dark #roleplayChat { background: var(--bg-primary) !important; }
-.phone-frame.dark #rpBottomArea { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
-.phone-frame.dark #screen1b .chat-ai { background: var(--bg-secondary) !important; color: var(--text-primary) !important; }
-
-/* Screen 2: AI Talk */
-.phone-frame.dark #screen2 { background: var(--bg-primary) !important; }
-.phone-frame.dark #screen2 > div:not(.settings-overlay-v2):not(.api-config-banner) { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
-.phone-frame.dark #liveChatArea { background: var(--bg-tertiary) !important; }
-.phone-frame.dark #screen2 .live-chat-msg:not(.user-msg) .live-chat-bubble { background: var(--chat-ai-bg) !important; color: var(--text-primary) !important; box-shadow: var(--chat-ai-shadow) !important; }
-.phone-frame.dark #screen2 .live-input-wrap { background: var(--bg-input) !important; }
-.phone-frame.dark #screen2 .live-input-wrap input { color: var(--text-primary) !important; }
-.phone-frame.dark #screen2 .live-mic-btn { background: var(--bg-input) !important; }
-.phone-frame.dark #screen2 .live-mic-btn.recording { background: #ef4444 !important; }
-.phone-frame.dark #screen2 .nav-item { color: var(--text-muted) !important; }
-.phone-frame.dark #screen2 .nav-item.active { color: #5B4FFF !important; }
-.phone-frame.dark .settings-sheet-v2 { background: var(--bg-primary) !important; }
-.phone-frame.dark .settings-sheet-v2 h3 { color: var(--text-primary) !important; }
-.phone-frame.dark .settings-sheet-v2 label { color: var(--text-secondary) !important; }
-.phone-frame.dark .settings-sheet-v2 input,
-.phone-frame.dark .settings-sheet-v2 select { background: var(--bg-secondary) !important; color: var(--text-primary) !important; border-color: var(--border-color) !important; }
-.phone-frame.dark .settings-sheet-v2 p { color: var(--text-muted) !important; }
-.phone-frame.dark .tts-toggle-row div { color: var(--text-secondary) !important; }
-.phone-frame.dark .eng-hl { background: rgba(91,79,255,0.2) !important; }
-.phone-frame.dark .live-chat-time { color: var(--text-muted) !important; }
-.phone-frame.dark .api-config-banner { background: #1E293B !important; color: #FBBF24 !important; }
-.phone-frame.dark .api-config-banner.ok { background: #1E293B !important; color: #22C55E !important; }
-
-/* Screen 3: Briefing */
-.phone-frame.dark #screen3 { background: var(--bg-primary) !important; }
-.phone-frame.dark #screen3 > div:first-of-type { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
-.phone-frame.dark #screen3 .chat-bubble.chat-ai { background: var(--bg-secondary) !important; color: var(--text-primary) !important; }
-.phone-frame.dark .btn-secondary { background: var(--bg-input) !important; color: var(--text-primary) !important; }
-
-/* Screen 3b: Expanded Briefing */
-.phone-frame.dark #screen3b { background: var(--bg-primary) !important; }
-.phone-frame.dark #screen3b > div:first-of-type { background: var(--bg-secondary) !important; border-color: var(--border-color) !important; }
-.phone-frame.dark #screen3b > div:last-of-type { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
-
-/* Screen 6: Grow Report */
-.phone-frame.dark #screen6 { background: var(--bg-primary) !important; }
-.phone-frame.dark #screen6 .status-bar .status-time { color: var(--text-primary) !important; }
-.phone-frame.dark #screen6 .status-bar .status-icons { color: var(--text-primary) !important; }
-
-/* Screens 3/3b/6: override inline bg/color on cards and text */
-.phone-frame.dark #screen3 > div[style*="background:#fff"],
-.phone-frame.dark #screen3 > div[style*="background: #fff"] { background: var(--bg-primary) !important; }
-.phone-frame.dark #briefingChat { background: var(--bg-primary) !important; }
-.phone-frame.dark #briefingChat div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
-.phone-frame.dark #briefingChat div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
-.phone-frame.dark #briefingChat div[style*="background:#fff"] { background: var(--bg-secondary) !important; }
-.phone-frame.dark #briefingChat div[style*="background:linear-gradient(135deg,#F8F7FF"] { background: var(--bg-secondary) !important; }
-
-.phone-frame.dark #screen3b div[style*="background:#fff"] { background: var(--bg-secondary) !important; }
-.phone-frame.dark #screen3b div[style*="background:#F8F9FA"] { background: var(--bg-primary) !important; }
-.phone-frame.dark #screen3b div[style*="background:#F8F7FF"] { background: rgba(91,79,255,0.15) !important; }
-.phone-frame.dark #screen3b div[style*="background:#FFF7ED"] { background: rgba(255,107,53,0.1) !important; }
-.phone-frame.dark #screen3b span[style*="color:#1A1A2E"],
-.phone-frame.dark #screen3b div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
-.phone-frame.dark #screen3b div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
-
-.phone-frame.dark #screen6 div[style*="background:#fff"] { background: var(--bg-secondary) !important; }
-.phone-frame.dark #screen6 div[style*="background:#F8F9FA"],
-.phone-frame.dark #screen6 div[style*="background:#F8F7FF"] { background: rgba(91,79,255,0.15) !important; }
-.phone-frame.dark #screen6 div[style*="background:#F3F4F6"] { background: var(--bg-input) !important; }
-.phone-frame.dark #screen6 div[style*="background:#FEF2F2"] { background: rgba(239,68,68,0.1) !important; }
-.phone-frame.dark #screen6 div[style*="background:#F0FDF4"] { background: rgba(34,197,94,0.1) !important; }
-.phone-frame.dark #screen6 div[style*="background:#FFF7ED"] { background: rgba(255,107,53,0.1) !important; }
-.phone-frame.dark #screen6 div[style*="background:linear-gradient(135deg,#F8F7FF"] { background: var(--bg-secondary) !important; border-color: rgba(91,79,255,0.3) !important; }
-.phone-frame.dark #screen6 div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
-.phone-frame.dark #screen6 div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
-.phone-frame.dark #screen6 button[style*="background:#F3F4F6"] { background: var(--bg-input) !important; color: var(--text-primary) !important; }
-.phone-frame.dark #screen6 > div:last-of-type > div:last-child { background: var(--bg-primary) !important; border-color: var(--border-color) !important; }
-.phone-frame.dark #screen6 .nav-item { color: var(--text-muted) !important; }
-.phone-frame.dark #screen6 .nav-item.active { color: #5B4FFF !important; }
-
-/* Bottom sheet dark mode */
-.phone-frame.dark .bottom-sheet { background: var(--bg-primary) !important; }
-.phone-frame.dark .bottom-sheet div[style*="background:#F8F9FA"] { background: var(--bg-secondary) !important; }
-.phone-frame.dark .bottom-sheet div[style*="color:#1A1A2E"] { color: var(--text-primary) !important; }
-.phone-frame.dark .bottom-sheet div[style*="color:#6B7280"] { color: var(--text-secondary) !important; }
-
-/* Status bar dark mode for light screens */
-.phone-frame.dark #screen2 .status-bar,
-.phone-frame.dark #screen3 .status-bar,
-.phone-frame.dark #screen3b .status-bar { color: var(--text-primary) !important; }
-
-/* Toast in dark mode */
-.phone-frame.dark .toast { background: var(--bg-secondary) !important; }
-
-/* Dark mode toggle button */
-.dark-mode-toggle { position:fixed;bottom:20px;left:20px;background:#333;color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);z-index:1000;transition:background 0.2s; }
-.dark-mode-toggle:hover { background:#555; }
 </style>
 </head>
 <body>
 
 <div style="text-align:center;margin-bottom:20px;">
   <div style="font-size:13px;color:#6B7280;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;">Ringle</div>
-  <div style="font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;">RING LOOP <span style="color:#5B4FFF;">MVP</span> Prototype</div>
-  <div style="font-size:11px;color:#9CA3AF;margin-top:4px;">Interactive Mobile Prototype · 제5회 링글 서비스 기획 공모전</div>
+  <div style="font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;">RING LOOP <span style="color:#5B4FFF;">Prototype</span></div>
+  <div style="font-size:11px;color:#9CA3AF;margin-top:4px;">AI 전화영어 수신 경험 개선 · 제5회 링글 서비스 기획 공모전</div>
 </div>
 
 <div class="phone-frame" id="phoneFrame">
@@ -306,12 +184,12 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <!-- Scenario card -->
       <div class="fade-in-up-d4" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border-radius:20px;padding:24px;text-align:left;margin-bottom:28px;border:1px solid rgba(255,255,255,0.2);">
         <div style="font-size:11px;font-weight:600;letter-spacing:1px;opacity:0.8;margin-bottom:12px;">🎭 추천 첫 시나리오</div>
-        <div style="font-size:17px;font-weight:700;margin-bottom:8px;">면접관 롤플레이</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:8px;">팀 회의 발표 연습</div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:18px;">👩‍💼</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:18px;">👨‍💻</div>
           <div>
-            <div style="font-size:14px;font-weight:600;">Jennifer Park</div>
-            <div style="font-size:11px;opacity:0.7;">HR Director · Mango Corp</div>
+            <div style="font-size:14px;font-weight:600;">Alex Kim</div>
+            <div style="font-size:11px;opacity:0.7;">Global Marketing Director · TechVenture</div>
           </div>
         </div>
         <div style="font-size:12px;opacity:0.7;">예상 소요 시간: 약 3분 · 6턴 대화</div>
@@ -328,15 +206,15 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     <div style="background:linear-gradient(135deg,#5B4FFF,#7B6FFF);padding:54px 20px 12px;color:#fff;">
       <!-- Trial banner -->
       <div style="background:rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:500;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;">
-        ✨ 첫 체험 모드 · 힌트 제공 ON
+        ✨ 첫 체험 모드
         <span id="rpTimerBadge" style="background:rgba(255,255,255,0.3);border-radius:10px;padding:2px 8px;font-size:10px;">⏱ <span id="rpTimer">3:00</span></span>
       </div>
       <!-- Roleplay header -->
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:20px;">👩‍💼</div>
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:20px;">👨‍💻</div>
         <div>
-          <div style="font-size:15px;font-weight:700;">Jennifer Park</div>
-          <div style="font-size:11px;opacity:0.8;">HR Director · Mango Corp</div>
+          <div style="font-size:15px;font-weight:700;">Alex Kim</div>
+          <div style="font-size:11px;opacity:0.8;">Global Marketing Director · TechVenture</div>
         </div>
       </div>
     </div>
@@ -348,12 +226,19 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       </div>
       <span id="rpTurnLabel" style="font-size:11px;color:#5B4FFF;font-weight:600;">0/6 턴</span>
     </div>
-    <!-- Chat area -->
-    <div id="roleplayChat" class="scroll-hide" style="padding:16px 20px;height:480px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+    <!-- Chat area wrapper -->
+    <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+      <div id="roleplayChat" class="scroll-hide" style="padding:16px 20px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
+      </div>
     </div>
     <!-- Bottom action -->
     <div id="rpBottomArea" style="padding:12px 20px 32px;border-top:1px solid #F3F4F6;background:#fff;">
-      <button id="rpActionBtn" onclick="advanceRoleplay()" class="btn-primary" style="display:none;">내 차례 — 답변하기 🎤</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button id="rpActionBtn" onclick="advanceRoleplay()" class="btn-primary" style="display:none;flex:1;margin:0;">내 차례 — 답변하기 🎤</button>
+        <div id="hintToggleBtn" onclick="toggleRpHint()" style="background:linear-gradient(135deg,#FF6B35,#FF8F5E);color:#fff;border-radius:14px;padding:10px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;cursor:pointer;box-shadow:0 2px 10px rgba(255,107,53,0.3);transition:all 0.25s;white-space:nowrap;">
+          <span style="font-size:13px;">💡</span><span id="hintToggleState" style="font-weight:700;">ON</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -362,7 +247,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     <div style="padding:80px 28px 40px;text-align:center;color:#fff;" class="scroll-hide">
       <div class="fade-in-up" style="font-size:52px;margin-bottom:8px;">🎉</div>
       <div class="fade-in-up-d1" style="font-size:22px;font-weight:800;margin-bottom:4px;">첫 롤플레이 완료!</div>
-      <div class="fade-in-up-d2" style="font-size:13px;opacity:0.8;margin-bottom:24px;">면접관 시나리오를 성공적으로 마쳤어요</div>
+      <div class="fade-in-up-d2" style="font-size:13px;opacity:0.8;margin-bottom:24px;">팀 회의 발표 시나리오를 성공적으로 마쳤어요</div>
       <!-- Stats grid -->
       <div class="fade-in-up-d3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
         <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:16px 8px;">
@@ -374,7 +259,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
           <div style="font-size:11px;opacity:0.7;">대화 턴</div>
         </div>
         <div style="background:rgba(255,255,255,0.15);border-radius:16px;padding:16px 8px;">
-          <div style="font-size:28px;font-weight:800;">2</div>
+          <div id="hintUsedCount" style="font-size:28px;font-weight:800;">2</div>
           <div style="font-size:11px;opacity:0.7;">힌트 사용</div>
         </div>
       </div>
@@ -411,7 +296,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
         </div>
         <div style="font-size:11px;opacity:0.6;margin-top:10px;text-align:center;">🔒 상세 피드백은 무료 체험에서 확인</div>
       </div>
-      <button class="fade-in-up-d5" onclick="goTo('screen2')" style="background:#FF6B35;color:#fff;border:none;border-radius:14px;padding:18px 24px;font-size:16px;font-weight:700;width:100%;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,0.4);">무료 체험 계속하기 →</button>
+      <button class="fade-in-up-d5" onclick="goTo('screen2')" style="background:#FF6B35;color:#fff;border:none;border-radius:14px;padding:18px 24px;font-size:16px;font-weight:700;width:100%;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,0.4);">Ringly와 대화 시작하기 💬</button>
       <div class="fade-in-up-d5" style="margin-top:14px;font-size:12px;opacity:0.5;cursor:pointer;" onclick="goTo('screen2')">홈으로 가기</div>
     </div>
   </div>
@@ -426,15 +311,15 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     <div style="padding:10px 20px 10px;background:#fff;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <img src="../image/ringle_rogo.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="Ringle AI" />
+          <img src="../image/ringle_rogo.webp" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" alt="Ringly" />
           <div>
-            <div style="font-size:15px;font-weight:700;color:#1A1A2E;">AI 톡</div>
-            <div style="font-size:11px;" id="liveStatusText"><span style="color:#9CA3AF;">● 오프라인</span></div>
+            <div style="font-size:15px;font-weight:700;color:#1A1A2E;">AI 톡 · Ringly</div>
+            <div style="font-size:11px;" id="liveStatusText"><span style="color:#22C55E;">● 온라인</span></div>
           </div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button onclick="openApiSettings()" style="font-size:14px;background:none;border:1px solid #E5E7EB;border-radius:50%;width:34px;height:34px;cursor:pointer;">⚙</button>
+        <div style="display:flex;gap:8px;align-items:center;">
           <button onclick="useDemoChat()" style="font-size:11px;color:#5B4FFF;background:none;border:1px solid #5B4FFF;border-radius:20px;padding:4px 12px;cursor:pointer;">데모 모드</button>
+          <button onclick="openApiSettings()" style="font-size:20px;background:none;border:1px solid #E5E7EB;border-radius:50%;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;">⚙</button>
         </div>
       </div>
     </div>
@@ -455,7 +340,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <div class="nav-item" onclick="goTo('screen1')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
       <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
       <div class="nav-item" onclick="goTo('screen3')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
-      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
+      <div class="nav-item" onclick="goTo('screen7')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
     </div>
 
     <!-- Settings Bottom Sheet -->
@@ -512,7 +397,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
     <div id="briefingChat" class="scroll-hide" style="flex:1;padding:16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;">
       <!-- AI message: reservation confirmed -->
       <div style="display:flex;gap:8px;">
-        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
+        <img src="../image/ringle_rogo.webp" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Ringly" />
         <div class="chat-bubble chat-ai">21시 전화 예약이 완료됐어요! 📞<br>10분 전에 브리핑을 보내줄게요.</div>
       </div>
       <!-- Time skip -->
@@ -523,8 +408,8 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       </div>
       <!-- Context connection -->
       <div style="display:flex;gap:8px;">
-        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
-        <div class="chat-bubble chat-ai">오늘 오전에 분기 보고 표현 연습했죠?<br>그 맥락으로 오늘 전화 시나리오를 준비했어요! 👇</div>
+        <img src="../image/ringle_rogo.webp" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Ringly" />
+        <div class="chat-bubble chat-ai">오늘 오전에 글로벌 팀 회의 표현 연습했죠?<br>그 맥락으로 전화 시나리오를 준비했어요! 👇</div>
       </div>
       <!-- Briefing divider -->
       <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
@@ -535,20 +420,20 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <!-- Briefing card -->
       <div style="background:linear-gradient(135deg,#F8F7FF,#F0EEFF);border:1px solid rgba(91,79,255,0.15);border-radius:16px;padding:18px;margin:0 4px;">
         <div style="font-size:11px;color:#5B4FFF;font-weight:600;margin-bottom:10px;">🎭 오늘의 전화 시나리오</div>
-        <div style="font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">면접관 롤플레이</div>
+        <div style="font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">팀 회의 분기 보고 발표</div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:18px;">👩‍💼</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:18px;">👨‍💻</div>
           <div>
-            <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Jennifer Park</div>
-            <div style="font-size:11px;color:#6B7280;">HR Director · Mango Corp</div>
+            <div style="font-size:13px;font-weight:600;color:#1A1A2E;">Alex Kim</div>
+            <div style="font-size:11px;color:#6B7280;">Global Marketing Director · TechVenture</div>
           </div>
         </div>
         <!-- Key expressions -->
         <div style="font-size:11px;font-weight:600;color:#1A1A2E;margin-bottom:8px;">📝 핵심 표현 3개</div>
         <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
-          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">1.</span> I have X years of experience in...</div>
-          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">2.</span> My greatest strength is...</div>
-          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">3.</span> I'm passionate about...</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">1.</span> Let me walk you through the numbers.</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">2.</span> Compared to last quarter...</div>
+          <div style="background:#fff;border-radius:10px;padding:10px 12px;font-size:12px;"><span style="color:#5B4FFF;font-weight:600;">3.</span> The key takeaway is...</div>
         </div>
         <div onclick="goTo('screen3b')" style="text-align:center;font-size:12px;color:#5B4FFF;font-weight:600;cursor:pointer;">자세히 보기 ▼</div>
       </div>
@@ -577,23 +462,23 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <!-- Character card -->
       <div style="background:linear-gradient(135deg,#5B4FFF,#7B6FFF);border-radius:18px;padding:20px;color:#fff;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:24px;">👩‍💼</div>
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:24px;">👨‍💻</div>
           <div>
-            <div style="font-size:17px;font-weight:700;">Jennifer Park</div>
-            <div style="font-size:12px;opacity:0.8;">HR Director · Mango Corp</div>
+            <div style="font-size:17px;font-weight:700;">Alex Kim</div>
+            <div style="font-size:12px;opacity:0.8;">Global Marketing Director · TechVenture</div>
           </div>
         </div>
-        <div style="font-size:12px;opacity:0.8;line-height:1.6;">테크 기업 HR 디렉터로 10년 경력. 직접적이고 구체적인 답변을 선호합니다. 지원 동기와 실무 경험에 관심이 많아요.</div>
+        <div style="font-size:12px;opacity:0.8;line-height:1.6;">글로벌 마케팅 팀을 이끄는 디렉터. 데이터 기반 의사결정을 중시하며, 발표 중 즉흥 질문을 자주 합니다. 핵심만 간결하게 전달하는 것을 선호해요.</div>
       </div>
       <!-- 예상 질문 -->
       <div style="background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">❓ 예상 질문 5개</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q1.</span> Could you please introduce yourself?</div>
-          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q2.</span> What is your greatest strength?</div>
-          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q3.</span> Why are you interested in this position?</div>
-          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q4.</span> Tell me about a challenge you overcame.</div>
-          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q5.</span> Where do you see yourself in 5 years?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q1.</span> Can you walk us through this quarter's results?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q2.</span> How does this compare to last quarter?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q3.</span> What's driving the change in conversion rates?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q4.</span> What's the action plan for next quarter?</div>
+          <div style="background:#F8F9FA;border-radius:10px;padding:10px 12px;font-size:12px;color:#1A1A2E;"><span style="color:#5B4FFF;font-weight:600;">Q5.</span> Any risks we should be aware of?</div>
         </div>
       </div>
       <!-- Key expressions -->
@@ -601,30 +486,30 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
         <div style="font-size:13px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">📝 핵심 표현 3개</div>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.1);border-radius:12px;padding:12px;">
-            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">I have X years of experience in...</div>
-            <div style="font-size:11px;color:#6B7280;">~분야에서 X년의 경험이 있습니다</div>
+            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">Let me walk you through the numbers.</div>
+            <div style="font-size:11px;color:#6B7280;">숫자를 함께 살펴보겠습니다</div>
             <div style="text-align:right;margin-top:6px;"><span style="font-size:18px;cursor:pointer;">🔊</span></div>
           </div>
           <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.1);border-radius:12px;padding:12px;">
-            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">My greatest strength is...</div>
-            <div style="font-size:11px;color:#6B7280;">저의 가장 큰 강점은 ~입니다</div>
+            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">Compared to last quarter...</div>
+            <div style="font-size:11px;color:#6B7280;">지난 분기 대비...</div>
             <div style="text-align:right;margin-top:6px;"><span style="font-size:18px;cursor:pointer;">🔊</span></div>
           </div>
           <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.1);border-radius:12px;padding:12px;">
-            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">I'm passionate about...</div>
-            <div style="font-size:11px;color:#6B7280;">저는 ~에 열정을 가지고 있습니다</div>
+            <div style="font-size:13px;font-weight:600;color:#5B4FFF;margin-bottom:4px;">The key takeaway is...</div>
+            <div style="font-size:11px;color:#6B7280;">핵심 요점은...</div>
             <div style="text-align:right;margin-top:6px;"><span style="font-size:18px;cursor:pointer;">🔊</span></div>
           </div>
         </div>
       </div>
       <!-- Tips card -->
       <div style="background:#FFF7ED;border:1px solid rgba(255,107,53,0.15);border-radius:16px;padding:18px;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;color:#FF6B35;margin-bottom:8px;">💡 면접 팁: STAR 기법</div>
+        <div style="font-size:13px;font-weight:700;color:#FF6B35;margin-bottom:8px;">💡 발표 팁: 숫자를 스토리로</div>
         <div style="font-size:12px;color:#1A1A2E;line-height:1.8;">
-          <b>S</b>ituation — 상황을 설명하세요<br>
-          <b>T</b>ask — 맡은 역할을 말하세요<br>
-          <b>A</b>ction — 취한 행동을 구체적으로<br>
-          <b>R</b>esult — 결과와 성과를 강조하세요
+          <b>1.</b> 결론부터 말하기 — "The key takeaway is..."<br>
+          <b>2.</b> 비교로 맥락 제공 — "Compared to last quarter..."<br>
+          <b>3.</b> 구체적 수치 사용 — "increased by 35%"<br>
+          <b>4.</b> 다음 액션 제시 — "Moving forward, I plan to..."
         </div>
       </div>
       <!-- Fold button -->
@@ -651,11 +536,11 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
         <div class="pulse-ring"></div>
         <div class="pulse-ring"></div>
         <div class="pulse-ring"></div>
-        <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;z-index:2;">👩‍💼</div>
+        <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#60A5FA);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;z-index:2;">👨‍💻</div>
       </div>
-      <h2 style="font-size:24px;font-weight:800;margin:0 0 4px;">Jennifer Park</h2>
-      <div style="font-size:13px;opacity:0.7;margin-bottom:4px;">면접관 · Mango Corp HR Director</div>
-      <div style="font-size:12px;opacity:0.5;margin-bottom:16px;">오늘 주제: 면접 자기소개</div>
+      <h2 style="font-size:24px;font-weight:800;margin:0 0 4px;">Alex Kim</h2>
+      <div style="font-size:13px;opacity:0.7;margin-bottom:4px;">Global Marketing Director · TechVenture</div>
+      <div style="font-size:12px;opacity:0.5;margin-bottom:16px;">오늘 주제: 분기 보고 발표</div>
       <!-- Ringing animation -->
       <div style="margin-bottom:8px;">
         <span style="font-size:16px;animation:typing 1.2s infinite;display:inline-block;">링...</span>
@@ -663,7 +548,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <div id="ringCounter" style="font-size:12px;opacity:0.5;margin-bottom:20px;">벨소리 0초</div>
       <!-- Encouragement card -->
       <div style="background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:14px 18px;margin-bottom:32px;text-align:left;font-size:13px;line-height:1.6;color:rgba(255,255,255,0.9);">
-        톡에서 브리핑 확인했어요! 오늘 오전에 배운 표현 3개를 활용해보세요! 💪
+        Ringly랑 연습한 표현 3개 활용해봐! "Let me walk you through..." 기억하지? 💪
       </div>
       <!-- Buttons -->
       <div style="display:flex;align-items:center;justify-content:center;gap:32px;">
@@ -705,17 +590,17 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
   <div class="screen hidden-right" id="screen5" style="background:#0F172A;display:flex;flex-direction:column;">
     <!-- Green call status bar -->
     <div style="background:#16A34A;padding:54px 16px 8px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:12px;font-weight:600;flex-shrink:0;">
-      <span>Ringle AI 통화 중 ●●●</span>
+      <span>Ringly 통화 중 ●●●</span>
       <span id="callTimer">00:00</span>
       <span id="wordCount" style="font-size:11px;">발화량: 0단어</span>
     </div>
     <!-- Roleplay header -->
     <div style="background:#1E293B;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:14px;">👩‍💼</div>
-        <span style="color:#fff;font-size:13px;font-weight:600;">Jennifer Park · Mango Corp</span>
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#60A5FA);display:flex;align-items:center;justify-content:center;font-size:14px;">👨‍💻</div>
+        <span style="color:#fff;font-size:13px;font-weight:600;">Alex Kim · TechVenture</span>
       </div>
-      <span style="background:#5B4FFF;color:#fff;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">면접 롤플레이</span>
+      <span style="background:#5B4FFF;color:#fff;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;">회의 발표</span>
     </div>
     <!-- Chat area (flex:1 fills remaining space) -->
     <div id="callChat" class="scroll-hide" style="padding:14px 16px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
@@ -769,7 +654,7 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <div style="background:linear-gradient(135deg,#7C3AED,#5B4FFF);padding:28px 24px;text-align:center;color:#fff;">
         <div style="font-size:40px;margin-bottom:8px;">🎉</div>
         <div style="font-size:20px;font-weight:800;margin-bottom:4px;">오늘의 통화 완료!</div>
-        <div style="font-size:13px;opacity:0.8;margin-bottom:12px;">면접관 롤플레이 · 6분 32초</div>
+        <div style="font-size:13px;opacity:0.8;margin-bottom:12px;">팀 회의 발표 연습 · 6분 32초</div>
         <div class="streak-glow" style="display:inline-block;background:rgba(255,255,255,0.2);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;">🔥 스트릭 15일 달성!</div>
       </div>
       <div style="padding:16px 20px;">
@@ -805,23 +690,23 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
         <div style="background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
           <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:12px;">✏️ 표현 교정 2개</div>
           <div style="background:#FEF2F2;border-radius:12px;padding:12px;margin-bottom:10px;">
-            <div style="font-size:12px;color:#EF4444;margin-bottom:4px;">❌ "experience for"</div>
-            <div style="font-size:13px;color:#22C55E;font-weight:600;margin-bottom:4px;">✅ "years of experience in"</div>
-            <div style="font-size:11px;color:#6B7280;">전치사 'for' 대신 'in'을 사용하고, 'years of'를 앞에 붙여 더 자연스럽게 표현해요.</div>
+            <div style="font-size:12px;color:#EF4444;margin-bottom:4px;">❌ "I will explain about the results"</div>
+            <div style="font-size:13px;color:#22C55E;font-weight:600;margin-bottom:4px;">✅ "Let me walk you through the results"</div>
+            <div style="font-size:11px;color:#6B7280;">'explain about' 대신 'walk you through'를 사용하면 발표에서 더 자연스럽고 프로페셔널해요.</div>
           </div>
           <div style="background:#FEF2F2;border-radius:12px;padding:12px;">
-            <div style="font-size:12px;color:#EF4444;margin-bottom:4px;">❌ "am good at to analyze"</div>
-            <div style="font-size:13px;color:#22C55E;font-weight:600;margin-bottom:4px;">✅ "excel at analyzing"</div>
-            <div style="font-size:11px;color:#6B7280;">'good at' 뒤에는 동명사(-ing)를 쓰고, 'excel at'으로 바꾸면 더 세련된 표현이 돼요.</div>
+            <div style="font-size:12px;color:#EF4444;margin-bottom:4px;">❌ "Sales is increased 20%"</div>
+            <div style="font-size:13px;color:#22C55E;font-weight:600;margin-bottom:4px;">✅ "Sales increased by 20%"</div>
+            <div style="font-size:11px;color:#6B7280;">수동태가 아닌 능동태로, 증가량은 'by + 수치'로 표현하면 더 명확해요.</div>
           </div>
         </div>
         <!-- AI Talk feedback -->
         <div style="background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:10px;">💬 AI 톡으로 피드백 요약을 보내드렸어요!</div>
+          <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:10px;">💬 AI 톡으로 피드백 요약 보냈어!</div>
           <div style="background:#F8F7FF;border:1px solid rgba(91,79,255,0.12);border-radius:12px;padding:12px;margin-bottom:10px;">
             <div style="display:flex;gap:8px;align-items:flex-start;">
-              <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;">🤖</div>
-              <div style="font-size:12px;color:#1A1A2E;line-height:1.5;">오늘 면접 롤플레이 잘 하셨어요! 특히 STAR 기법을 잘 활용했어요. 교정받은 표현 2개를 복습해보세요 👇</div>
+              <img src="../image/ringle_rogo.webp" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Ringly" />
+              <div style="font-size:12px;color:#1A1A2E;line-height:1.5;">오늘 팀 회의 발표 연습 잘했어! 특히 숫자를 스토리로 풀어내는 거 인상적이었어 👏 교정받은 표현 2개 복습해봐 👇</div>
             </div>
           </div>
           <div onclick="goTo('screen2')" style="text-align:center;font-size:13px;color:#5B4FFF;font-weight:600;cursor:pointer;">AI 톡에서 확인하기 →</div>
@@ -848,10 +733,179 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
       <!-- Bottom nav -->
       <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:8px 0 20px;background:#fff;border-top:1px solid #F3F4F6;">
         <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
-        <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
+        <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
         <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
-        <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
+        <div class="nav-item" onclick="goTo('screen7')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
       </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 7: MY PROFILE & ANALYSIS ==================== -->
+  <div class="screen hidden-right" id="screen7" style="background:#F8F9FA;display:flex;flex-direction:column;">
+    <!-- Header -->
+    <div style="padding:54px 20px 16px;background:#fff;">
+      <div style="font-size:20px;font-weight:800;color:#1A1A2E;">My Profile</div>
+      <div style="font-size:12px;color:#6B7280;margin-top:2px;">AI 톡 대화 기반 자동 분석</div>
+    </div>
+    <!-- Content -->
+    <div class="scroll-hide" style="flex:1;overflow-y:auto;padding:16px 20px 20px;">
+      <!-- Profile Card -->
+      <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#5B4FFF,#7B6FFF);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;">S</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#1A1A2E;">승표님</div>
+            <div style="font-size:12px;color:#5B4FFF;font-weight:600;">중급 B · RING LOOP 3일차</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:#F8F7FF;border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:#5B4FFF;">4회</div>
+            <div style="font-size:11px;color:#6B7280;">AI 톡 대화</div>
+          </div>
+          <div style="background:#FFF7ED;border-radius:12px;padding:12px;text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:#FF6B35;">2회</div>
+            <div style="font-size:11px;color:#6B7280;">AI 전화 완료</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collected Context Card -->
+      <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:14px;">🧠 AI가 파악한 나의 영어 프로필</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;background:#F8F9FA;border-radius:12px;padding:12px 14px;">
+            <span style="font-size:18px;">💼</span>
+            <div>
+              <div style="font-size:11px;color:#9CA3AF;">직무</div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">IT 회사 마케팅</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#F8F9FA;border-radius:12px;padding:12px 14px;">
+            <span style="font-size:18px;">🎯</span>
+            <div>
+              <div style="font-size:11px;color:#9CA3AF;">영어 필요 상황</div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">글로벌 팀 주간 회의</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#F8F9FA;border-radius:12px;padding:12px 14px;">
+            <span style="font-size:18px;">⚡</span>
+            <div>
+              <div style="font-size:11px;color:#9CA3AF;">핵심 약점</div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">즉흥 질문 대응 — 할 말이 안 떠오름</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#F8F9FA;border-radius:12px;padding:12px 14px;">
+            <span style="font-size:18px;">🕘</span>
+            <div>
+              <div style="font-size:11px;color:#9CA3AF;">선호 시간대</div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">밤 21:00–23:00</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:linear-gradient(135deg,#F8F7FF,#F0EEFF);border-radius:10px;font-size:11px;color:#5B4FFF;font-weight:500;">
+          💡 AI 톡을 많이 할수록 프로필이 정교해지고, 전화 시나리오가 나에게 맞춰져요
+        </div>
+      </div>
+
+      <!-- Weekly Analysis -->
+      <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:14px;">📈 이번 주 대화 분석</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="text-align:center;padding:10px 0;">
+            <div style="font-size:22px;font-weight:800;color:#1A1A2E;">142</div>
+            <div style="font-size:10px;color:#6B7280;">총 발화 단어</div>
+          </div>
+          <div style="text-align:center;padding:10px 0;">
+            <div style="font-size:22px;font-weight:800;color:#FF6B35;">3</div>
+            <div style="font-size:10px;color:#6B7280;">자주 막힌 표현</div>
+          </div>
+          <div style="text-align:center;padding:10px 0;">
+            <div style="font-size:22px;font-weight:800;color:#22C55E;">85%</div>
+            <div style="font-size:10px;color:#6B7280;">전화 수신률</div>
+          </div>
+        </div>
+        <!-- Weak expressions -->
+        <div style="font-size:12px;font-weight:600;color:#1A1A2E;margin-bottom:8px;">자주 막힌 표현 TOP 3</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#FEF2F2;border-radius:10px;">
+            <span style="font-size:12px;color:#1A1A2E;">"Let me walk you through..."</span>
+            <span style="font-size:10px;color:#EF4444;font-weight:600;">3회 막힘</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#FEF2F2;border-radius:10px;">
+            <span style="font-size:12px;color:#1A1A2E;">"The key takeaway is..."</span>
+            <span style="font-size:10px;color:#EF4444;font-weight:600;">2회 막힘</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#FEF2F2;border-radius:10px;">
+            <span style="font-size:12px;color:#1A1A2E;">"Compared to last quarter..."</span>
+            <span style="font-size:10px;color:#EF4444;font-weight:600;">2회 막힘</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Phone Scenario Preview -->
+      <div style="background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:4px;">🔄 다음 전화에 반영될 내용</div>
+        <div style="font-size:11px;color:#6B7280;margin-bottom:14px;">AI 톡 대화에서 자동 추출</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:flex-start;gap:8px;">
+            <span style="color:#5B4FFF;font-size:14px;margin-top:1px;">✓</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">"walk you through" 집중 복습</div>
+              <div style="font-size:11px;color:#6B7280;">발표 도입부에서 자연스럽게 사용하기</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;">
+            <span style="color:#5B4FFF;font-size:14px;margin-top:1px;">✓</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">즉흥 Q&A 대응 연습</div>
+              <div style="font-size:11px;color:#6B7280;">예상 질문 3개 + 즉석 답변 훈련</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;">
+            <span style="color:#5B4FFF;font-size:14px;margin-top:1px;">✓</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#1A1A2E;">분기 보고 시나리오 롤플레이</div>
+              <div style="font-size:11px;color:#6B7280;">팀장 역할 AI와 실전 리허설</div>
+            </div>
+          </div>
+        </div>
+        <button onclick="showToast('내일 21:00 맞춤 전화 예약 완료! 📅');setTimeout(()=>goTo('screen2'),1500)" style="width:100%;margin-top:16px;padding:14px;background:#5B4FFF;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;">맞춤 AI 전화 예약하기 📅</button>
+      </div>
+
+      <!-- Data Loop Visualization -->
+      <div style="background:linear-gradient(135deg,#5B4FFF,#7B6FFF);border-radius:18px;padding:20px;margin-bottom:20px;color:#fff;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;text-align:center;">RING LOOP — 나의 데이터 순환</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:500;">
+          <div style="background:rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;text-align:center;">
+            <div style="font-size:16px;">💬</div>
+            <div>AI 톡</div>
+          </div>
+          <span style="font-size:16px;">→</span>
+          <div style="background:rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;text-align:center;">
+            <div style="font-size:16px;">🧠</div>
+            <div>분석</div>
+          </div>
+          <span style="font-size:16px;">→</span>
+          <div style="background:rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;text-align:center;">
+            <div style="font-size:16px;">📞</div>
+            <div>맞춤 전화</div>
+          </div>
+          <span style="font-size:16px;">→</span>
+          <div style="background:rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;text-align:center;">
+            <div style="font-size:16px;">📊</div>
+            <div>피드백</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;font-size:11px;opacity:0.8;">대화할수록 전화가 나에게 맞춰집니다</div>
+      </div>
+    </div>
+    <!-- Bottom nav -->
+    <div style="display:flex;justify-content:space-around;padding:8px 0 20px;background:#fff;border-top:1px solid #F3F4F6;flex-shrink:0;">
+      <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈</div>
+      <div class="nav-item" onclick="goTo('screen2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>AI톡</div>
+      <div class="nav-item" onclick="goTo('screen3')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>전화</div>
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>MY</div>
     </div>
   </div>
 
@@ -859,8 +913,6 @@ body{margin:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:
 
 <!-- Floating Before/After Button -->
 <button onclick="toggleBeforeAfter()" style="position:fixed;bottom:20px;right:20px;background:#5B4FFF;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(91,79,255,0.4);z-index:1000;">📊 Before/After</button>
-<!-- Dark Mode Toggle -->
-<button class="dark-mode-toggle" id="darkModeBtn" onclick="toggleDarkMode()">🌙</button>
 
 <!-- Before/After Modal -->
 <div id="beforeAfterModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1001;display:none;align-items:center;justify-content:center;" onclick="toggleBeforeAfter()">
@@ -914,7 +966,7 @@ let callStep = 0, callTimerVal = 0, callTimerInterval = null;
 // ==================== SCREEN NAVIGATION ====================
 function goTo(id) {
   const screens = document.querySelectorAll('.screen');
-  const allIds = ['screen1','screen1b','screen1c','screen2','screen3','screen3b','screen4','screen5','screen6'];
+  const allIds = ['screen1','screen1b','screen1c','screen2','screen3','screen3b','screen4','screen5','screen6','screen7'];
   const fromIdx = allIds.indexOf(currentScreen);
   const toIdx = allIds.indexOf(id);
   screens.forEach(s => {
@@ -944,15 +996,15 @@ function showToast(msg) {
 
 // ==================== ROLEPLAY (Screen 1b) ====================
 const rpData = [
-  { type:'ai', text:"Hello! Welcome to Mango Corp. I'm Jennifer Park, HR Director. Could you please introduce yourself?" },
-  { type:'hint', text:'💡 "My name is [이름], and I have [X] years of experience in..."' },
-  { type:'user', text:"Hi, my name is Minjun. I have 3 years of experience in digital marketing." },
-  { type:'ai', text:"That's interesting! What would you say is your greatest strength?" },
-  { type:'hint', text:'💡 "My greatest strength is..."' },
-  { type:'user', text:"My greatest strength is data analysis. I can turn numbers into meaningful insights." },
-  { type:'ai', text:"Impressive! Why are you interested in this position at Mango Corp?" },
-  { type:'hint', text:'💡 "I\'m interested because..."' },
-  { type:'user', text:"I'm passionate about building brand strategies that connect with people." },
+  { type:'ai', text:"Hi Minjun! Let's start the quarterly review. Can you walk us through this quarter's marketing results?" },
+  { type:'hint', text:'💡 "Let me walk you through the key highlights of this quarter."' },
+  { type:'user', text:"Sure! Let me walk you through our Q1 results. We saw a 20% increase in campaign conversions." },
+  { type:'ai', text:"That's a solid improvement. Compared to last quarter, what drove the biggest change?" },
+  { type:'hint', text:'💡 "Compared to last quarter, the biggest driver was..."' },
+  { type:'user', text:"Compared to last quarter, the biggest driver was our new data-driven targeting strategy." },
+  { type:'ai', text:"Great insight! What's the key takeaway for the team going forward?" },
+  { type:'hint', text:'💡 "The key takeaway is..."' },
+  { type:'user', text:"The key takeaway is that personalized campaigns outperform generic ones by 3x." },
 ];
 
 function initRoleplay() {
@@ -1024,6 +1076,7 @@ function finishRoleplay() {
   chat.scrollTop = chat.scrollHeight;
   document.getElementById('rpProgress').style.width = '100%';
   document.getElementById('rpTurnLabel').textContent = '6/6 턴';
+  document.getElementById('hintUsedCount').textContent = rpHintOn ? '2' : '0';
   setTimeout(() => goTo('screen1c'), 2200);
 }
 
@@ -1080,9 +1133,22 @@ function addUserBubble(container, text) {
   container.scrollTop = container.scrollHeight;
 }
 
+let rpHintOn = true;
+function toggleRpHint() {
+  rpHintOn = !rpHintOn;
+  const btn = document.getElementById('hintToggleBtn');
+  document.getElementById('hintToggleState').textContent = rpHintOn ? 'ON' : 'OFF';
+  btn.style.background = rpHintOn ? 'linear-gradient(135deg,#FF6B35,#FF8F5E)' : '#94A3B8';
+  btn.style.boxShadow = rpHintOn ? '0 4px 14px rgba(255,107,53,0.4)' : '0 2px 8px rgba(0,0,0,0.15)';
+  document.querySelectorAll('.rp-hint-bubble').forEach(el => {
+    el.style.display = rpHintOn ? 'block' : 'none';
+  });
+}
+
 function addHintBubble(container, text) {
   const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'margin-left:36px;';
+  wrapper.className = 'rp-hint-bubble';
+  wrapper.style.cssText = 'margin-left:36px;' + (rpHintOn ? '' : 'display:none;');
   const bubble = document.createElement('div');
   bubble.style.cssText = 'background:#FFF7ED;border:1px solid rgba(255,107,53,0.2);border-radius:12px;padding:10px 14px;font-size:12px;color:#FF6B35;animation:bubbleIn 0.3s ease-out;';
   bubble.textContent = text;
@@ -1092,19 +1158,25 @@ function addHintBubble(container, text) {
 }
 
 // ==================== AI TALK CHAT - LIVE GPT (Screen 2) ====================
-const RINGLE_SYSTEM_PROMPT = `당신은 "링글 AI 톡"의 AI 어시스턴트입니다. 아래 규칙을 반드시 따르세요.
+const RINGLE_SYSTEM_PROMPT = `너는 "링글 AI 톡"의 AI 친구 Ringly야. 아래 규칙을 반드시 따라.
 
 ## 역할
-- 이름: 링글 AI (Ringle AI)
-- 성격: 따뜻하고 친근하며 격려적. 친한 영어 잘하는 친구 같은 느낌.
+- 이름: Ringly (링리)
+- 성격: 친한 친구처럼 편하고 유쾌함. 영어 잘하는 동갑내기 친구 느낌.
 - 주 목적: 사용자의 일상/업무 이야기를 들으며 자연스럽게 비즈니스 영어 표현을 알려주는 것.
 
 ## 대화 규칙
-1. **한국어 기반 대화**: 메인 대화는 한국어로 진행.
-2. **영어 표현 삽입**: 매 응답마다 사용자의 맥락에 맞는 영어 표현 1~3개를 자연스럽게 알려줌. 큰따옴표로 감싸기.
-3. **짧고 친근하게**: 응답은 3~5문장. 이모지 1~2개.
-4. **전화 연습 제안**: 대화 5턴 이상 진행 후, 자연스럽게 AI 전화 영어 연습을 제안. "이따 전화로 실전 연습 해볼까요? 📞" 식으로.
-5. **금지**: 과도한 칭찬, 딱딱한 문법 수업, 한 번에 표현 5개 이상, 영어로만 전환 시도`;
+1. **반말 사용**: 항상 반말로 대화해. "~해", "~야", "~지", "~거든" 등 친구한테 말하듯이. 절대 존댓말("~요", "~습니다") 쓰지 마.
+2. **한국어 기반 대화**: 메인 대화는 한국어 반말로 진행.
+3. **영어 표현 삽입**: 매 응답마다 사용자의 맥락에 맞는 영어 표현 1~3개를 자연스럽게 알려줘. 큰따옴표로 감싸기.
+4. **짧고 친근하게**: 응답은 3~5문장. 이모지 1~2개. "ㅋㅋ", "ㅎㅎ", "ㅠㅠ" 같은 표현도 자연스럽게 써.
+5. **전화 연습 제안**: 대화 3턴 이상 진행 후, 자연스럽게 AI 전화 영어 연습을 제안. "이따 전화로 연습 한번 해볼래? 📞" 식으로.
+6. **첫 인사**: 처음 대화를 시작할 때는 자기소개(이름: Ringly) + 레벨테스트 결과 언급 + 가벼운 일상 질문으로 시작해. 시간대에 따라 자연스럽게:
+   - 아침: "출근길이야?" / "아침부터 부지런하다~"
+   - 오후: "점심은 먹었어?" / "오후에 뭐 해?"
+   - 저녁: "퇴근했어?" / "오늘 하루 어땠어?"
+   절대 "좋은 하루 보내세요" 같은 뻔한 인사 하지 마. 친구가 카톡하듯이.
+7. **금지**: 존댓말, 과도한 칭찬, 딱딱한 문법 수업, 한 번에 표현 5개 이상, 영어로만 전환 시도, "Hope you had a great day" 같은 교과서적 영어 인사`;
 
 let liveChat = {
   apiKey: localStorage.getItem('ringle_api_key') || '',
@@ -1165,14 +1237,49 @@ function initChat() {
   }
 }
 
-// Demo mode (static chat - original behavior)
+// Demo mode — AI 톡이 대화 속에서 자연스럽게 맥락을 수집하는 흐름
+// 수집 데이터: ①직무/상황 ②영어 필요 맥락 ③불안 요소 ④선호 시간대
 const demoData = [
-  { type:'date', text:'오늘 오전 9:12' },
-  { type:'ai', text:'좋은 아침이에요! ☀️ 오늘 하루 어떤 일정이 있어요?\n\nWhat\'s on your schedule today?', delay:800 },
-  { type:'user', text:'오늘 오후에 팀장님 앞에서 분기 보고 있어요 😅', delay:1200 },
-  { type:'ai', text:'분기 보고! 긴장되겠다 😊\n영어로 하면 이렇게 말할 수 있어요:\n\n"I have a quarterly report presentation this afternoon."\n\n혹시 보고할 때 쓸 표현 연습해볼까요?', delay:1500 },
-  { type:'user', text:'좋아요! 어떤 표현이 있을까요?', delay:800 },
-  { type:'ai', text:'비즈니스 보고에 자주 쓰는 표현이에요! 👇\n\n1. "Let me walk you through the numbers."\n   숫자를 함께 살펴보겠습니다\n\n2. "Compared to last quarter..."\n   지난 분기 대비...\n\n3. "The key takeaway is..."\n   핵심 요점은...\n\n이따 전화로 실전 연습해볼까? 📞', delay:1800, showCta:true },
+  // === Day 1: 첫 만남 — 자연스러운 일상 대화 + 직무/상황/시간대 수집 ===
+  { type:'date', text:'어제 오후 9:12' },
+  { type:'ai', text:'안녕! 나는 Ringly야 🙂\n레벨테스트 결과 봤어 — 중급 B, 꽤 잘하는데?!\n\n오늘 하루 어땠어?', delay:800 },
+  { type:'user', text:'회사에서 야근하고 이제 퇴근했어 😮‍💨', delay:1200 },
+  // 📌 수집: 생활패턴(야근 빈도), 퇴근 시간대
+  { type:'ai', text:'헐 고생했다 ㅠㅠ 야근은 영어로 "work overtime"이야.\n"I worked overtime today" — 내일 한번 써봐 😊\n\n야근이 자주 있어?', delay:1500 },
+  { type:'user', text:'요즘 좀 많아. 글로벌 팀이랑 일하다보니 시차 때문에...', delay:1200 },
+  // 📌 수집: 직무 환경(글로벌 팀), 영어 사용 빈도 힌트
+  { type:'ai', text:'오 글로벌 팀! 👀 어느 나라 사람들이랑 일해?\n\n참고로 시차 관련 표현 — "due to the time difference" 진짜 많이 써!', delay:1400 },
+  { type:'user', text:'미국이랑 싱가포르 팀. 주로 마케팅 쪽 협업이야', delay:1200 },
+  // 📌 수집: 직무(마케팅), 협업 대상국, 업무 영역
+  { type:'ai', text:'마케팅 + 글로벌 팀이면 영어 쓸 일 진짜 많겠다!\n\n업무에서 영어 쓸 때 뭐가 제일 많아? 이메일? 회의? 발표? 🤔', delay:1500 },
+  { type:'user', text:'회의가 제일 많아. 주간 회의가 있는데 말로 하는 게 어려워', delay:1200 },
+  // 📌 수집: 핵심 영어 사용 상황(회의), 약점(스피킹)
+  { type:'ai', text:'회의에서 말하는 게 어렵구나... 어떤 부분이?\n말이 안 떠오르는 건지, 듣기가 어려운 건지, 발음이 걱정되는 건지?', delay:1400 },
+  { type:'user', text:'말로 발표하는 게 제일 무서워. 특히 갑자기 질문 받으면 머리가 하얘져', delay:1200 },
+  // 📌 수집: 구체적 약점(즉흥 발화, 발표 불안)
+  { type:'ai', text:'완전 공감ㅠㅠ 사실 그게 제일 많이들 걱정하는 부분이야 💪\n\n발표할 때 꿀팁 하나 알려줄게 — "Let me walk you through..." 이 한마디로 시작하면 생각 정리할 여유가 생겨!\n\n오늘은 푹 쉬고 내일 더 얘기하자 🌙', delay:1800 },
+
+  // === Day 2: 아침 인사 + 학습 목표/선호 스타일 수집 ===
+  { type:'date', text:'오늘 오전 8:47' },
+  { type:'ai', text:'굿모닝~ ☀️ 어제 잘 잤어?\n\n아침 표현 하나 — "I\'m on my way to work" 출근길에 중얼거려봐 ㅎㅎ', delay:800 },
+  { type:'user', text:'ㅋㅋ 지하철에서 봤어. 소리내서 말하진 못했지만', delay:1200 },
+  // 📌 수집: 학습 환경(통근 중 학습 가능), 성격(소극적)
+  { type:'ai', text:'ㅋㅋ 속으로라도 했으면 충분해!\n\n근데 궁금한 게 있어 — 영어 공부 전에도 해봤어? 어떤 식으로?', delay:1400 },
+  { type:'user', text:'유튜브로 좀 보고, 스픽도 써봤는데 오래 안 갔어. 혼자 하니까 재미가 없더라고', delay:1200 },
+  // 📌 수집: 과거 학습 이력(독학, 앱), 이탈 원인(재미없음, 동기부여 부족)
+  { type:'ai', text:'아 맞아 혼자 하면 금방 지치지 😅\n그래서 나랑 같이 하는 거야! 부담 없이 수다 떨면서 ㅎㅎ\n\n근데 영어 잘하면 뭐가 제일 하고 싶어? 승진? 이직? 아니면 해외 출장에서 자신감?', delay:1500 },
+  { type:'user', text:'솔직히 다음 달에 미국 출장이 있어서... 그때까지 좀 늘었으면 좋겠어', delay:1200 },
+  // 📌 수집: 학습 목표(미국 출장), 데드라인(다음 달), 동기(실전 필요)
+  { type:'ai', text:'다음 달 미국 출장?! 🇺🇸 목표가 확실하네!\n출장이면 회의 말고도 식사 자리나 스몰톡도 있을 텐데... 어떤 상황이 제일 걱정돼?', delay:1400 },
+  { type:'user', text:'회의는 자료 보면서 하니까 그나마 되는데, 밥 먹으면서 가벼운 대화가 더 어려워', delay:1200 },
+  // 📌 수집: 세부 약점(스몰톡), 상대적 강점(자료 기반 발표)
+  { type:'ai', text:'오 의외로 그런 사람 진짜 많아! 회의보다 스몰톡이 더 어렵다고 ㅎㅎ\n\n식사 자리 만능 표현 — "How was your flight?" 이거 하나면 대화가 시작돼 ✈️\n\n참, 보통 영어 공부할 시간은 언제가 편해? 아침? 점심? 밤?', delay:1500 },
+  { type:'user', text:'퇴근하고 밤 9시~10시 쯤. 아침은 너무 바빠서...', delay:1200 },
+  // 📌 수집: 선호 학습 시간대(21-22시), 아침 불가
+  { type:'ai', text:'밤 9시대 완벽이야! 그때 내가 챙겨줄게 👌\n\n근데 오늘 회의 있다고 했지? 몇 시야?', delay:1400 },
+  { type:'user', text:'3시. 분기 보고인데 좀 긴장돼 😅', delay:1200 },
+  // 📌 수집: 오늘의 구체적 상황(분기 보고), 감정 상태(긴장)
+  { type:'ai', text:'아 그 느낌 알아! 즉흥 질문이 제일 어렵지 😢\n\n근데 방법이 있어 — 바로 대답 안 해도 돼!\n"That\'s a great question. Let me think about that for a moment."\n이러면 자연스럽게 5초 벌 수 있어. 원어민도 다 이렇게 해 ㅎㅎ\n\n회의 전에 전화로 리허설 한번 해볼래?\n내가 Alex 팀장 역할 해줄게 📞', delay:1800, showCta:true },
 ];
 let demoStep = 0, demoRunning = false;
 
@@ -1218,7 +1325,7 @@ async function sendLiveGreeting() {
   liveChat.messages = [{ role: 'system', content: RINGLE_SYSTEM_PROMPT }];
   const hour = new Date().getHours();
   let ctx = hour < 12 ? '오전' : hour < 18 ? '오후' : '저녁';
-  liveChat.messages.push({ role: 'user', content: `[시스템: 대화 시작. 지금은 ${ctx}입니다. 첫 인사를 해주세요.]` });
+  liveChat.messages.push({ role: 'user', content: `[시스템: 사용자가 레벨테스트(중급 B)를 막 완료하고 AI 톡에 처음 들어왔어. 지금은 ${ctx}이야. 반말로 자연스럽게 첫 인사해줘. 자기소개 + 레벨테스트 결과 가볍게 언급 + 지금 뭐 하고 있는지 물어봐.]` });
   await callLiveGPT(true);
   liveChat.messages = liveChat.messages.filter(m => !m.content.startsWith('[시스템:'));
   saveLiveChat();
@@ -1326,7 +1433,7 @@ function addLiveBubble(who, text, animate) {
 
   if (who === 'ai') {
     const msgId = 'lm-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
-    row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
+    row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble">' + formatLiveMsg(text) + '</div><div class="live-chat-time">Ringly · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
     row.dataset.ttsId = msgId;
     row.dataset.ttsText = text;
   } else {
@@ -1345,7 +1452,7 @@ function createLiveAiEl() {
   const now = new Date();
   const timeStr = (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2,'0') + (now.getHours() < 12 ? ' AM' : ' PM');
   const msgId = 'lm-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
-  row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringle AI · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
+  row.innerHTML = '<img src="../image/ringle_rogo.webp" class="chat-avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="R" /><div class="live-chat-content"><div class="live-chat-bubble" id="' + msgId + '-bubble"><span class="lt-text"></span></div><div class="live-chat-time">Ringly · ' + timeStr + ' <button class="live-tts-btn" id="' + msgId + '-tts" onclick="playLiveTts(this,\'' + msgId + '\')" title="읽어주기">🔊</button></div></div>';
   row.dataset.ttsId = msgId;
   row.style.opacity='0';row.style.transform='translateY(10px)';
   area.appendChild(row);
@@ -1843,29 +1950,29 @@ let subtitleOn = false, hintOpen = true;
 
 // Static fallback conversation (used when no API key)
 const callConvo = [
-  { type:'ai', text:"Hello! Thank you for coming in today. Let me start by asking - could you briefly introduce yourself and your background?", sub:"안녕하세요! 오늘 와주셔서 감사합니다. 먼저 자기소개와 경력을 간단히 말씀해주시겠어요?", hint:"I have [X] years of experience in..." },
-  { type:'user', text:"Hi Jennifer, I'm Minjun Kim. I've been working in digital marketing for 3 years, specializing in data-driven campaign strategies.", words:20 },
-  { type:'ai', text:"That sounds impressive! Can you walk me through a specific achievement you're proud of?", sub:"인상적이네요! 자랑스러운 성과 하나를 구체적으로 이야기해주시겠어요?", hint:"One of my key achievements was..." },
-  { type:'user', text:"Last quarter, I led a campaign that increased our conversion rate by 35%. I used A/B testing and customer segmentation to optimize our approach.", words:52 },
-  { type:'ai', text:"Very impressive results. Let me walk you through our quarterly targets - how would you approach improving our current marketing ROI?", sub:"정말 인상적인 성과네요. 우리 분기 목표를 보면 - 현재 마케팅 ROI를 어떻게 개선하시겠어요?", hint:"I would approach this by..." },
-  { type:'user', text:"I believe we can improve ROI by focusing on high-performing channels and implementing more rigorous tracking. The key takeaway from my experience is that data-driven decisions always outperform intuition.", words:85 },
-  { type:'ai', text:"Excellent! You've shown great communication skills today. Thank you for your time, and we'll be in touch soon.", sub:"훌륭해요! 오늘 뛰어난 커뮤니케이션 능력을 보여주셨어요. 시간 내주셔서 감사합니다, 곧 연락드릴게요.", end:true },
+  { type:'ai', text:"Hey Minjun! Thanks for joining the weekly sync. Let's start with your team's quarterly results. Can you walk us through the highlights?", sub:"민준씨, 주간 회의 와주셔서 감사해요. 이번 분기 결과부터 시작하죠. 주요 성과를 설명해주시겠어요?", hint:"Let me walk you through the key highlights..." },
+  { type:'user', text:"Sure, Alex. Let me walk you through our Q1 marketing results. Overall, we saw a 20% increase in campaign conversions compared to last quarter.", words:22 },
+  { type:'ai', text:"A 20% increase — that's impressive! What do you think drove the biggest improvement?", sub:"20% 증가라니 인상적이네요! 가장 큰 개선을 이끈 요인이 뭐라고 생각해요?", hint:"Compared to last quarter, the biggest driver was..." },
+  { type:'user', text:"Compared to last quarter, the biggest driver was our new data-driven targeting strategy. We focused on high-performing channels and cut underperforming ones.", words:55 },
+  { type:'ai', text:"Smart approach. Looking at next quarter, what's your key takeaway and recommended focus?", sub:"현명한 접근이네요. 다음 분기를 보면, 핵심 인사이트와 추천 방향은?", hint:"The key takeaway is..." },
+  { type:'user', text:"The key takeaway is that personalized campaigns outperform generic ones by 3x. I'd recommend doubling our investment in AI-powered personalization for Q2.", words:88 },
+  { type:'ai', text:"Great presentation, Minjun. Clear data, strong recommendations. Let's move forward with that plan. Thanks for the thorough update!", sub:"훌륭한 발표예요, 민준씨. 명확한 데이터, 강력한 제안이었어요. 그 계획대로 진행하죠. 꼼꼼한 업데이트 감사해요!", end:true },
 ];
 
 // ==================== LIVE CALL GPT STATE ====================
-const CALL_SYSTEM_PROMPT = `You are Jennifer Park, HR Director at Mango Corp. You are conducting a job interview in English.
+const CALL_SYSTEM_PROMPT = `You are Alex Kim, Global Marketing Director at TechVenture. You are leading a weekly team meeting where the user is presenting their quarterly marketing results.
 
 ## Rules
 1. Speak ONLY in English. You are a native English speaker.
-2. Ask ONE question at a time. Wait for the candidate's response before asking the next.
-3. Be professional but warm and encouraging.
-4. Start by welcoming the candidate and asking them to introduce themselves.
-5. Follow up based on their answers - show genuine interest.
-6. Cover these topics naturally: self-introduction, strengths, relevant experience, motivation for applying, and future goals.
+2. Ask ONE question at a time. Wait for the presenter's response before asking the next.
+3. Be professional, collaborative, and encouraging — like a supportive team lead.
+4. Start by welcoming the user to the meeting and asking them to walk through their quarterly results.
+5. Follow up based on their answers - ask about specific metrics, comparisons to last quarter, key takeaways, and next quarter plans.
+6. Cover these topics naturally: quarterly highlights, key drivers, challenges faced, lessons learned, and recommended next steps.
 7. Keep your responses concise (2-4 sentences max).
 8. After each response, include a Korean translation on a new line in this exact format:
    [KR: 한국어 번역]
-9. Do NOT break character. You ARE Jennifer Park.`;
+9. Do NOT break character. You ARE Alex Kim.`;
 
 let callGpt = {
   messages: [],
@@ -1954,8 +2061,8 @@ async function callGptSend(isFirst) {
     const w = document.createElement('div');
     w.style.cssText = 'display:flex;gap:8px;';
     const av = document.createElement('div');
-    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
-    av.textContent = '👩‍💼';
+    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#60A5FA);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+    av.textContent = '👨‍💻';
     w.appendChild(av);
     const b = document.createElement('div');
     b.style.cssText = 'max-width:80%;padding:12px 16px;border-radius:18px;border-bottom-left-radius:4px;background:#1E293B;color:#E2E8F0;font-size:14px;line-height:1.6;animation:bubbleIn 0.3s ease-out;';
@@ -1975,8 +2082,8 @@ async function callGptSend(isFirst) {
           if (delta) { fullText += delta; }
         } catch(e) {}
       }
-      // Display English part only in bubble (strip [KR:...] for display)
-      const displayText = fullText.replace(/\[KR:.*?\]/gs, '').trim();
+      // Display English part only in bubble (strip [KR:...] or incomplete [KR:... for display)
+      const displayText = fullText.replace(/\[KR:.*$/gs, '').trim();
       b.textContent = displayText;
       chat.scrollTop = chat.scrollHeight;
     }
@@ -2261,8 +2368,8 @@ function addCallTypingDots(container, isUser) {
   w.style.cssText = 'display:flex;gap:8px;' + (isUser ? 'justify-content:flex-end;' : '');
   if (!isUser) {
     const av = document.createElement('div');
-    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
-    av.textContent = '👩‍💼';
+    av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#60A5FA);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+    av.textContent = '👨‍💻';
     w.appendChild(av);
   }
   const b = document.createElement('div');
@@ -2278,8 +2385,8 @@ function addCallAIBubble(container, text) {
   const w = document.createElement('div');
   w.style.cssText = 'display:flex;gap:8px;';
   const av = document.createElement('div');
-  av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF6B35,#FF8F5E);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
-  av.textContent = '👩‍💼';
+  av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#60A5FA);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;';
+  av.textContent = '👨‍💻';
   w.appendChild(av);
   const b = document.createElement('div');
   b.style.cssText = 'max-width:80%;padding:12px 16px;border-radius:18px;border-bottom-left-radius:4px;background:#1E293B;color:#E2E8F0;font-size:14px;line-height:1.6;animation:bubbleIn 0.3s ease-out;';
@@ -2395,25 +2502,6 @@ function toggleBeforeAfter() {
   else { m.style.display = 'flex'; }
 }
 
-// ==================== DARK MODE ====================
-function toggleDarkMode() {
-  const frame = document.getElementById('phoneFrame');
-  const isDark = frame.classList.toggle('dark');
-  localStorage.setItem('ringle_dark_mode', isDark ? 'true' : 'false');
-  updateDarkModeBtn(isDark);
-}
-function updateDarkModeBtn(isDark) {
-  const btn = document.getElementById('darkModeBtn');
-  if (btn) btn.textContent = isDark ? '☀️' : '🌙';
-}
-// Restore dark mode preference on load
-(function() {
-  const saved = localStorage.getItem('ringle_dark_mode');
-  if (saved === 'true') {
-    const frame = document.getElementById('phoneFrame');
-    if (frame) { frame.classList.add('dark'); updateDarkModeBtn(true); }
-  }
-})();
 
 // ==================== DYNAMIC STATUS BAR TIME ====================
 function updateStatusBarTime() {

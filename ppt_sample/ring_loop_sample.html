@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RING LOOP — 링글 AI 스피킹 고도화 기획안</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<style>
+:root {
+  --primary: #1B5BFF;
+  --navy: #0F1B2D;
+  --navy-light: #1A2B4B;
+  --ready: #4A9EFF;
+  --in: #34C77B;
+  --grow: #FF8C42;
+  --bg: #F5F7FF;
+  --bg-alt: #EEF2FF;
+  --text: #1A1A2E;
+  --text-secondary: #374151;
+  --text-muted: #6B7280;
+  --white: #FFFFFF;
+  --danger: #DC2626;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+  --success: #16A34A;
+  --success-bg: #F0FDF4;
+  --success-border: #BBF7D0;
+  --solution-bg: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+  --solution-border: #C7D2FE;
+  --font-body: 'Pretendard Variable', 'Pretendard', system-ui, -apple-system, sans-serif;
+  --radius: 16px;
+  --radius-sm: 14px;
+  --radius-lg: 20px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.12);
+  --step-speed: 0.4s;
+  --step-stagger: 70ms;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #E5E7EB; font-family: var(--font-body); }
+
+.presentation { width: 100vw; height: 100dvh; display: flex; justify-content: center; align-items: center; }
+
+.slide-viewport {
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  height: min(100dvh, calc(100vw * 9 / 16));
+  overflow: hidden; background: var(--white);
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+}
+
+.slide {
+  position: absolute; top: 0; left: 0;
+  width: 1920px; height: 1080px;
+  transform-origin: top left;
+  opacity: 0; pointer-events: none;
+  background: var(--white); color: var(--text);
+}
+.slide.active { opacity: 1; pointer-events: auto; z-index: 1; }
+
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: 48px 56px;
+  display: flex; flex-direction: column;
+  justify-content: center;
+}
+
+.transition-fade .slide { transition: opacity 0.5s ease; }
+
+[data-step] { opacity: 0; transform: translateY(16px); transition: opacity var(--step-speed) ease, transform var(--step-speed) ease; pointer-events: none; }
+[data-step].visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.stagger [data-step].visible { transition-delay: calc(var(--i, 0) * var(--step-stagger)); }
+
+/* === Logo === */
+.slide-logo { position: absolute; top: 28px; right: 40px; width: 100px; height: auto; opacity: 0.8; z-index: 10; pointer-events: none; }
+.slide--dark .slide-logo { opacity: 0.6; filter: brightness(1.2); }
+
+/* === Section Tag === */
+.section-tag {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.section-tag--primary { color: var(--primary); }
+.section-tag--danger { color: var(--danger); }
+
+/* === Slide Heading === */
+.slide-heading {
+  font-size: 28px; font-weight: 800; color: var(--text);
+  margin-bottom: 32px; line-height: 1.35;
+}
+
+/* === Cover === */
+.cover-bg {
+  background: linear-gradient(135deg, var(--navy) 0%, #162544 50%, var(--navy-light) 100%);
+  color: var(--white);
+}
+.cover-tag {
+  font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase; opacity: 0.5;
+}
+.ring-loop-row { display: flex; align-items: center; gap: 16px; }
+.ring-step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ring-circle {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700; color: var(--white);
+}
+.ring-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; }
+.ring-arrow { font-size: 20px; opacity: 0.4; margin-bottom: 18px; }
+
+/* === Three Box (Exec Summary) === */
+.three-box {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+.box {
+  border-radius: var(--radius); padding: 28px 24px;
+  display: flex; flex-direction: column;
+}
+.box--problem { background: var(--danger-bg); border: 1px solid var(--danger-border); }
+.box--solution { background: var(--solution-bg); border: 1px solid var(--solution-border); }
+.box--kpi { background: var(--success-bg); border: 1px solid var(--success-border); }
+.box-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 16px;
+}
+.box--problem .box-title { color: var(--danger); }
+.box--solution .box-title { color: var(--primary); }
+.box--kpi .box-title { color: var(--success); }
+.box .stat {
+  font-size: 36px; font-weight: 800; margin-bottom: 8px;
+}
+.box .desc {
+  font-size: 13px; color: var(--text-muted); line-height: 1.6;
+}
+.box .desc strong { color: var(--text); }
+
+/* === Bottom Bar === */
+.bottom-bar {
+  margin-top: 24px; background: var(--navy);
+  border-radius: 12px; padding: 14px 24px;
+  color: var(--white); font-size: 13px; font-weight: 500;
+  text-align: center; letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+/* === Bottom Insight (navy bar with badge) === */
+.bottom-insight {
+  margin-top: 20px; background: var(--navy);
+  border-radius: 12px; padding: 16px 24px;
+  display: flex; align-items: center; gap: 16px;
+  flex-shrink: 0;
+}
+.bottom-insight .badge {
+  background: var(--primary); color: var(--white);
+  border-radius: 8px; padding: 6px 12px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.bottom-insight .text {
+  font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5;
+}
+
+/* === Market: Bar Chart === */
+.h-bar-row { display: flex; align-items: center; gap: 14px; }
+.h-bar-year {
+  width: 60px; font-size: 16px; font-weight: 700;
+  color: var(--text); text-align: right; flex-shrink: 0;
+}
+.h-bar-track {
+  flex: 1; height: 44px; background: #F3F4F6;
+  border-radius: 10px; overflow: hidden;
+}
+.h-bar-fill {
+  height: 100%; border-radius: 10px;
+  display: flex; align-items: center; padding-left: 16px;
+}
+.h-bar-value { font-size: 15px; font-weight: 800; color: var(--white); white-space: nowrap; }
+.h-bar-badge {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+}
+
+/* === Market Stat Cards === */
+.stat-row { display: flex; gap: 16px; flex-shrink: 0; }
+.market-stat {
+  flex: 1; background: #F8FAFC; border-radius: var(--radius-sm);
+  padding: 16px; text-align: center; border: 1px solid #E5E7EB;
+}
+.ms-value { font-size: 22px; font-weight: 900; color: var(--primary); line-height: 1.1; }
+.ms-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.35; }
+
+/* === Problem: Left Big Stat === */
+.big-stat-card {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  background: var(--danger-bg); border-radius: var(--radius-lg);
+  padding: 32px; text-align: center;
+}
+.big-num { font-size: 72px; font-weight: 900; color: var(--danger); line-height: 1; margin-bottom: 8px; }
+.big-label { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.big-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* === Problem: Reason Cards === */
+.reason-card {
+  display: flex; align-items: center; gap: 14px;
+  background: #F8F9FA; border-radius: var(--radius-sm);
+  padding: 16px 18px; border-left: 4px solid;
+}
+.reason-icon { font-size: 20px; flex-shrink: 0; }
+.reason-text { font-size: 13px; font-weight: 600; color: var(--text); }
+.reason-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* === Solution: Flow Steps === */
+.flow-row {
+  display: flex; align-items: stretch; gap: 0;
+}
+.flow-step {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  padding: 24px 20px; border-radius: var(--radius);
+  position: relative;
+}
+.flow-step--ready { background: rgba(74,158,255,0.08); }
+.flow-step--in { background: rgba(52,199,123,0.08); }
+.flow-step--grow { background: rgba(255,140,66,0.08); }
+.flow-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: var(--white); margin-bottom: 12px;
+}
+.flow-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.flow-sub { font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+.flow-sub--ready { color: var(--ready); }
+.flow-sub--in { color: var(--in); }
+.flow-sub--grow { color: var(--grow); }
+.flow-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.flow-desc strong { color: var(--text); }
+.flow-arrow {
+  display: flex; align-items: center;
+  font-size: 20px; color: #CBD5E1; padding: 0 8px; margin-top: -20px;
+}
+
+/* === Source === */
+.source-text { font-size: 10px; color: var(--text-muted); opacity: 0.5; margin-top: 6px; flex-shrink: 0; }
+
+/* === UI === */
+.progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(128,128,128,0.08); z-index: 50; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--grow)); width: 0%; transition: width 0.4s ease; }
+.slide-counter { position: absolute; bottom: 14px; right: 24px; font-size: 11px; color: #9CA3AF; font-weight: 500; font-variant-numeric: tabular-nums; z-index: 50; user-select: none; }
+.slide-nav { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 50; opacity: 0; transition: opacity 0.3s; }
+.slide-viewport:hover .slide-nav { opacity: 1; }
+.nav-btn { width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(128,128,128,0.08); color: var(--text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.nav-btn:hover { background: rgba(128,128,128,0.15); }
+.nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.page-num { position: absolute; bottom: 16px; right: 24px; font-size: 11px; color: #9CA3AF; font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+.speaker-notes { display: none; }
+</style>
+</head>
+<body>
+
+<main class="presentation" role="region" aria-roledescription="carousel" aria-label="슬라이드 프레젠테이션">
+  <div class="slide-viewport transition-fade" id="slideViewport" aria-live="polite">
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="slide-counter" id="slideCounter"></div>
+    <nav class="slide-nav" aria-label="슬라이드 탐색">
+      <button class="nav-btn" id="prevBtn" aria-label="이전 슬라이드">&#8592;</button>
+      <button class="nav-btn" id="nextBtn" aria-label="다음 슬라이드">&#8594;</button>
+    </nav>
+
+    <!-- ==================== SLIDE 0: COVER ==================== -->
+    <section class="slide slide--dark active" role="group" aria-roledescription="slide" aria-label="슬라이드 1/5" style="background:linear-gradient(135deg, #0F1B2D 0%, #162544 50%, #1A2B4B 100%);">
+      <img src="../image/ringle-rogo1.png" alt="Ringle" class="slide-logo">
+      <div class="slide-inner" style="align-items:center;text-align:center;justify-content:center;color:#fff;">
+
+        <div class="cover-tag" data-step="1">제5회 링글 서비스 기획 & 마케팅 공모전 · 서비스 기획 부문</div>
+
+        <div class="ring-loop-row" data-step="2" style="margin-top:40px;">
+          <div class="ring-step">
+            <div class="ring-circle" style="background:var(--ready);">💬</div>
+            <div class="ring-label" style="color:var(--ready);">READY</div>
+          </div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-step">
+            <div class="ring-circle" style="background:var(--in);">📞</div>
+            <div class="ring-label" style="color:var(--in);">IN</div>
+          </div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-step">
+            <div class="ring-circle" style="background:var(--grow);">📊</div>
+            <div class="ring-label" style="color:var(--grow);">GROW</div>
+          </div>
+        </div>
+
+        <h1 data-step="3" style="font-size:36px;font-weight:800;letter-spacing:-0.5px;margin-top:40px;line-height:1.3;">RING LOOP</h1>
+
+        <p data-step="4" style="font-size:15px;opacity:0.6;line-height:1.6;margin-top:12px;max-width:500px;">
+          카톡처럼 매일 열면, AI가 나만의 영어 코치가 된다<br>
+          <span style="opacity:0.5;">— 링글 AI 스피킹 고도화 기획안</span>
+        </p>
+
+        <p data-step="5" style="font-size:12px;opacity:0.35;margin-top:48px;line-height:1.6;">
+          2026.03 | 팀명 기재
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 1: EXECUTIVE SUMMARY ==================== -->
+    <section class="slide" role="group" aria-roledescription="slide" aria-label="슬라이드 2/5" aria-hidden="true">
+      <img src="../image/ringle-rogo1.png" alt="Ringle" class="slide-logo">
+      <div class="slide-inner">
+        <div data-step="1">
+          <div class="section-tag section-tag--primary">Executive Summary</div>
+          <h2 class="slide-heading">링글을 매일 여는 앱으로 바꾼다</h2>
+        </div>
+
+        <div class="three-box" data-step="2">
+          <!-- Problem -->
+          <div class="box box--problem">
+            <div class="box-title">❌ 문제</div>
+            <div class="stat" style="color:var(--danger);">40%</div>
+            <div class="desc">
+              AI 전화영어 <strong>수신 거절률</strong><br><br>
+              "뭘 말해야 하지?" 불안 →<br>
+              학습 루틴 형성의 최대 병목
+            </div>
+          </div>
+          <!-- Solution -->
+          <div class="box box--solution">
+            <div class="box-title">💡 솔루션</div>
+            <div class="stat" style="color:var(--primary);font-size:24px;line-height:1.3;">메신저형<br>AI 톡</div>
+            <div class="desc">
+              대화할수록 <strong>AI가 나를 파악</strong><br><br>
+              → 맞춤 전화 시나리오 자동 생성<br>
+              → 준비된 상태에서 전화 수신
+            </div>
+          </div>
+          <!-- KPI -->
+          <div class="box box--kpi">
+            <div class="box-title">📈 기대 KPI</div>
+            <div class="stat" style="color:var(--success);font-size:20px;line-height:1.4;">거절 40%→25%<br>전환 ×2.4</div>
+            <div class="desc">
+              <strong>시장 점유율 20~30%</strong> 달성<br><br>
+              롤플레이 경험자 결제 전환율<br>미사용자 대비 2.4배
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-bar" data-step="3">
+          💬 카카오톡처럼 매일 열고, 넷플릭스처럼 나를 알아가는 영어 앱 — 그것이 RING LOOP입니다
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 2: MARKET MAU GROWTH ==================== -->
+    <section class="slide" role="group" aria-roledescription="slide" aria-label="슬라이드 3/5" aria-hidden="true">
+      <img src="../image/ringle-rogo1.png" alt="Ringle" class="slide-logo">
+      <div class="slide-inner">
+        <div data-step="1">
+          <div class="section-tag section-tag--primary">Market Opportunity</div>
+          <h2 class="slide-heading" style="margin-bottom:8px;">글로벌 AI 영어 시장, 지금이 골든 타임</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px;">국내 AI 영어앱 MAU 성장 추이 (2023 → 2024 → 2025 목표)</p>
+        </div>
+
+        <!-- Horizontal Bar Chart -->
+        <div style="display:flex;flex-direction:column;gap:14px;" data-step="2">
+          <div class="h-bar-row">
+            <div class="h-bar-year">2023</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="width:41%;background:linear-gradient(90deg,#94A3B8,#64748B);">
+                <span class="h-bar-value">82만</span>
+              </div>
+            </div>
+            <span style="width:120px;font-size:11px;color:var(--text-muted);font-weight:500;">스픽 중심 초기 시장</span>
+          </div>
+          <div class="h-bar-row">
+            <div class="h-bar-year">2024</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="width:68%;background:linear-gradient(90deg,#3B82F6,var(--primary));">
+                <span class="h-bar-value">156만</span>
+              </div>
+            </div>
+            <span class="h-bar-badge" style="background:#EEF2FF;color:var(--primary);">+90% YoY</span>
+          </div>
+          <div class="h-bar-row">
+            <div class="h-bar-year" style="color:var(--grow);">2025</div>
+            <div class="h-bar-track" style="border:2px dashed var(--grow);background:rgba(255,140,66,0.03);">
+              <div class="h-bar-fill" style="width:100%;background:linear-gradient(90deg,#FF8C42,#FFB07A);">
+                <span class="h-bar-value">200만+</span>
+              </div>
+            </div>
+            <span class="h-bar-badge" style="background:#FFF7ED;color:var(--grow);">TARGET</span>
+          </div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="stat-row" data-step="3" style="margin-top:20px;">
+          <div class="market-stat">
+            <div class="ms-value">CAGR 14.3%</div>
+            <div class="ms-label">글로벌 AI 튜터 시장 연평균 성장률</div>
+          </div>
+          <div class="market-stat">
+            <div class="ms-value" style="color:var(--grow);">×2.4</div>
+            <div class="ms-label">롤플레이 경험자 결제 전환율 배수</div>
+          </div>
+          <div class="market-stat">
+            <div class="ms-value" style="color:var(--danger);">40%</div>
+            <div class="ms-label">AI 전화영어 수신 거절률</div>
+          </div>
+          <div class="market-stat">
+            <div class="ms-value" style="color:var(--in);">50%</div>
+            <div class="ms-label">화상영어 유저 중 AI 스피킹 병행</div>
+          </div>
+        </div>
+
+        <div class="bottom-insight" data-step="4" style="margin-top:16px;">
+          <div class="badge">인사이트</div>
+          <div class="text">국내 AI 영어앱 MAU가 2년만에 2배 — 이 시장은 이미 구조적으로 성장 중</div>
+        </div>
+        <p class="source-text" data-step="4">출처: MetaTech Insights, Sensor Tower, 2024</p>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 3: PAIN POINT ==================== -->
+    <section class="slide" role="group" aria-roledescription="slide" aria-label="슬라이드 4/5" aria-hidden="true">
+      <img src="../image/ringle-rogo1.png" alt="Ringle" class="slide-logo">
+      <div class="slide-inner">
+        <div data-step="1">
+          <div class="section-tag section-tag--danger">Pain Point #1</div>
+          <h2 class="slide-heading" style="margin-bottom:28px;">AI 전화영어 수신 거절률 40% — 왜?</h2>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+          <!-- Left: Big stat -->
+          <div class="big-stat-card" data-step="2">
+            <div class="big-num">40%</div>
+            <div class="big-label">수신 거절률</div>
+            <div class="big-desc">
+              예약한 전화를 10번 중 4번 거절<br>
+              학습 루틴 형성의 최대 병목이자<br>
+              결제 이탈의 직접 원인
+            </div>
+            <div style="margin-top:16px;display:flex;gap:12px;">
+              <div style="text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:var(--danger);">77.7%</div>
+                <div style="font-size:10px;color:var(--text-muted);">AI 발신</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:24px;font-weight:800;color:#9CA3AF;">22.3%</div>
+                <div style="font-size:10px;color:var(--text-muted);">사용자 발신</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Reason cards -->
+          <div style="display:flex;flex-direction:column;gap:12px;justify-content:center;">
+            <div class="reason-card" style="border-color:var(--danger);" data-step="3" style="--i:0;">
+              <div class="reason-icon">😰</div>
+              <div>
+                <div class="reason-text">준비 안 된 상태의 불안</div>
+                <div class="reason-sub">"지금 뭘 말해야 하지?" — 심리적 공포</div>
+              </div>
+            </div>
+            <div class="reason-card" style="border-color:#F97316;" data-step="3" style="--i:1;">
+              <div class="reason-icon">⚡</div>
+              <div>
+                <div class="reason-text">갑작스러운 전화</div>
+                <div class="reason-sub">맥락 없이 울리는 전화 → 거부 반응</div>
+              </div>
+            </div>
+            <div class="reason-card" style="border-color:#EAB308;" data-step="3" style="--i:2;">
+              <div class="reason-icon">🔗</div>
+              <div>
+                <div class="reason-text">학습 맥락 부재</div>
+                <div class="reason-sub">이전 학습과 연결 없는 단절된 경험</div>
+              </div>
+            </div>
+            <div class="reason-card" style="border-color:#6366F1;" data-step="4" style="--i:0;">
+              <div class="reason-icon">🏠</div>
+              <div>
+                <div class="reason-text">환경적 제약</div>
+                <div class="reason-sub">회의 중, 이동 중 등 상황 미고려</div>
+              </div>
+            </div>
+            <div class="reason-card" style="border-color:#8B5CF6;" data-step="4" style="--i:1;">
+              <div class="reason-icon">📉</div>
+              <div>
+                <div class="reason-text">성과 미체감</div>
+                <div class="reason-sub">통화 후 "나아졌는지" 알 수 없음</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4: RING LOOP SOLUTION ==================== -->
+    <section class="slide" role="group" aria-roledescription="slide" aria-label="슬라이드 5/5" aria-hidden="true" style="background:linear-gradient(180deg, #FAFBFF 0%, #F0F3FF 100%);">
+      <img src="../image/ringle-rogo1.png" alt="Ringle" class="slide-logo">
+      <div class="slide-inner">
+        <div data-step="1">
+          <div class="section-tag section-tag--primary">Solution — RING LOOP</div>
+          <h2 class="slide-heading" style="font-size:24px;">카톡처럼 매일 대화하면, AI가 오늘의 영어를 준비한다</h2>
+        </div>
+
+        <!-- 3-column: Phone mockup + description -->
+        <div style="display:flex;align-items:flex-start;gap:24px;" data-step="2">
+
+          <!-- READY -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--ready);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;">💬</div>
+              <span style="font-size:16px;font-weight:800;color:var(--text);">Ready</span>
+              <span style="font-size:11px;font-weight:600;color:var(--ready);">AI 톡 + 브리핑</span>
+            </div>
+            <div style="border-radius:24px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:2px solid rgba(74,158,255,0.3);max-height:520px;">
+              <img src="../image/proto_ready.png" alt="AI 톡 브리핑 화면" style="width:100%;height:auto;display:block;">
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.5;">
+              대화 속에서 직무·약점 파악<br>
+              <strong style="color:var(--ready);">맞춤 전화 시나리오 자동 생성</strong>
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div style="display:flex;align-items:center;font-size:20px;color:#CBD5E1;padding-top:260px;">→</div>
+
+          <!-- IN -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--in);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;">📞</div>
+              <span style="font-size:16px;font-weight:800;color:var(--text);">In</span>
+              <span style="font-size:11px;font-weight:600;color:var(--in);">AI 전화 수신</span>
+            </div>
+            <div style="border-radius:24px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:2px solid rgba(52,199,123,0.3);max-height:520px;">
+              <img src="../image/proto_in.png" alt="AI 전화 수신 화면" style="width:100%;height:auto;display:block;">
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.5;">
+              준비된 상태에서 전화 수신<br>
+              <strong style="color:var(--in);">AI 캐릭터와 실전 영어 훈련</strong>
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div style="display:flex;align-items:center;font-size:20px;color:#CBD5E1;padding-top:260px;">→</div>
+
+          <!-- GROW -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--grow);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;">📊</div>
+              <span style="font-size:16px;font-weight:800;color:var(--text);">Grow</span>
+              <span style="font-size:11px;font-weight:600;color:var(--grow);">피드백 + 복습</span>
+            </div>
+            <div style="border-radius:24px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.15);border:2px solid rgba(255,140,66,0.3);max-height:520px;">
+              <img src="../image/proto_grow.png" alt="CAFP 분석 리포트" style="width:100%;height:auto;display:block;">
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.5;">
+              CAFP 4축 분석 + 표현 교정<br>
+              <strong style="color:var(--grow);">복습 → 다음 전화로 자동 연결</strong>
+            </p>
+          </div>
+
+        </div>
+
+        <div class="bottom-insight" data-step="3" style="margin-top:16px;">
+          <div class="badge">핵심 차별점</div>
+          <div class="text">쓸수록 AI가 나를 알아간다 — 대화 데이터가 쌓일수록 전화 시나리오가 정교해지고, 거절이 줄어든다</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+class PresentationEngine {
+  constructor(vp) {
+    this.vp = vp;
+    this.slides = Array.from(vp.querySelectorAll('.slide'));
+    this.total = this.slides.length;
+    this.cur = 0; this.step = 0; this.maxStep = 0;
+    this.animating = false;
+    this.init();
+  }
+  init() {
+    this.cur = this.parseHash();
+    this.slides.forEach((s, i) => s.classList.toggle('active', i === this.cur));
+    this.maxStep = this.getMaxStep(this.cur);
+    this.step = 0;
+    this.applySteps(); this.scale(); this.ui(); this.hash(); this.bind();
+  }
+  sc() { return Math.min(this.vp.clientWidth / 1920, this.vp.clientHeight / 1080); }
+  scale() { const s = this.sc(); this.slides.forEach(el => { el.style.transform = `scale(${s})`; }); }
+  getMaxStep(i) { let m = 0; this.slides[i].querySelectorAll('[data-step]').forEach(el => { const v = +el.dataset.step; if (v > m) m = v; }); return m; }
+  applySteps() {
+    const sl = this.slides[this.cur];
+    sl.querySelectorAll('[data-step]').forEach(el => { el.classList.toggle('visible', +el.dataset.step <= this.step); });
+  }
+  next() { if (this.animating) return; if (this.step < this.maxStep) { this.step++; this.applySteps(); } else this.go(this.cur + 1); }
+  prev() { if (this.animating) return; if (this.step > 0) { this.step--; this.applySteps(); } else this.go(this.cur - 1, { all: true }); }
+  go(i, o = {}) {
+    if (i < 0 || i >= this.total || this.animating || i === this.cur) return;
+    const p = this.slides[this.cur], n = this.slides[i];
+    this.animating = true;
+    n.classList.add('active'); p.classList.remove('active');
+    setTimeout(() => {
+      this.cur = i; this.maxStep = this.getMaxStep(i);
+      this.step = o.all ? this.maxStep : 0;
+      this.applySteps(); this.ui(); this.hash(); this.animating = false;
+    }, 500);
+  }
+  ui() {
+    document.getElementById('progressBar').style.width = `${(this.cur / (this.total - 1)) * 100}%`;
+    document.getElementById('slideCounter').textContent = `${this.cur + 1} / ${this.total}`;
+    document.getElementById('prevBtn').disabled = (this.cur === 0);
+    document.getElementById('nextBtn').disabled = (this.cur === this.total - 1);
+  }
+  hash() { history.replaceState(null, '', `#slide-${this.cur + 1}`); }
+  parseHash() { const m = location.hash.match(/^#slide-(\d+)$/); if (m) { const n = +m[1] - 1; if (n >= 0 && n < this.total) return n; } return 0; }
+  bind() {
+    window.addEventListener('resize', () => this.scale());
+    document.addEventListener('keydown', e => {
+      if (e.repeat) return;
+      switch (e.key) {
+        case 'ArrowRight': case 'PageDown': case ' ': e.preventDefault(); this.next(); break;
+        case 'ArrowLeft': case 'PageUp': case 'Backspace': e.preventDefault(); this.prev(); break;
+        case 'Home': e.preventDefault(); this.go(0); break;
+        case 'End': e.preventDefault(); this.go(this.total - 1, { all: true }); break;
+        case 'f': case 'F':
+          if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+          break;
+      }
+    });
+    let ps = { x: 0, y: 0, t: 0 };
+    document.addEventListener('pointerdown', e => { ps = { x: e.clientX, y: e.clientY, t: Date.now() }; });
+    document.addEventListener('pointerup', e => {
+      const dx = e.clientX - ps.x, dy = e.clientY - ps.y, dt = Date.now() - ps.t;
+      if (dt > 400) return;
+      if (Math.abs(dx) >= 50 && Math.abs(dy) <= 100) { dx > 0 ? this.prev() : this.next(); }
+    });
+    document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+    document.getElementById('nextBtn').addEventListener('click', () => this.next());
+  }
+}
+new PresentationEngine(document.getElementById('slideViewport'));
+</script>
+</body>
+</html>

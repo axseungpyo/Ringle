@@ -5,6 +5,21 @@
 
 ---
 
+## 🚨 핵심 설계 원칙 (모든 작업에 우선)
+
+> **1. 링글 기존 서비스 위에서 설계한다.**
+> 우리의 기획은 링글이 이미 제공하는 서비스(레벨테스트, AI 튜터, AI 전화영어) 맥락 위에서 작동한다.
+> 기존 기능을 다시 만들거나 대체하는 것이 아니라, **기존 서비스에 RING LOOP를 얹는 것**이다.
+>
+> **2. AI 톡은 대화 속에서 자연스럽게 데이터를 수집한다.**
+> 설문/폼이 아닌, AI 톡 대화 흐름 안에서 사용자의 개인 맥락(직무, 상황, 불안, 시간대 등)을 수집한다.
+> 이 데이터가 전화 시나리오의 재료가 되므로, **사용자가 AI 톡을 쓰고 싶고 써야 할 명분**을 만드는 것이 핵심이다.
+>
+> **3. 프로토타입의 시작점 = RING LOOP가 개입하는 순간이다.**
+> 레벨테스트, 가입 등 링글 기존 온보딩은 이미 완료된 전제. 프로토타입은 "Ringly가 처음 말을 거는 장면"부터 시작한다.
+
+---
+
 ## 프로젝트 개요
 
 - **공모전명**: 제5회 링글 서비스 기획 & 마케팅 공모전
@@ -90,6 +105,7 @@
 | `report/ringle_report_ui.html` | 위 리서치의 시각화 보고서 (Chart.js + Tailwind) | ✅ 완료 |
 | `ringle_competition_notice.md` | 공모전 공식 안내문 전체 | ✅ 참고 문서 |
 | `ringle_competition_full_content.md` | 비즈니스 케이스 가이드라인 전체 | ✅ 참고 문서 |
+| `docs/_ref/competition_strategy.md` | **공모전 Tip & 전략 (공식 가이드 기반)** | ⭐ 필독 — 매 작업 전 확인 |
 
 **기존 리서치의 핵심 인사이트 요약 (중복 작업 방지):**
 - 글로벌 AI 튜터 시장 CAGR 14.3%
@@ -121,13 +137,20 @@
 
 ```
 docs/
-├── 01_market_analysis.md        ← market-analyst 전용
-├── 02_ringle_service_analysis.md ← service-analyst 전용
-├── 03_problem_definition.md     ← Lead 전용
-├── 04_feature_spec.md           ← ux-designer 전용
-├── 05_wireframe_spec.md         ← ux-designer 전용
-├── 06_ppt_outline.md            ← doc-writer 전용
-└── 07_concept_board.md          ← doc-writer 전용
+├── _ref/                            ← 참고/메타 문서 (읽기 전용)
+│   ├── competition_strategy.md      ← 공모전 전략 ⭐ 필독
+│   ├── data_registry.md             ← 데이터 출처 레지스트리
+│   └── session_handoff.md           ← 세션 핸드오프
+├── 01_market_analysis.md            ← market-analyst 전용 (리서치)
+├── 02_ringle_service_analysis.md    ← service-analyst 전용 (리서치)
+├── 03_problem_definition.md         ← Lead 전용 (기획)
+├── 04_feature_spec.md               ← ux-designer 전용 (설계)
+├── 05_wireframe_spec.md             ← ux-designer 전용 (설계)
+├── 06_ppt_outline.md                ← doc-writer 전용 (산출물)
+├── 07_concept_board.md              ← doc-writer 전용 (산출물)
+├── 08_ppt_ui_plan.md                ← PPT UI 상세 설계 (산출물)
+├── 09_review_report.md              ← 리뷰 리포트 (검증)
+└── 10_cross_check.md                ← 크로스 체크 (검증)
 ```
 
 ---
@@ -226,10 +249,16 @@ docs/
 ├── CLAUDE.md                              ← 현재 파일
 ├── ringle_competition_notice.md           ← 공모전 공식 안내문
 ├── ringle_competition_full_content.md     ← 비즈니스 케이스 가이드라인
-├── report/
-│   ├── 링글 AI 스피킹 개선 공모전 리서치.pdf  ← 기존 리서치 (읽기 전용)
-│   └── ringle_report_ui.html              ← 리서치 시각화 보고서 (읽기 전용)
-└── docs/                                  ← 팀 산출물 (파일 소유권 준수)
+├── report/                                ← 기존 리서치 (읽기 전용)
+│   ├── 링글 AI 스피킹 개선 공모전 리서치.pdf
+│   └── ringle_report_ui.html
+├── docs/                                  ← 팀 산출물
+│   ├── _ref/                              ← 참고/메타 문서
+│   ├── 01~02 리서치 / 03 기획 / 04~05 설계
+│   ├── 06~08 산출물 / 09~10 검증
+│   └── (상세 구조는 파일 소유권 규칙 참조)
+├── ppt_sample/                            ← PPT HTML 시안
+└── prototype/                             ← 프로토타입
 ```
 
 ---

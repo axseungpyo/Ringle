@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RING LOOP — 기획안 시안</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B5BFF;
+    --navy: #0F1B2D;
+    --navy-light: #1A2B4B;
+    --ready: #4A9EFF;
+    --in: #34C77B;
+    --grow: #FF8C42;
+    --bg: #F5F7FF;
+    --text: #1A1A2E;
+    --gray: #6B7280;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard Variable', -apple-system, sans-serif;
+    background: #E5E7EB;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .slide {
+    width: 960px;
+    height: 540px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .slide-label {
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 600;
+    margin-bottom: -28px;
+    align-self: flex-start;
+    margin-left: calc(50% - 460px);
+  }
+
+  /* ===== SLIDE 0: COVER ===== */
+  .cover {
+    background: linear-gradient(135deg, var(--navy) 0%, #162544 50%, var(--navy-light) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+    text-align: center;
+    padding: 60px;
+  }
+  .cover .tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 40px;
+  }
+  .cover .ring-loop-icon {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .cover .ring-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .cover .ring-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .cover .ring-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .cover .ring-arrow {
+    font-size: 20px;
+    opacity: 0.4;
+    margin-bottom: 18px;
+  }
+  .cover h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .cover .subtitle {
+    font-size: 15px;
+    opacity: 0.6;
+    line-height: 1.6;
+    margin-bottom: 48px;
+  }
+  .cover .meta {
+    font-size: 12px;
+    opacity: 0.35;
+    line-height: 1.6;
+  }
+
+  /* ===== SLIDE 1: EXEC SUMMARY ===== */
+  .exec-summary {
+    display: flex;
+    flex-direction: column;
+    padding: 48px 56px;
+  }
+  .exec-summary .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .exec-summary h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 32px;
+  }
+  .exec-summary .three-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+  }
+  .exec-summary .box {
+    border-radius: 16px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .exec-summary .box-problem {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+  }
+  .exec-summary .box-solution {
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    border: 1px solid #C7D2FE;
+  }
+  .exec-summary .box-kpi {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+  }
+  .exec-summary .box .box-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .exec-summary .box-problem .box-title { color: #DC2626; }
+  .exec-summary .box-solution .box-title { color: var(--primary); }
+  .exec-summary .box-kpi .box-title { color: #16A34A; }
+  .exec-summary .box .stat {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .exec-summary .box .desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+  .exec-summary .box .desc strong {
+    color: var(--text);
+  }
+  .exec-summary .bottom-bar {
+    margin-top: 24px;
+    background: var(--navy);
+    border-radius: 12px;
+    padding: 14px 24px;
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+
+  /* ===== SLIDE 2: PROBLEM ===== */
+  .problem-slide {
+    display: flex;
+    flex-direction: column;
+    padding: 48px 56px 40px;
+  }
+  .problem-slide .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #DC2626;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .problem-slide h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+  .problem-slide .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    flex: 1;
+  }
+  .problem-slide .left-stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #FEF2F2;
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+  }
+  .problem-slide .big-num {
+    font-size: 72px;
+    font-weight: 900;
+    color: #DC2626;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .problem-slide .big-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .problem-slide .big-desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+  .problem-slide .reasons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+  }
+  .problem-slide .reason-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #F8F9FA;
+    border-radius: 14px;
+    padding: 16px 18px;
+    border-left: 4px solid;
+  }
+  .problem-slide .reason-card:nth-child(1) { border-color: #DC2626; }
+  .problem-slide .reason-card:nth-child(2) { border-color: #F97316; }
+  .problem-slide .reason-card:nth-child(3) { border-color: #EAB308; }
+  .problem-slide .reason-card:nth-child(4) { border-color: #6366F1; }
+  .problem-slide .reason-card:nth-child(5) { border-color: #8B5CF6; }
+  .problem-slide .reason-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .problem-slide .reason-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .problem-slide .reason-sub {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+
+  /* ===== SLIDE 3: SOLUTION ===== */
+  .solution-slide {
+    display: flex;
+    flex-direction: column;
+    padding: 48px 56px 40px;
+    background: linear-gradient(180deg, #FAFBFF 0%, #F0F3FF 100%);
+  }
+  .solution-slide .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .solution-slide h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 28px;
+    line-height: 1.4;
+  }
+  .solution-slide .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex: 1;
+  }
+  .solution-slide .flow-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 16px;
+    border-radius: 16px;
+    position: relative;
+  }
+  .solution-slide .flow-step.ready { background: rgba(74,158,255,0.08); }
+  .solution-slide .flow-step.in { background: rgba(52,199,123,0.08); }
+  .solution-slide .flow-step.grow { background: rgba(255,140,66,0.08); }
+  .solution-slide .flow-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  .solution-slide .ready .flow-icon { background: var(--ready); }
+  .solution-slide .in .flow-icon { background: var(--in); }
+  .solution-slide .grow .flow-icon { background: var(--grow); }
+  .solution-slide .flow-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .solution-slide .flow-sub {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .solution-slide .ready .flow-sub { color: var(--ready); }
+  .solution-slide .in .flow-sub { color: var(--in); }
+  .solution-slide .grow .flow-sub { color: var(--grow); }
+  .solution-slide .flow-desc {
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+  .solution-slide .flow-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    color: #CBD5E1;
+    padding: 0 8px;
+    margin-top: -20px;
+  }
+  .solution-slide .bottom-insight {
+    margin-top: 20px;
+    background: var(--navy);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .solution-slide .bottom-insight .badge {
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .solution-slide .bottom-insight .text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+  }
+
+  /* ===== SLIDE 4: BEFORE/AFTER ===== */
+  .ba-slide {
+    display: flex;
+    flex-direction: column;
+    padding: 48px 56px 40px;
+  }
+  .ba-slide .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ba-slide h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+  .ba-slide .comparison {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 0;
+    flex: 1;
+  }
+  .ba-slide .ba-col {
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .ba-slide .before-col {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+  }
+  .ba-slide .after-col {
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    border: 1px solid #C7D2FE;
+  }
+  .ba-slide .ba-header {
+    font-size: 14px;
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 2px solid;
+    margin-bottom: 4px;
+  }
+  .ba-slide .before-col .ba-header { color: #9CA3AF; border-color: #D1D5DB; }
+  .ba-slide .after-col .ba-header { color: var(--primary); border-color: var(--primary); }
+  .ba-slide .ba-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .ba-slide .before-col .ba-item { color: #6B7280; }
+  .ba-slide .after-col .ba-item { color: var(--text); font-weight: 500; }
+  .ba-slide .ba-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .ba-slide .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--primary);
+  }
+
+  /* Page number */
+  .page-num {
+    position: absolute;
+    bottom: 16px;
+    right: 24px;
+    font-size: 11px;
+    color: #9CA3AF;
+    font-weight: 500;
+  }
+
+  /* Nav buttons */
+  .nav-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+  }
+  .nav-bar span { color: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="nav-bar">
+  <span>RING LOOP 기획안 시안</span> — 디자인 방향 검증용 샘플 4장 (총 23장 中)
+</div>
+
+<!-- ==================== SLIDE 0: COVER ==================== -->
+<div class="slide-label">Slide 0 — 표지</div>
+<div class="slide cover">
+  <div class="tag">제5회 링글 서비스 기획 & 마케팅 공모전 · 서비스 기획 부문</div>
+
+  <div class="ring-loop-icon">
+    <div class="ring-step">
+      <div class="ring-circle" style="background:var(--ready);">💬</div>
+      <div class="ring-label" style="color:var(--ready);">READY</div>
+    </div>
+    <div class="ring-arrow">→</div>
+    <div class="ring-step">
+      <div class="ring-circle" style="background:var(--in);">📞</div>
+      <div class="ring-label" style="color:var(--in);">IN</div>
+    </div>
+    <div class="ring-arrow">→</div>
+    <div class="ring-step">
+      <div class="ring-circle" style="background:var(--grow);">📊</div>
+      <div class="ring-label" style="color:var(--grow);">GROW</div>
+    </div>
+  </div>
+
+  <h1>RING LOOP</h1>
+  <div class="subtitle">
+    카톡처럼 매일 열면, AI가 나만의 영어 코치가 된다<br>
+    <span style="opacity:0.5;">— 링글 AI 스피킹 고도화 기획안</span>
+  </div>
+
+  <div class="meta">
+    2026.03 | 팀명 기재
+  </div>
+</div>
+
+<!-- ==================== SLIDE 1: EXECUTIVE SUMMARY ==================== -->
+<div class="slide-label">Slide 1 — Executive Summary</div>
+<div class="slide exec-summary">
+  <div class="section-tag">Executive Summary</div>
+  <h2>링글을 매일 여는 앱으로 바꾼다</h2>
+
+  <div class="three-box">
+    <div class="box box-problem">
+      <div class="box-title">❌ 문제</div>
+      <div class="stat" style="color:#DC2626;">40%</div>
+      <div class="desc">
+        AI 전화영어 <strong>수신 거절률</strong><br><br>
+        "뭘 말해야 하지?" 불안 →<br>
+        학습 루틴 형성의 최대 병목
+      </div>
+    </div>
+    <div class="box box-solution">
+      <div class="box-title">💡 솔루션</div>
+      <div class="stat" style="color:var(--primary);font-size:24px;line-height:1.3;">메신저형<br>AI 톡</div>
+      <div class="desc">
+        대화할수록 <strong>AI가 나를 파악</strong><br><br>
+        → 맞춤 전화 시나리오 자동 생성<br>
+        → 준비된 상태에서 전화 수신
+      </div>
+    </div>
+    <div class="box box-kpi">
+      <div class="box-title">📈 기대 KPI</div>
+      <div class="stat" style="color:#16A34A;font-size:20px;line-height:1.4;">거절 40%→25%<br>전환 ×2.4</div>
+      <div class="desc">
+        <strong>시장 점유율 20~30%</strong> 달성<br><br>
+        롤플레이 경험자 결제 전환율<br>미사용자 대비 2.4배
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    💬 카카오톡처럼 매일 열고, 넷플릭스처럼 나를 알아가는 영어 앱 — 그것이 RING LOOP입니다
+  </div>
+  <div class="page-num">01</div>
+</div>
+
+<!-- ==================== SLIDE 2: CORE PROBLEM ==================== -->
+<div class="slide-label">Slide 3-2 — 핵심 문제 정의</div>
+<div class="slide problem-slide">
+  <div class="section-tag">Pain Point #1</div>
+  <h2>AI 전화영어 수신 거절률 40% — 왜?</h2>
+
+  <div class="content">
+    <div class="left-stat">
+      <div class="big-num">40%</div>
+      <div class="big-label">수신 거절률</div>
+      <div class="big-desc">
+        예약한 전화를 10번 중 4번 거절<br>
+        학습 루틴 형성의 최대 병목이자<br>
+        결제 이탈의 직접 원인
+      </div>
+      <div style="margin-top:16px;display:flex;gap:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:#DC2626;">77.7%</div>
+          <div style="font-size:10px;color:#6B7280;">AI 발신</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:#9CA3AF;">22.3%</div>
+          <div style="font-size:10px;color:#6B7280;">사용자 발신</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reasons">
+      <div class="reason-card">
+        <div class="reason-icon">😰</div>
+        <div>
+          <div class="reason-text">준비 안 된 상태의 불안</div>
+          <div class="reason-sub">"지금 뭘 말해야 하지?" — 심리적 공포</div>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-icon">⚡</div>
+        <div>
+          <div class="reason-text">갑작스러운 전화</div>
+          <div class="reason-sub">맥락 없이 울리는 전화 → 거부 반응</div>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-icon">🔗</div>
+        <div>
+          <div class="reason-text">학습 맥락 부재</div>
+          <div class="reason-sub">이전 학습과 연결 없는 단절된 경험</div>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-icon">🏠</div>
+        <div>
+          <div class="reason-text">환경적 제약</div>
+          <div class="reason-sub">회의 중, 이동 중 등 상황 미고려</div>
+        </div>
+      </div>
+      <div class="reason-card">
+        <div class="reason-icon">📉</div>
+        <div>
+          <div class="reason-text">성과 미체감</div>
+          <div class="reason-sub">통화 후 "나아졌는지" 알 수 없음</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">05</div>
+</div>
+
+<!-- ==================== SLIDE 3: RING LOOP SOLUTION ==================== -->
+<div class="slide-label">Slide 4-1 — 솔루션: RING LOOP</div>
+<div class="slide solution-slide">
+  <div class="section-tag">Solution — RING LOOP</div>
+  <h2>카톡처럼 매일 대화하면, AI가 오늘의 영어를 준비한다</h2>
+
+  <div class="flow">
+    <div class="flow-step ready">
+      <div class="flow-icon">💬</div>
+      <div class="flow-title">Ready</div>
+      <div class="flow-sub">AI 톡</div>
+      <div class="flow-desc">
+        카카오톡처럼 Ringly와<br>매일 수다 떨기<br><br>
+        <strong style="color:var(--ready);">대화 속에서 자연스럽게<br>직무·약점·목표 파악</strong><br><br>
+        맞춤 전화 시나리오<br>자동 생성
+      </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step in">
+      <div class="flow-icon">📞</div>
+      <div class="flow-title">In</div>
+      <div class="flow-sub">AI 전화 롤플레이</div>
+      <div class="flow-desc">
+        준비된 상태에서<br>전화 수신<br><br>
+        <strong style="color:var(--in);">AI 캐릭터와 실전<br>비즈니스 영어 훈련</strong><br><br>
+        실시간 힌트 카드 +<br>자막 지원
+      </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step grow">
+      <div class="flow-icon">📊</div>
+      <div class="flow-title">Grow</div>
+      <div class="flow-sub">피드백 + 복습</div>
+      <div class="flow-desc">
+        CAFP 4축 분석<br>+ 표현 교정 리포트<br><br>
+        <strong style="color:var(--grow);">복습 퀴즈 +<br>다음 전화로 자동 연결</strong><br><br>
+        AI 톡으로 결과 전달<br>→ 루프 재시작
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-insight">
+    <div class="badge">핵심 차별점</div>
+    <div class="text">쓸수록 AI가 나를 알아간다 — 대화 데이터가 쌓일수록 전화 시나리오가 정교해지고, 거절이 줄어든다</div>
+  </div>
+  <div class="page-num">08</div>
+</div>
+
+<!-- ==================== SLIDE 4: BEFORE/AFTER ==================== -->
+<div class="slide-label">Slide 4-2 — Before / After</div>
+<div class="slide ba-slide">
+  <div class="section-tag">AI 톡 — 메신저형 학습 파트너</div>
+  <h2>카카오톡처럼 매일 열고, 대화할수록 AI가 나를 알아간다</h2>
+
+  <div class="comparison">
+    <div class="ba-col before-col">
+      <div class="ba-header">❌ Before — 기존 AI 전화영어</div>
+      <div class="ba-item">
+        <span class="ba-icon">📵</span>
+        <span>갑자기 전화가 울린다<br><em style="font-size:11px;color:#9CA3AF;">"지금은 아닌 것 같다..." → 거절</em></span>
+      </div>
+      <div class="ba-item">
+        <span class="ba-icon">❓</span>
+        <span>맥락 없는 대화<br><em style="font-size:11px;color:#9CA3AF;">무슨 주제인지도 모른 채 시작</em></span>
+      </div>
+      <div class="ba-item">
+        <span class="ba-icon">📭</span>
+        <span>통화 종료 후 끝<br><em style="font-size:11px;color:#9CA3AF;">피드백 없음, 다음 학습과 단절</em></span>
+      </div>
+      <div class="ba-item">
+        <span class="ba-icon">🔄</span>
+        <span>매번 같은 수준의 전화<br><em style="font-size:11px;color:#9CA3AF;">학습 데이터가 축적되지 않음</em></span>
+      </div>
+      <div style="margin-top:auto;background:#FEF2F2;border-radius:10px;padding:12px 16px;text-align:center;">
+        <span style="font-size:28px;font-weight:900;color:#DC2626;">40%</span>
+        <span style="font-size:12px;color:#DC2626;font-weight:600;"> 수신 거절</span>
+      </div>
+    </div>
+
+    <div class="arrow-col">→</div>
+
+    <div class="ba-col after-col">
+      <div class="ba-header">✅ After — RING LOOP</div>
+      <div class="ba-item">
+        <span class="ba-icon">💬</span>
+        <span>Ringly와 매일 수다<br><em style="font-size:11px;color:var(--primary);">카톡처럼 편하게, 직무·상황 자연 파악</em></span>
+      </div>
+      <div class="ba-item">
+        <span class="ba-icon">🎯</span>
+        <span>맞춤 시나리오 자동 생성<br><em style="font-size:11px;color:var(--primary);">내 상황에 맞는 롤플레이 준비 완료</em></span>
+      </div>
+      <div class="ba-item">
+        <span class="ba-icon">📊</span>
+        <span>AI 톡으로 피드백 전달<br><em style="font-size:11px;color:var(--primary);">복습 퀴즈 + 다음 전화 자동 연결</em></span>
+      </div>
+      <div class="ba-item">
+        <span class="ba-icon">🧠</span>
+        <span>쓸수록 정교해지는 AI<br><em style="font-size:11px;color:var(--primary);">대화할수록 나만의 코치로 진화</em></span>
+      </div>
+      <div style="margin-top:auto;background:#F0FDF4;border-radius:10px;padding:12px 16px;text-align:center;">
+        <span style="font-size:28px;font-weight:900;color:#16A34A;">25%</span>
+        <span style="font-size:12px;color:#16A34A;font-weight:600;"> 목표 거절률</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">09</div>
+</div>
+
+</body>
+</html>
